@@ -1,0 +1,2 @@
+Servidor:
+Crear algoritmo lógico para organizar en memoria interna la información de los deterioros de un levantamiento, y no sobrecargar la base de datos

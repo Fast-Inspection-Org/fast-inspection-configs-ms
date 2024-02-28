@@ -1,0 +1,10 @@
+23/02/2024
+*Definir las entidades y sus relaciones en el Modulo Lógico
+*Implementar Servicios y Controlladores del Modulo Configuración
+24/02/2024
+*Implementar algoritmo para la replicación de versiones de la configuración (Documentar)
+25/02/2024
+*Estructurar DTO y sus relaciones
+*Implementar operaciones CRUD relacionales
+27/02/2024
+*Reenfocar herencia de entidades

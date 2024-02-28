@@ -1,0 +1,26 @@
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { SistemaConfig } from "../sistemas-config/sistema-config.entity";
+import { MaterialConfig } from "../materiales-config/material-config.entity";
+
+@Entity("subsistemaConfig")
+export class SubsistemaConfig {
+    @PrimaryGeneratedColumn()
+    id: number
+    @Column()
+    nombre: String
+    @ManyToOne(() => SistemaConfig, sistemaConfig => sistemaConfig.subSistemasConfig, { onDelete: "CASCADE" })
+    sistemaConfig: SistemaConfig
+    @OneToMany(() => MaterialConfig, materialConfig => materialConfig.subsistemaConfig, { eager: true })
+    materialesConfig: Array<MaterialConfig>
+
+    public replicarVersion() {
+        this.id = undefined
+        this.replicarVersionMaterialesConfig() // se replica la información de los materiales
+    }
+
+    private replicarVersionMaterialesConfig() {
+        this.materialesConfig.forEach((materialConfig) => {
+            materialConfig.replicarVersion() // se replica la version del material
+        })
+    }
+}
