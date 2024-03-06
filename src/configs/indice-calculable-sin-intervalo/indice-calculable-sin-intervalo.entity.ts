@@ -1,18 +1,17 @@
-import { Entity, ManyToOne, OneToMany } from "typeorm";
+import { ChildEntity, Entity, ManyToOne, OneToMany } from "typeorm";
 import { IndiceCalculable } from "../indice-calculable/indice-calculable.entity";
 import { IndicadorSinIntervalo } from "../indicador-sin-intervalo/indicador-sin-intervalo.entity";
 import { Config } from "../config.entity";
+import { Indicador } from "../indicador/indicador.entity";
 
-@Entity("indiceCalculableSinIntervalo")
+@ChildEntity("indiceCalculableSinIntervalo")
 export class IndiceCalculableSinIntervalo extends IndiceCalculable {
-    @OneToMany(() => IndicadorSinIntervalo, indicadorSinIntervalo => indicadorSinIntervalo.indiceCalculableSinIntervalo, {eager: true})
+    @OneToMany(() => IndicadorSinIntervalo, indicadorSinIntervalo => indicadorSinIntervalo.indiceCalculableSinIntervalo, { eager: true })
     indicadoresSinIntervalos: Array<IndicadorSinIntervalo> // Atributo que define los indicadores sin intervalos del indice calculable sin intervalos
-    @ManyToOne(() => Config, config => config.indicesCalculablesSinIntervalo, {onDelete: "CASCADE"})
-    config: Config // Atributo que representa la configuracion donde esta definido los indices calculables
 
-    constructor (nombre: String, config: Config) {
-        super(nombre)
-        this.config = config
+
+    constructor(id?: number, nombre?: String, config?: Config, tipo?: string, calculo?: number) {
+        super(id, nombre, config, tipo, calculo)
     }
 
     public replicarVersion() {
@@ -24,5 +23,18 @@ export class IndiceCalculableSinIntervalo extends IndiceCalculable {
         this.indicadoresSinIntervalos.forEach((indicadorSinIntervalo) => {
             indicadorSinIntervalo.replicarVersion() // se replica la version del indicador sin intervalo
         })
+    }
+
+    // Metodo para obtener el indicador correspondiente a un valor calculado
+    public obtenerIndicadorCalculo(valorCalculo: number): Indicador {
+        let indicador: Indicador | undefined = undefined
+
+        for (let index = 0; index < this.indicadoresSinIntervalos.length && !indicador; index++) {
+            if (this.indicadoresSinIntervalos[index].valor == valorCalculo) // si el valor calculado es igual 
+                indicador = this.indicadoresSinIntervalos[index]
+
+        }
+
+        return indicador
     }
 }

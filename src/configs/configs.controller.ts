@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, Param, ParseIntPipe, Post } from '@nestjs/common';
 import { ConfigsService } from './configs.service';
 import { ConfigDTO } from './config.dto';
 
@@ -22,15 +22,24 @@ export class ConfigsController {
     public createConfigByOtherConfig(@Param("versionOtherConfig", ParseIntPipe) versionOtherConfig: number) {
         this.configsService.createConfigByOtherConfig(versionOtherConfig)
     }
-
-    @Post("saveNewConfig")
-    public saveNewConfig(@Body() newConfig: ConfigDTO) {
-        this.configsService.createConfig(newConfig)
+   
+    @Post("createNewConfig")
+    public async saveNewConfig(@Body() newConfig: ConfigDTO) {
+       await this.configsService.createConfig(newConfig)
+              
     }
 
     @Delete("deleteConfig/:version") // Ruta para eliminar una configuración en especifico (Método de super administrador)
-    public deleteConfig(@Param("version", ParseIntPipe) versionConfig: number) {
-        this.configsService.deleteConfig(versionConfig)
+    public async deleteConfig(@Param("version", ParseIntPipe) versionConfig: number) {
+        try {
+            await  this.configsService.deleteConfig(versionConfig)
+        } catch (error) {
+            throw new HttpException({
+                status: HttpStatus.INTERNAL_SERVER_ERROR,
+                error: 'No exite una configuración con ese id',
+            }, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+      
     }
 
     @Delete("deleteAllConfigs") // Ruta para eliminar todas las configuraciones (Método de super administrador)

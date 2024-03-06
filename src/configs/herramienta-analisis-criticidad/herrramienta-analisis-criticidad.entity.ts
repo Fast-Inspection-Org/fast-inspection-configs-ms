@@ -8,14 +8,11 @@ import { Config } from "../config.entity";
 export class HerramientaAnalisisCriticidad extends Herramienta {
     @OneToMany(() => Campo, campo => campo.herramientaAnalisisCriticidad, { eager: true })
     campos: Array<Campo> // Campos definidos en la herramienta
-    @Column()
-    configVersion: number
-    @ManyToOne(() => Config, config => config.herramientasAnalisisCriticidad, { onDelete: "CASCADE"})
-    config: Config // atributo que representa la configuracion a la que pertenece la herramienta
+ 
+   
 
-    constructor( id?: number, nombre?: String, config?: Config, tipo?: string) {
-        super(id, nombre, tipo)
-        this.config = config
+    constructor( id?: number, nombre?: String, tipo?: string, config?: Config) {
+        super(id, nombre, tipo, config)
     }
 
     public replicarVersion() {

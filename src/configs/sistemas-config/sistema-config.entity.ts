@@ -9,15 +9,16 @@ export class SistemaConfig {
     id: number // atributo que representa el id unico del sistema
     @Column()
     nombre: String
-    @OneToOne(() => Herramienta, { eager: true })
-    @JoinColumn()
+    @ManyToOne(() => Herramienta, { eager: true })
     herramienta: Herramienta
     @OneToMany(() => SubsistemaConfig, subsistemaConfig => subsistemaConfig.sistemaConfig, { eager: true })
     subSistemasConfig: Array<SubsistemaConfig>
+    @Column()
+    configVersion: number
     @ManyToOne(() => Config, config => config.sistemasConfig, { onDelete: "CASCADE" })
     config: Config // atributo que define a la configuracion que pertenece el sistemaConfig
 
-    constructor(nombre?: String, herramienta?: Herramienta, config?: Config, id?: number) {
+    constructor(id?: number, nombre?: String, herramienta?: Herramienta, config?: Config) {
         this.id = id
         this.nombre = nombre
         this.herramienta = herramienta

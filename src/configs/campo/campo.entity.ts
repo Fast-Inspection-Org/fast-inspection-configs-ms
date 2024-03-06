@@ -10,14 +10,17 @@ export class Campo {
     nombre: String
     @Column()
     nivelImportancia: number
+    @Column()
+    configVersion: number
     @ManyToOne(() => HerramientaAnalisisCriticidad, herramientaAnalisisCriticidad => herramientaAnalisisCriticidad.campos, { onDelete: "CASCADE" })
     herramientaAnalisisCriticidad: HerramientaAnalisisCriticidad // Atributo que define a la herramienta analisis de criticidad que pertenece el campo
     @ManyToMany(() => TipoDeterioroAnalisisCriticidadConfig, tipoDeterioroAnalisisCriticidadConfig => tipoDeterioroAnalisisCriticidadConfig.camposAfectados)
     tipoDeterioroAnalisisCriticidadConfig: TipoDeterioroAnalisisCriticidadConfig
 
-    constructor(nombre: String, nivelImportancia: number, herramientaAnalisisCriticidad: HerramientaAnalisisCriticidad) {
+    constructor(nombre: String, nivelImportancia: number, configVersion: number, herramientaAnalisisCriticidad: HerramientaAnalisisCriticidad) {
         this.nombre = nombre
         this.nivelImportancia = nivelImportancia
+        this.configVersion = configVersion
         this.herramientaAnalisisCriticidad = herramientaAnalisisCriticidad
     }
 

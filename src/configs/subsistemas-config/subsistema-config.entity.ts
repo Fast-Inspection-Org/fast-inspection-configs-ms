@@ -13,6 +13,12 @@ export class SubsistemaConfig {
     @OneToMany(() => MaterialConfig, materialConfig => materialConfig.subsistemaConfig, { eager: true })
     materialesConfig: Array<MaterialConfig>
 
+    constructor(id?: number, nombre?: String, sistemaConfig?: SistemaConfig) {
+        this.id = id
+        this.nombre = nombre
+        this.sistemaConfig = sistemaConfig
+    }
+
     public replicarVersion() {
         this.id = undefined
         this.replicarVersionMaterialesConfig() // se replica la información de los materiales

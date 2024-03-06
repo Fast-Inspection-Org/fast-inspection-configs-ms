@@ -1,7 +1,7 @@
 import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Levantamiento } from "../levantamiento/levantamiento.entity";
-import { Sistema } from "../levantamiento/estructura-levantamiento/sistema.class";
-import { TipoDeterioro } from "../levantamiento/estructura-levantamiento/tipo-deterioro.class";
+import { Sistema } from "../levantamiento/estructura-levantamiento/sistema.domain";
+import { TipoDeterioro } from "../levantamiento/estructura-levantamiento/tipo-deterioro.domain";
 import { ValorCampoDefinido } from "../valor-campo-definido/valor-campo-definido.entity";
 
 @Entity("deterioro")

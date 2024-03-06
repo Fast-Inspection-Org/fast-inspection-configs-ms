@@ -1,6 +1,12 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn, TableInheritance } from "typeorm";
+
+enum TipoIndicador {
+    IndicadorIntervalo = "indicadorIntervalo",
+    IndicadorSinIntervalo = "indicadorSinIntervalo"
+}
 
 @Entity("indicador")
+@TableInheritance({ column: { type: "varchar", name: "tipo" } })
 export abstract class Indicador {
     @PrimaryGeneratedColumn()
     id: number // Atributo unico
@@ -8,10 +14,13 @@ export abstract class Indicador {
     nombre: String
     @Column()
     valor: number
+    @Column()
+    tipo: string
 
-    constructor(nombre: String, valor: number) {
+    constructor(id?: number, nombre?: String, valor?: number, tipo?: string) {
         this.nombre = nombre
         this.valor = valor
+        this.tipo = tipo
     }
 
     public replicarVersion() {

@@ -22,8 +22,30 @@ export class CampoService {
     // Metodo auxiliar para crear un campo con la entityManager correspondiente
     private async createCampoWithEntityManager(campoDTO: CampoDTO, entityManager?: EntityManager) {
         const campo: Campo = new Campo(campoDTO.nombre, campoDTO.nivelImportancia,
-            campoDTO.herramientaAnalisisCriticidad instanceof HerramientaAnalisisCriticidad ? campoDTO.herramientaAnalisisCriticidad : undefined) // se crea el campo
+            campoDTO.configVersion, campoDTO.herramientaAnalisisCriticidad instanceof HerramientaAnalisisCriticidad ? campoDTO.herramientaAnalisisCriticidad : undefined) // se crea el campo
 
         const campoInsertado: Campo = await entityManager.save(campo) // se almacena el campo en la base de datos
+    }
+
+    // Metodo para buscar un campo que pertenezca a una configuración con un nombre en especifico
+    public async getCampo(nombre: String, configVersion: number, entityManager?: EntityManager) {
+        let campo: Campo | undefined = undefined
+        
+        if (entityManager)
+            campo = await entityManager.findOne(Campo, {
+                where: {
+                    "nombre": nombre,
+                    "configVersion": configVersion
+                }
+            })
+        else
+            campo = await this.campoRepository.findOne({
+                where: {
+                    "nombre": nombre,
+                    "configVersion": configVersion
+                }
+            })
+
+        return campo
     }
 }

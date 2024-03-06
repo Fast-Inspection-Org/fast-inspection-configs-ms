@@ -9,6 +9,6 @@ export class Edificacion {
     nombre: String
     @Column({ unique: true })
     direccion: String
-    @OneToMany(() => Levantamiento, levantamiento => levantamiento.edificacion)
+    @OneToMany(() => Levantamiento, levantamiento => levantamiento.edificacion, {eager: true, cascade: true})
     levantamientos: Array<Levantamiento> // Atributo que define el historial de levantamientos realizados a una edificación
 }

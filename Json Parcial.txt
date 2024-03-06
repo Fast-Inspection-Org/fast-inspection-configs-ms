@@ -1,0 +1,232 @@
+{
+  "nombre": "B",
+  "descripcion": "One B",
+"herramientasAnalisisCriticidad":[{"nombre": "Herramienta Analisis Criticidad", "tipo": "Herramienta Analisis Criticidad",
+"campos": [{"nombre": "Salud", "nivelImportancia": 3}]}],
+"indicesCalculablesIntervalo": [{"nombre": "Contra",
+  "indicadoresIntervalos": [{"nombre": "indi", "valor": 2,
+    "limiteInferior": 10, "limiteSuperior": 20
+  }]
+}]
+
+}
+
+
+{
+  "nombre": "E",
+  "descripcion": "One E",
+"herramientasAnalisisCriticidad":[{"nombre": "Herramienta Analisis Criticidad", "tipo": "Herramienta Analisis Criticidad",
+"campos": [{"nombre": "Salud", "nivelImportancia": 3}]}],
+"indicesCalculablesIntervalo": [{"nombre": "Contra",
+  "indicadoresIntervalos": [{"nombre": "indi", "valor": 2,
+    "limiteInferior": 10, "limiteSuperior": 20
+  }]
+}],
+"indicesCalculablesSinIntervalo": [{"nombre": "ContraSin", 
+"indicadoresSinIntervalos": [{"nombre": "indiSin", "valor": 3}]}]
+}
+
+
+{
+  "nombre": "H",
+  "descripcion": "One H",
+"herramientasAnalisisCriticidad":[{"nombre": "Herramienta Analisis Criticidad A", "tipo": "Herramienta Analisis Criticidad",
+"campos": [{"nombre": "ZAL", "nivelImportancia": 3}]}],
+"indicesCalculablesIntervalo": [{"nombre": "Contra",
+  "indicadoresIntervalos": [{"nombre": "indi", "valor": 2,
+    "limiteInferior": 10, "limiteSuperior": 20
+  }]
+}],
+"indicesCalculablesSinIntervalo": [{"nombre": "ContraSin", 
+"indicadoresSinIntervalos": [{"nombre": "indiSin", "valor": 3}]}],
+"sistemasConfigs": [{"nombre": "Estructural", "herramienta": {"nombre": "Herramienta Analisis Criticidad A", "tipo": "Herramienta Analisis Criticidad"}}]
+}
+
+
+#PARCIAL CON SUBSISTEMA
+{
+  "nombre": "M",
+  "descripcion": "One M",
+"herramientas":[{"nombre": "Herramienta Analisis Criticidad A", "tipo": "herramientaAnalisisCriticidad",
+"campos": [{"nombre": "ZAL", "nivelImportancia": 3}]}],
+"indicesCalculables": [{"nombre": "Contra", "tipo": "indiceCalculableIntervalo",
+  "indicadoresIntervalos": [{"nombre": "indi", "valor": 2, "tipo": "indicadorIntervalo",
+    "limiteInferior": 10, "limiteSuperior": 20
+  }]}, {"nombre": "ContraSin", 
+"indicadoresSinIntervalos": [{"nombre": "indiSin", "valor": 3, "tipo": "indicadorSinIntervalo"}]}],
+"sistemasConfigs": [{"nombre": "Estructural", "herramienta": {"nombre": "Herramienta Analisis Criticidad A", "tipo": "herramientaAnalisisCriticidad"}, "subSistemasConfig": [{"nombre": "SubSistema A"}]}]
+}
+
+#PARCIAL CON MATERIAL
+{
+  "nombre": "M",
+  "descripcion": "One M",
+"herramientas":[{"nombre": "Herramienta Analisis Criticidad A", "tipo": "herramientaAnalisisCriticidad",
+"campos": [{"nombre": "ZAL", "nivelImportancia": 3}]}],
+"indicesCalculables": [{"nombre": "Contra", "tipo": "indiceCalculableIntervalo",
+  "indicadoresIntervalos": [{"nombre": "indi", "valor": 2, "tipo": "indicadorIntervalo",
+    "limiteInferior": 10, "limiteSuperior": 20
+  }]}, {"nombre": "ContraSin", 
+"indicadoresSinIntervalos": [{"nombre": "indiSin", "valor": 3, "tipo": "indicadorSinIntervalo"}]}],
+"sistemasConfigs": [{"nombre": "Estructural", "herramienta": {"nombre": "Herramienta Analisis Criticidad A", "tipo": "herramientaAnalisisCriticidad"}, "subSistemasConfig": [{"nombre": "SubSistema A", "materialesConfig": [{"nombre": "Material A"}]}]}]
+}
+
+#PARCIAL TIPO DETERIORO -PARCIAL-
+{
+  "nombre": "A",
+  "descripcion": "One A",
+  "herramientas": [
+    {
+      "nombre": "Herramienta Analisis Criticidad A",
+      "tipo": "herramientaAnalisisCriticidad",
+      "campos": [
+        {
+          "nombre": "ZAL",
+          "nivelImportancia": 3
+        }
+      ]
+    }
+  ],
+  "indicesCalculables": [
+    {
+      "nombre": "Contra",
+      "tipo": "indiceCalculableIntervalo",
+      "indicadoresIntervalos": [
+        {
+          "nombre": "indi",
+          "valor": 2,
+          "tipo": "indicadorIntervalo",
+          "limiteInferior": 10,
+          "limiteSuperior": 20
+        }
+      ]
+    },
+    {
+      "nombre": "ContraSin",
+      "indicadoresSinIntervalos": [
+        {
+          "nombre": "indiSin",
+          "valor": 3,
+          "tipo": "indicadorSinIntervalo"
+        }
+      ]
+    }
+  ],
+  "sistemasConfigs": [
+    {
+      "nombre": "Estructural",
+      "herramienta": {
+        "nombre": "Herramienta Analisis Criticidad A",
+        "tipo": "herramientaAnalisisCriticidad"
+      },
+      "subSistemasConfig": [
+        {
+          "nombre": "SubSistema A",
+          "materialesConfig": [
+            {
+              "nombre": "Material A",
+              "tiposDeteriorosConfig": [
+                {
+                  "nombre": "Grieta",
+                  "tipo": "tipoDeterioroAnalisisCriticidadConfig",
+                  "camposDefinidos": [
+                    {
+                      "nombre": "CampoDefA",
+                      "tipo": "Numero"
+                    }
+                  ],
+                  "causas": [
+                    {
+                      "nombre": "Causa A"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+
+
+#PARCIAL TIPO DETERIORO -COMPLETO-
+{
+  "nombre": "Z",
+  "descripcion": "One Z",
+  "herramientas": [
+    {
+      "nombre": "Herramienta Analisis Criticidad A",
+      "tipo": "herramientaAnalisisCriticidad",
+      "campos": [
+        {
+          "nombre": "ZAL",
+          "nivelImportancia": 3
+        }
+      ]
+    }
+  ],
+  "indicesCalculables": [
+    {
+      "nombre": "Contra",
+      "tipo": "indiceCalculableIntervalo",
+      "indicadoresIntervalos": [
+        {
+          "nombre": "indi",
+          "valor": 2,
+          "tipo": "indicadorIntervalo",
+          "limiteInferior": 10,
+          "limiteSuperior": 20
+        }
+      ]
+    },
+    {
+      "nombre": "ContraSin",
+      "indicadoresSinIntervalos": [
+        {
+          "nombre": "indiSin",
+          "valor": 3,
+          "tipo": "indicadorSinIntervalo"
+        }
+      ]
+    }
+  ],
+  "sistemasConfigs": [
+    {
+      "nombre": "Estructural",
+      "herramienta": {
+        "nombre": "Herramienta Analisis Criticidad A",
+        "tipo": "herramientaAnalisisCriticidad"
+      },
+      "subSistemasConfig": [
+        {
+          "nombre": "SubSistema A",
+          "materialesConfig": [
+            {
+              "nombre": "Material A",
+              "tiposDeteriorosConfig": [
+                {
+                  "nombre": "Grieta",
+                  "tipo": "tipoDeterioroAnalisisCriticidadConfig",
+                  "camposDefinidos": [
+                    {
+                      "nombre": "CampoDefA",
+                      "tipo": "Numero"
+                    }
+                  ],
+                  "causas": [
+                    {
+                      "nombre": "Causa A"
+                    }
+                  ],
+                  "camposAfectados": [{"nombre": "ZAL"}]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

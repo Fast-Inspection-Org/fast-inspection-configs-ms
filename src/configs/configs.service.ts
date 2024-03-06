@@ -1,16 +1,17 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { Config } from './config.entity';
 import { EntityManager, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ConfigDTO } from './config.dto';
 import { HerramientaAnalisisCriticidadService } from './herramienta-analisis-criticidad/herramienta-analisis-criticidad.service';
-import { HerramientaAnalisisCriticidadDTO } from './herramienta-analisis-criticidad/herramienta-analisis-criticidad.dto';
-import { IndiceCalculableIntervaloDTO } from './indice-calculable-intervalo/indice-calculable-intervalo.dto';
 import { IndiceCalculableIntervaloService } from './indice-calculable-intervalo/indice-calculable-intervalo.service';
 import { IndiceCalculableSinIntervaloService } from './indice-calculable-sin-intervalo/indice-calculable-sin-intervalo.service';
 import { SistemasConfigService } from './sistemas-config/sistemas-config.service';
-import { IndiceCalculableSinIntervaloDTO } from './indice-calculable-sin-intervalo/indice-calculable-sin-intervalo.dto';
 import { SistemaConfigDTO } from './sistemas-config/sistema-config.dto';
+import { HerramientaDTO } from './herramientas/herramienta.dto';
+import { TipoHerramienta } from './herramientas/herramienta.entity';
+import { IndiceCalculableDTO } from './indice-calculable/indice-calculable.dto';
+import { TipoIndiceCalculable } from './indice-calculable/indice-calculable.entity';
 
 
 @Injectable()
@@ -82,50 +83,52 @@ export class ConfigsService {
 
     // Metodo auxiliar para crear una configuración con la entityManager correspondiente
     private async createConfigWithEntitiManager(configDTO: ConfigDTO, entityManager: EntityManager) {
+
         const configInsertada: Config = await entityManager.save(this.configuracionRepository.create(configDTO)) // Se almacena en la base de datos la configuracion y se obtiene con su id
-        if (configDTO.herramientasAnalisisCriticidad)
-            await this.saveHerramientasConfig(configDTO.herramientasAnalisisCriticidad, configInsertada, entityManager) // se insertan las herramientas pertenecientes a esta configuración en la base de datos
-        if (configDTO.indicesCalculablesIntervalo)
-            await this.saveIndicesCalculablesIntervalo(configDTO.indicesCalculablesIntervalo, configInsertada, entityManager) // se insertan los indicesCalculables por Intervalo pertenecientes a esta configuración en la base de datos
-        if (configDTO.indicesCalculablesSinIntervalo)
-            await this.saveIndicesCalculablesSinIntervalo(configDTO.indicesCalculablesSinIntervalo, configInsertada, entityManager) // se insertan los indicesCalculables sin Intervalo pertenecientes a esta configuración en la base de datos
+        if (configDTO.herramientas)
+            await this.saveHerramientasConfig(configDTO.herramientas, configInsertada, entityManager) // se insertan las herramientas pertenecientes a esta configuración en la base de datos
+        if (configDTO.indicesCalculables)
+            await this.saveIndicesCalculables(configDTO.indicesCalculables, configInsertada, entityManager) // se insertan los indicesCalculables por Intervalo pertenecientes a esta configuración en la base de datos
         if (configDTO.sistemasConfigs)
             await this.saveSistemasConfig(configDTO.sistemasConfigs, configInsertada, entityManager) // se insertan los sistemasConfig  pertenecientes a esta configuración en la base de datos
         //Además se utiliza await para que la transacción espere a que se realicen todas las operaciones en los demás servicios
+
+
+
+
     }
 
     // Metodo para registrar en la base de datos los indicesCalculablesIntervalo que forman parte de una configuracion
-    private async saveIndicesCalculablesIntervalo(indicesCalculablesIntervaloDTO: Array<IndiceCalculableIntervaloDTO>, configInsertada: Config, entityManager: EntityManager) {
+    private async saveIndicesCalculables(indicesCalculablesIntervaloDTO: Array<IndiceCalculableDTO>, configInsertada: Config, entityManager: EntityManager) {
+        // Se indica por indices calculables a que configuracion registrada en la base de datos pertenecen
         for (let index = 0; index < indicesCalculablesIntervaloDTO.length; index++) {
             indicesCalculablesIntervaloDTO[index].config = configInsertada
-            await this.indiceCalculableIntervaloService.createIndiceCalculableIntervalo(indicesCalculablesIntervaloDTO[index], entityManager) /// se manda a insertar al servicio los indices
+            if (indicesCalculablesIntervaloDTO[index].tipo === TipoIndiceCalculable.InidiceCalculableIntervalo) // si se trata de un indice calculable tipo intervalos
+                await this.indiceCalculableIntervaloService.createIndiceCalculableIntervalo(indicesCalculablesIntervaloDTO[index], entityManager) // se manda a insertar al servicio los indices con intervalo
+            else
+                await this.indiceCalculableSinIntervaloService.createIndiceCalculableSinIntervalo(indicesCalculablesIntervaloDTO[index], entityManager) // se manda a insertar al servicio los indices sin intervalos
         }
     }
 
-    // Metodo para registrar en la base de datos los indicesCalculablesSinIntervalo que forman parte de una configuracion
-    private async saveIndicesCalculablesSinIntervalo(indicesCalculablesSinIntervaloDTO: Array<IndiceCalculableSinIntervaloDTO>, configInsertada: Config, entityManager: EntityManager) {
-        for (let index = 0; index < indicesCalculablesSinIntervaloDTO.length; index++) {
-            indicesCalculablesSinIntervaloDTO[index].config = configInsertada
-            await this.indiceCalculableSinIntervaloService.createIndiceCalculableSinIntervalo(indicesCalculablesSinIntervaloDTO[index], entityManager) // se manda insertar al servicio los indices
-        }
-    }
 
     // Metodo para registrar en la base de datos las herramientas que forman parte de una configuracion
-    private async saveHerramientasConfig(herramientas: Array<HerramientaAnalisisCriticidadDTO>, configInsertada: Config, entityManager: EntityManager) {
+    private async saveHerramientasConfig(herramientas: Array<HerramientaDTO>, configInsertada: Config, entityManager: EntityManager) {
         // Se indica por herramientas a que configuracion registrada en la base de datos pertenecen
         for (let index = 0; index < herramientas.length; index++) {
             herramientas[index].config = configInsertada
-            await this.herramientaAnalisisCriticidadService.createHerramientaAnalisisCriticidad(herramientas[index], entityManager) // se manda a insertar al servicio de herramienta analisis criticidad la herramienta en la base de datos   
+            if (herramientas[index].tipo === TipoHerramienta.AnalisisCriticidad) // si se trata de una herramienta analisis criticidad
+                await this.herramientaAnalisisCriticidadService.createHerramientaAnalisisCriticidad(herramientas[index], entityManager) // se manda a insertar al servicio de herramienta analisis criticidad la herramienta en la base de datos   
+
         }
 
     }
 
     // Metodo para registrar en la base de datos las herramientas que forman parte de una configuracion
     private async saveSistemasConfig(sistemasConfigDTO: Array<SistemaConfigDTO>, configInsertada: Config, entityManager: EntityManager) {
-        // Se indica por herramientas a que configuracion registrada en la base de datos pertenecen
+        // Se indica por sistemas de configuracion a que configuracion registrada en la base de datos pertenecen
         for (let index = 0; index < sistemasConfigDTO.length; index++) {
             sistemasConfigDTO[index].config = configInsertada
-            
+
             await this.sistemaConfigService.createSistemaConfig(sistemasConfigDTO[index], entityManager) // se manda a insertar al servicio el sistema config  
         }
 
@@ -134,17 +137,21 @@ export class ConfigsService {
 
 
     // Metodo para eliminar una configuración en especifico (Metodo de super Administrador)
-    public deleteConfig(versionConfig: number) {
-        try {
-            this.configuracionRepository.delete({ version: versionConfig })
-        } catch (error) {
-            //Se lanza HTTP Exception
-        }
+    public async deleteConfig(versionConfig: number) {
+        if (!await this.getConfig(versionConfig)) // si existe la config
+        await this.configuracionRepository.delete({ version: versionConfig })
+        else
+        throw new HttpException({
+            status: HttpStatus.INTERNAL_SERVER_ERROR,
+            error: 'No exite una configuración con ese id',
+        }, HttpStatus.INTERNAL_SERVER_ERROR);
+
     }
 
 
     // Metodo para eliminar todas las configuraciones (Método de super administrador)
     public async deleteAllConfigs() {
+        
         await this.configuracionRepository.delete({})
     }
 }

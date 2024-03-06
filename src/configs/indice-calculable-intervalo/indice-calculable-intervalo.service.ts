@@ -6,6 +6,8 @@ import { IndiceCalculableIntervaloDTO } from './indice-calculable-intervalo.dto'
 import { Config } from '../config.entity';
 import { IndicadorIntervaloDTO } from '../indicador-intervalo/indicador-intervalo.dto';
 import { IndicadorIntervaloService } from '../indicador-intervalo/indicador-intervalo.service';
+import { IndiceCalculableDTO } from '../indice-calculable/indice-calculable.dto';
+import { IndicadorDTO } from '../indicador/indicador.dto';
 
 @Injectable()
 export class IndiceCalculableIntervaloService {
@@ -13,7 +15,7 @@ export class IndiceCalculableIntervaloService {
     constructor(@InjectRepository(IndiceCalculableIntervalo) private indiceCalculableIntervalorRepository: Repository<IndiceCalculableIntervalo>,
         private indicadorIntervaloService: IndicadorIntervaloService) { }
 
-    public async createIndiceCalculableIntervalo(indiceCalculableIntervaloDTO: IndiceCalculableIntervaloDTO, entityManager?: EntityManager) {
+    public async createIndiceCalculableIntervalo(indiceCalculableIntervaloDTO: IndiceCalculableDTO, entityManager?: EntityManager) {
         if (!entityManager) // No se trata de una llamada con una transacción heredada
             await this.indiceCalculableIntervalorRepository.manager.transaction(async (trasactionManager: EntityManager) => { // se crea una transacción para este procedimiento
                 await this.createIndiceCalculableIntervaloWithEntity(indiceCalculableIntervaloDTO, trasactionManager)
@@ -22,9 +24,10 @@ export class IndiceCalculableIntervaloService {
             await this.createIndiceCalculableIntervaloWithEntity(indiceCalculableIntervaloDTO, entityManager)
     }
 
-    private async createIndiceCalculableIntervaloWithEntity(indiceCalculableIntervaloDTO: IndiceCalculableIntervaloDTO, entityManager: EntityManager) {
-        const indiceCalculableIntervalo: IndiceCalculableIntervalo = new IndiceCalculableIntervalo(indiceCalculableIntervaloDTO.nombre,
-            indiceCalculableIntervaloDTO.config instanceof Config ? indiceCalculableIntervaloDTO.config : undefined) // Se crea el indice para ser añadido
+    private async createIndiceCalculableIntervaloWithEntity(indiceCalculableIntervaloDTO: IndiceCalculableDTO, entityManager: EntityManager) {
+        const indiceCalculableIntervalo: IndiceCalculableIntervalo = new IndiceCalculableIntervalo(undefined, indiceCalculableIntervaloDTO.nombre,
+            indiceCalculableIntervaloDTO.config instanceof Config ? indiceCalculableIntervaloDTO.config : new Config(indiceCalculableIntervaloDTO.config.version),
+            indiceCalculableIntervaloDTO.tipo, indiceCalculableIntervaloDTO.calculo) // Se crea el indice para ser añadido
 
         const indiceCalculableIntervaloInsertado: IndiceCalculableIntervalo = await entityManager.save(indiceCalculableIntervalo) // se inserta el indice en la base de datos y se obtiene la instancia insertada
 
@@ -33,7 +36,7 @@ export class IndiceCalculableIntervaloService {
     }
 
 
-    private async saveIndicadoresIntervalosByIndiceCalculableIntervalo(indicadoresIntervalosDTO: Array<IndicadorIntervaloDTO>,
+    private async saveIndicadoresIntervalosByIndiceCalculableIntervalo(indicadoresIntervalosDTO: Array<IndicadorDTO>,
         indiceCalculableIntervaloInsertado: IndiceCalculableIntervalo, entityManager: EntityManager) {
         for (let index = 0; index < indicadoresIntervalosDTO.length; index++) {
             indicadoresIntervalosDTO[index].indiceCalculableIntervalo = indiceCalculableIntervaloInsertado // se le asigna el indice calculable insertado al indicador

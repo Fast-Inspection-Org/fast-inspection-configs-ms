@@ -4,5 +4,5 @@ import { IndiceCalculableSinIntervalo } from "../indice-calculable-sin-intervalo
 
 
 export class IndicadorSinIntervaloDTO extends IndicadorDTO{
-    indiceCalculableSinIntervalo: IndiceCalculableSinIntervaloDTO | IndiceCalculableSinIntervalo // Atributo que define el indiceCalculable sin intervalos al que pertenece el indicador sin intervalos
+    
 }

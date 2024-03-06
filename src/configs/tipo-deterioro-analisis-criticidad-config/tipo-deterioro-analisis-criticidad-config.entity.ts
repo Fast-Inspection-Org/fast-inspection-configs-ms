@@ -1,15 +1,20 @@
-import { Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from "typeorm";
+import { ChildEntity, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from "typeorm";
 import { TipoDeterioroConfig } from "../tipo-deterioros-config/tipo-deterioro-config.entity";
 import { Campo } from "../campo/campo.entity";
 import { MaterialConfig } from "../materiales-config/material-config.entity";
 
-@Entity("tipoDeterioroAnalisisCriticidadConfig")
+@ChildEntity("tipoDeterioroAnalisisCriticidadConfig")
 export class TipoDeterioroAnalisisCriticidadConfig extends TipoDeterioroConfig {
     @ManyToMany(() => Campo, { eager: true })
     @JoinTable()
     camposAfectados: Array<Campo> // atributo que define los campos afectados por este tipo de deterioro
-    @ManyToOne(() => MaterialConfig, materialConfig => materialConfig.tipoDeteriorosAnalisisCriticidadConfig, {onDelete: "CASCADE"})
-    materialConfig: MaterialConfig
+
+
+    constructor(id?: number, nombre?: String, tipo?: string, materialConfig?: MaterialConfig, detectabilidad?: number, camposAfectados?: Array<Campo>) {
+        super(id, nombre, tipo, materialConfig, detectabilidad)
+        this.camposAfectados = camposAfectados
+        
+    }
 
     public replicarVersion() {
         super.replicarVersion()

@@ -8,3 +8,5 @@
 *Implementar operaciones CRUD relacionales
 27/02/2024
 *Reenfocar herencia de entidades
+29/02/2024
+*Testear Algoritmo para la carga de configuraciones
