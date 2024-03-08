@@ -4,6 +4,7 @@ import { Deterioro } from "src/controlador-edificaciones/deterioro/deterioro.ent
 import { Sistema } from "./sistema.domain";
 import { LevantamientoDomain } from "./levantamiento.domain";
 import { Indicador } from "src/configs/indicador/indicador.entity";
+import { Exclude, Expose } from "class-transformer";
 
 export abstract class TipoDeterioro {
     //tipoDeterioroConfig: TipoDeterioroConfig // referencia de memoria del tipo de deterioro definido en configuracion
@@ -11,12 +12,14 @@ export abstract class TipoDeterioro {
     nombre: String
     tipo: string
     detectabilidad: number
+    @Exclude()
     sistema: Sistema // referencia al sistema al cual forma parte del tipo de deterioro (Para ralización de los calculos)
+    @Exclude()
     levantamiento: LevantamientoDomain // referencia al levantamiento al cual pertenece ( para la realización de los calculos)
     camposDefinidos: Array<CampoDefinido> // Atributo que representa los campos definidos para este tipo de deterioro
     causas: Array<Causa> // Atributo que define las causas para este tipo de deterioro
     deterioros: Array<Deterioro> // atributo que define La *información* de los deterioros asociados a un tipo de material
-    indiceCriticidad: Indicador // atributo que define la criticidad del tipo de deterioro
+
 
     constructor(id: number,
         nombre: String,
@@ -40,11 +43,13 @@ export abstract class TipoDeterioro {
     }
 
     // Operaciones
-    public abstract procesarCriticidad();
+
+    public abstract obtenerIndiceCriticidad(): Indicador;
 
 
 
     // Metodo para obtener la cantidad de deterioros asociados a este tipo de deterioro
+    @Expose()
     public obtenerCantidadDeterioros(): number {
         return this.deterioros.length
     }

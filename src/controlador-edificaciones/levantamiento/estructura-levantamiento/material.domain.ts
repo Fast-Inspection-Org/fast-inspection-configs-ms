@@ -6,6 +6,7 @@ import { TipoDeterioroAnalisisCriticidad } from "./tipo-deterioro-analisis-criti
 import { Sistema } from "./sistema.domain";
 import { TipoDeterioroAnalisisCriticidadConfig } from "src/configs/tipo-deterioro-analisis-criticidad-config/tipo-deterioro-analisis-criticidad-config.entity";
 import { LevantamientoDomain } from "./levantamiento.domain";
+import { Exclude, Expose } from "class-transformer";
 
 export class Material {
     //materialConfig: MaterialConfig // referencia de memoria del material definido en configuracion
@@ -49,6 +50,7 @@ export class Material {
 
 
     // Operaciones
+    @Expose()
     public obtenerCantidadDeterioros(): number {
         let cantDeterioros: number = 0
 
@@ -57,6 +59,17 @@ export class Material {
         })
 
         return cantDeterioros
+    }
+
+    // Metodo para calcular la criticidad de un material
+   @Expose()
+    public obtenerIndiceCriticidad() : number {
+        let criticidad: number = 0
+        this.tiposDeterioros.forEach((tipoDeterioro) => {
+            criticidad += tipoDeterioro.obtenerIndiceCriticidad().valor
+        })
+
+        return criticidad
     }
     // Fin Operaciones
 

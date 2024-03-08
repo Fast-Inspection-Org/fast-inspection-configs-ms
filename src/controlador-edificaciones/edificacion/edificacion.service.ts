@@ -16,14 +16,28 @@ export class EdificacionService {
 
     // Metodo para insertar una Edificacion
     public async createEdificacion(edificacionDTO: EdificacionDTO) {
-        try {
-            await this.edificacionRepository.save(this.edificacionRepository.create(edificacionDTO))
-        } catch (error) {
-            throw new HttpException({
-                status: HttpStatus.INTERNAL_SERVER_ERROR,
-                error: 'Error en la insercción de la edificacion',
-            }, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        await this.edificacionRepository.save(this.edificacionRepository.create(edificacionDTO))
+    }
+
+    // Metodo para obtener una edificacion
+    public async getEdificacion(id: number) {
+        return await this.edificacionRepository.findOne({
+            where: {
+                id: id
+            }
+        })
+    }
+
+    // Metodo para eliminar todas las edificaciones (super administrador)
+    public async deleteAllEdificaciones() {
+        await this.edificacionRepository.delete({})
+    }
+
+    // Metodo para eliminar una edificación  (super administrador)
+    public async deleteEdificacion(idEdificio: number) {
+        await this.edificacionRepository.delete({
+            id: idEdificio
+        })
     }
 
 }

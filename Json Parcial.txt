@@ -230,3 +230,384 @@
     }
   ]
 }
+
+#COMPLETO
+{
+  "nombre": "Z",
+  "descripcion": "One Z",
+  "herramientas": [
+    {
+      "nombre": "Herramienta Analisis Criticidad A",
+      "tipo": "herramientaAnalisisCriticidad",
+      "campos": [
+        {
+          "nombre": "ZAL",
+          "nivelImportancia": 3
+        }
+      ]
+    }
+  ],
+  "indicesCalculables": [
+    {
+      "nombre": "Contra",
+      "tipo": "indiceCalculableIntervalo",
+      "calculo": 0,
+      "indicadoresIntervalos": [
+        {
+          "nombre": "indi",
+          "valor": 2,
+          "tipo": "indicadorIntervalo",
+          "limiteInferior": 10,
+          "limiteSuperior": 20
+        }
+      ]
+    },
+    {
+      "nombre": "ContraSin",
+      "calculo": 0,
+      "indicadoresSinIntervalos": [
+        {
+          "nombre": "indiSin",
+          "valor": 3,
+          "tipo": "indicadorSinIntervalo"
+        }
+      ]
+    }
+  ],
+  "sistemasConfigs": [
+    {
+      "nombre": "Estructural",
+      "herramienta": {
+        "nombre": "Herramienta Analisis Criticidad A",
+        "tipo": "herramientaAnalisisCriticidad"
+      },
+      "subSistemasConfig": [
+        {
+          "nombre": "SubSistema A",
+          "materialesConfig": [
+            {
+              "nombre": "Material A",
+              "tiposDeteriorosConfig": [
+                {
+                  "nombre": "Grieta",
+                  "tipo": "tipoDeterioroAnalisisCriticidadConfig",
+                  "detectabilidad": 1,
+                  "camposDefinidos": [
+                    {
+                      "nombre": "CampoDefA",
+                      "tipo": "Numero"
+                    }
+                  ],
+                  "causas": [
+                    {
+                      "nombre": "Causa A"
+                    }
+                  ],
+                  "camposAfectados": [{"nombre": "ZAL"}]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+
+#LEVANTAMIENTO
+{
+    "fechaInicio": "2021-07-08",
+    "fechaFinalizado":"2022-07-08",
+    "deterioros": [{"idSistema": 70, "idSubSistema": 20, "idMaterial": 19, "idTipoDeterioro": 14}, {"idSistema": 70, "idSubSistema": 20, "idMaterial": 19, "idTipoDeterioro": 14}],
+    "config": {"version": 5}
+  
+}
+
+#EDIFICACION
+{
+  "nombre": "Frank Pais",
+  "direccion": "Ave 51",
+  "levantamientos": [{
+    "fechaInicio": "2021-07-08",
+    "fechaFinalizado":"2022-07-08",
+    "deterioros": [{"idSistema": 70, "idSubSistema": 20, "idMaterial": 19, "idTipoDeterioro": 14  }]
+  }]
+}
+
+#Edificaciones Buenas
+[
+  {
+    "id": 10,
+    "nombre": "Hotel Hostal",
+    "direccion": "Calle 35",
+    "ubicacionX": 23.1372,
+    "ubicacionY": -82.3283,
+    "levantamientos": []
+  },
+  {
+    "id": 5,
+    "nombre": "Cujae",
+    "direccion": "Calle 114",
+    "ubicacionX": 23.14,
+    "ubicacionY": -82.3583,
+    "levantamientos": []
+  },
+  {
+    "id": 8,
+    "nombre": "Museo de Bellas Artes",
+    "direccion": "Calle 21",
+    "ubicacionX": 23.1372,
+    "ubicacionY": -82.3783,
+    "levantamientos": []
+  },
+  {
+    "id": 6,
+    "nombre": "Capitolio de la Habana",
+    "direccion": "La Habana",
+    "ubicacionX": 23.1272,
+    "ubicacionY": -82.3583,
+    "levantamientos": []
+  },
+  {
+    "id": 4,
+    "nombre": "Frank Pais",
+    "direccion": "Ave 51",
+    "ubicacionX": 23.1372,
+    "ubicacionY": -82.3583,
+    "levantamientos": []
+  }
+]
+
+#EDIFICACION COMPLETA
+{
+  "nombre": "Casino Deportivo",
+  "direccion": "Ave 51",
+  "ubicacionX": 23.1372,
+  "ubicacionY": -82.3583,
+  "levantamientos": [{
+    "fechaInicio": "2021-07-08",
+    "fechaFinalizado":"2022-07-08",
+    "deterioros": [{"idSistema": 70, "idSubSistema": 20, "idMaterial": 19, "idTipoDeterioro": 14, "config": {"version": 5}}]
+  }]
+}
+
+ {
+    "nombre": "Avenida del Puerto",
+    "direccion": "Ave 25",
+    "ubicacionX": 23.1372,
+    "ubicacionY": -82.3783,
+    "levantamientos": [{
+    "fechaInicio": "2021-07-08",
+    "fechaFinalizado":"2022-07-08",
+    "config": {"version": 5},
+    "deterioros": [{"idSistema": 70, "idSubSistema": 20, "idMaterial": 19, "idTipoDeterioro": 14}]
+  }]
+  }
+
+#CONFIG COMPELTO
+{
+  "nombre": "Herramientas Confiabilidad",
+  "herramientas": [
+    {
+      "id": 61,
+      "nombre": "Herramienta Analisis Criticidad A",
+      "tipo": "herramientaAnalisisCriticidad",
+      "campos": [
+        {
+          "nombre": "Salud",
+          "nivelImportancia": 3
+        },
+        {
+          "nombre": "Estructura",
+          "nivelImportancia": 3
+        }
+      ]
+    }
+  ],
+  "indicesCalculables": [
+    {
+      "nombre": "Indice Calculable Detectabilidad",
+      "tipo": "indiceCalculableSinIntervalo",
+      "calculo": 0,
+      "indicadoresSinIntervalos": [
+        {
+          "nombre": "baja",
+          "valor": 1,
+          "tipo": "indicadorSinIntervalo"
+        },
+        {
+          "nombre": "media",
+          "valor": 2,
+          "tipo": "indicadorSinIntervalo"
+        },
+        {
+          "nombre": "alta",
+          "valor": 3,
+          "tipo": "indicadorSinIntervalo"
+        }
+      ]
+    },
+    {
+      "nombre": "Indice Calculable Impacto ",
+      "tipo": "indiceCalculableIntervalo",
+      "calculo": 1,
+      "indicadoresIntervalos": [
+        {
+          "nombre": "baja",
+          "valor": 1,
+          "tipo": "indicadorIntervalo",
+          "limiteInferior": 0,
+          "limiteSuperior": 30
+        },
+        {
+          "nombre": "media",
+          "valor": 2,
+          "tipo": "indicadorIntervalo",
+          "limiteInferior": 30,
+          "limiteSuperior": 50
+        },
+        {
+          "nombre": "alta",
+          "valor": 3,
+          "tipo": "indicadorIntervalo",
+          "limiteInferior": 50,
+          "limiteSuperior": 2147483647
+        }
+      ]
+    },
+    {
+      "nombre": "Indice Calculable Frecuencia ",
+      "tipo": "indiceCalculableIntervalo",
+      "calculo": 2,
+      "indicadoresIntervalos": [
+        {
+          "nombre": "baja",
+          "valor": 1,
+          "tipo": "indicadorIntervalo",
+          "limiteInferior": 0,
+          "limiteSuperior": 30
+        },
+        {
+          "nombre": "media",
+          "valor": 2,
+          "tipo": "indicadorIntervalo",
+          "limiteInferior": 30,
+          "limiteSuperior": 50
+        },
+        {
+          "nombre": "alta",
+          "valor": 3,
+          "tipo": "indicadorIntervalo",
+          "limiteInferior": 50,
+          "limiteSuperior": 2147483647
+        }
+      ]
+    },
+    {
+      "nombre": "Indice Calculable Criticidad ",
+      "tipo": "indiceCalculableIntervalo",
+      "calculo": 3,
+      "indicadoresIntervalos": [
+        {
+          "nombre": "baja",
+          "valor": 1,
+          "tipo": "indicadorIntervalo",
+          "limiteInferior": 0,
+          "limiteSuperior": 30
+        },
+        {
+          "nombre": "media",
+          "valor": 2,
+          "tipo": "indicadorIntervalo",
+          "limiteInferior": 30,
+          "limiteSuperior": 50
+        },
+        {
+          "nombre": "alta",
+          "valor": 3,
+          "tipo": "indicadorIntervalo",
+          "limiteInferior": 50,
+          "limiteSuperior": 100
+        }
+      ]
+    }
+  ],
+  "sistemasConfigs": [
+    {
+      "nombre": "Estructural",
+      "herramienta": {
+        "nombre": "Herramienta Analisis Criticidad A",
+        "tipo": "herramientaAnalisisCriticidad"
+      },
+      "subSistemasConfig": [
+        {
+          "nombre": "Columna",
+          "materialesConfig": [
+            {
+              "nombre": "Piedra",
+              "tiposDeteriorosConfig": [
+                {
+                  "nombre": "Grieta",
+                  "tipo": "tipoDeterioroAnalisisCriticidadConfig",
+                  "detectabilidad": 1,
+                  "camposAfectados": [
+                    {
+                      "nombre": "Salud"
+                    },
+                    {
+                      "nombre": "Estructura"
+                    }
+                  ],
+                  "camposDefinidos": [
+                    {
+                      "nombre": "largo",
+                      "tipo": "Numero"
+                    }
+                  ],
+                  "causas": [
+                    {
+                      "nombre": "Humedad"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "state": false,
+  "descripcion": "Herramientas elaboradas despues de un estudio inmersivo"
+}
+
+#Edificio
+{
+  "nombre": "Hotel Varadero",
+  "direccion": "Ave Vecina",
+  "ubicacionX": 23.1400,
+  "ubicacionY": -82.3583,
+  "levantamientos": [
+    {
+      "fechaInicio": "2021-07-08",
+      "fechaFinalizado": "2022-07-08",
+      "deterioros": [
+        {
+          "idSistema": 71,
+          "idSubSistema": 21,
+          "idMaterial": 20,
+          "idTipoDeterioro": 15
+        },
+        {
+          "idSistema": 71,
+          "idSubSistema": 21,
+          "idMaterial": 20,
+          "idTipoDeterioro": 15
+        }
+      ],
+      "config": {
+        "version": 12
+      }
+    }
+  ]
+}

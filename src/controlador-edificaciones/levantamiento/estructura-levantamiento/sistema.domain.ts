@@ -1,16 +1,17 @@
 
 import { SubSistema } from "./subsistema.domain";
 import { Herramienta } from "src/configs/herramientas/herramienta.entity";
-import { Calculos } from "src/configs/indice-calculable/indice-calculable.entity";
 import { SubsistemaConfig } from "src/configs/subsistemas-config/subsistema-config.entity";
 import { Deterioro } from "src/controlador-edificaciones/deterioro/deterioro.entity";
 import { LevantamientoDomain } from "./levantamiento.domain";
+import { Exclude, Expose } from "class-transformer";
 
 export class Sistema {
     // sistemaConfig: SistemaConfig // referencia de memoria del sistema definido en configuracion
     id: number // atributo que representa el id unico del sistema
     nombre: String
     subSistemas: Array<SubSistema>  // atributo que define La *información* de los subsistemas de un sistema
+    @Exclude()
     herramienta: Herramienta // define la herramienta que va hacer utilizada en el sistema
 
     constructor(id: number,
@@ -47,6 +48,7 @@ export class Sistema {
     }
 
     // Operaciones
+    @Expose()
     public obtenerCantidadDeterioros(): number {
         let cantDeterioros: number = 0
 
@@ -55,6 +57,16 @@ export class Sistema {
         })
 
         return cantDeterioros
+    }
+    // Metodo para calcular la criticidad de un sistema
+    @Expose()
+    public obtenerIndiceCriticidad(): number {
+        let criticidad: number = 0
+        this.subSistemas.forEach((subsistema) => {
+            criticidad += subsistema.obtenerIndiceCriticidad()
+        })
+
+        return criticidad
     }
     // Fin Operaciones
 

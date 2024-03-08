@@ -8,7 +8,7 @@ import { SubsistemaConfig } from "../subsistemas-config/subsistema-config.entity
 export class SistemaConfigDTO {
     id: number
     nombre: String
-    subSistemasConfig?: Array<SubsistemaConfigDTO>
+    subSistemasConfig: Array<SubsistemaConfigDTO>
     herramienta: HerramientaDTO // atributo que define la herramienta a la cual pertenece el sistema
-    config?: Config | ConfigDTO // atributo que define a la configuracion que pertenece el sistemaConfig
+    config: Config | ConfigDTO // atributo que define a la configuracion que pertenece el sistemaConfig
 }

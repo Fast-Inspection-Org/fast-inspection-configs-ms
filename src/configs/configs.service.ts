@@ -51,6 +51,16 @@ export class ConfigsService {
         return this.lastConfig
     }
 
+    // Metodo para obtener una configuración con una versión en específico
+    public async getConfigByVersion(versionConfig: number) {
+        return await this.configuracionRepository.findOne({
+            where: {
+                version: versionConfig
+            }
+        })
+
+    }
+
     // Metodo para obtener una configuración en especifico
     public async getConfig(versionConfig: number): Promise<Config> {
 
@@ -126,6 +136,7 @@ export class ConfigsService {
     // Metodo para registrar en la base de datos las herramientas que forman parte de una configuracion
     private async saveSistemasConfig(sistemasConfigDTO: Array<SistemaConfigDTO>, configInsertada: Config, entityManager: EntityManager) {
         // Se indica por sistemas de configuracion a que configuracion registrada en la base de datos pertenecen
+
         for (let index = 0; index < sistemasConfigDTO.length; index++) {
             sistemasConfigDTO[index].config = configInsertada
 
@@ -138,20 +149,20 @@ export class ConfigsService {
 
     // Metodo para eliminar una configuración en especifico (Metodo de super Administrador)
     public async deleteConfig(versionConfig: number) {
-        if (!await this.getConfig(versionConfig)) // si existe la config
-        await this.configuracionRepository.delete({ version: versionConfig })
+        if (await this.getConfig(versionConfig)) // si existe la config
+            await this.configuracionRepository.delete({ version: versionConfig })
         else
-        throw new HttpException({
-            status: HttpStatus.INTERNAL_SERVER_ERROR,
-            error: 'No exite una configuración con ese id',
-        }, HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new HttpException({
+                status: HttpStatus.INTERNAL_SERVER_ERROR,
+                error: 'No exite una configuración con ese id',
+            }, HttpStatus.INTERNAL_SERVER_ERROR);
 
     }
 
 
     // Metodo para eliminar todas las configuraciones (Método de super administrador)
     public async deleteAllConfigs() {
-        
+
         await this.configuracionRepository.delete({})
     }
 }

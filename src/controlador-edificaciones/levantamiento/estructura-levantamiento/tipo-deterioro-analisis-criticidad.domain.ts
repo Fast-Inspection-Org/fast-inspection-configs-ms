@@ -4,10 +4,10 @@ import { Sistema } from "./sistema.domain";
 import { CampoDefinido } from "src/configs/campo-definido/campo-definido.entity";
 import { Causa } from "src/configs/causa/causa.entity";
 import { Deterioro } from "src/controlador-edificaciones/deterioro/deterioro.entity";
-import { Levantamiento } from "../levantamiento.entity";
 import { LevantamientoDomain } from "./levantamiento.domain";
 import { Calculos } from "src/configs/indice-calculable/indice-calculable.entity";
 import { Indicador } from "src/configs/indicador/indicador.entity";
+import { Expose } from "class-transformer";
 
 export class TipoDeterioroAnalisisCriticidad extends TipoDeterioro {
 
@@ -30,12 +30,9 @@ export class TipoDeterioroAnalisisCriticidad extends TipoDeterioro {
     }
 
     // Operaciones
-    public procesarCriticidad() {
-        this.indiceCriticidad = this.obtenerIndiceCriticidad()
-    }
-
 
     // Metodo para obtener el indice de criticidad del tipo de deterioro
+    @Expose()
     public obtenerIndiceCriticidad(): Indicador {
         return this.levantamiento.obtenerIndicadorCalculo(this.obtenerIndiceFrecuencia() * this.obtenerIndiceDetectabilidad() * this.obtenerIndiceImportancia(), Calculos.Criticidad)
     }

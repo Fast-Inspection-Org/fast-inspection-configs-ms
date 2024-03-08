@@ -1,0 +1,6 @@
+https://fast-inspection.onrender.com/configs/getAllConfigs (obtener todas las configuraciones)
+https://fast-inspection.onrender.com/configs/createNewConfig (crear una nueva configuracion)
+https://fast-inspection.onrender.com/configs/getConfigByVersion/1 (obtener una configuración con un id en especifico)
+https://fast-inspection.onrender.com/edificacion/getAllEdificaciones (obtener todas las edificaciones)
+https://fast-inspection.onrender.com/edificacion/createEdificacion (crear una edificación)
+ 

@@ -5,6 +5,7 @@ import { SistemaConfig } from "src/configs/sistemas-config/sistema-config.entity
 import { Deterioro } from "src/controlador-edificaciones/deterioro/deterioro.entity"
 import { Indicador } from "src/configs/indicador/indicador.entity"
 import { Calculos } from "src/configs/indice-calculable/indice-calculable.entity"
+import { Exclude, Expose } from "class-transformer"
 
 export class LevantamientoDomain {
 
@@ -12,9 +13,11 @@ export class LevantamientoDomain {
     fechaInicio: Date
     fechaFinalizado: Date
     sistemas: Array<Sistema> // atributo que representa los sistemas del levantamiento
+    @Exclude()
     edificacion: Edificacion // Atributo que define la edificacion a la cual pertenece el letantamiento
+    @Exclude()
     config: Config
-    criticidad: number
+
 
     constructor(id: number,
         fechaInicio: Date,
@@ -30,6 +33,18 @@ export class LevantamientoDomain {
         this.config = config
         this.cargarSistemas(config.sistemasConfig, deteriorosLevantamiento) // se carga la estructura del levantamiento
         // Despues de cargada toda la inforamción del levantamiento, se procesan los calculos
+    }
+
+    // Getters
+
+    @Expose()
+    public nombreConfig() {
+        return this.config.nombre
+    }
+
+    @Expose()
+    public versionConfig() {
+        return this.config.version
     }
 
 
@@ -55,20 +70,13 @@ export class LevantamientoDomain {
 
 
     // Operaciones
-    // Metodo para procesar la criticidad del levantamiento
-    public procesarCriticidad() {
-        let criticidad: number = 0
-
-        this.sistemas.forEach((sistema) => {
-
-        })
-    }
-
+  
     // Metodo para obtener el indicador correspondiente a un valor calculado
     public obtenerIndicadorCalculo(valorCalculo: number, calculo: Calculos): Indicador {
         return this.config.obtenerIndicadorCalculo(valorCalculo, calculo) // se obtiene el valor del inidicador necesario
     }
 
+    @Expose()
     public obtenerCantidadDeterioros(): number {
         let cantDeterioros: number = 0
 
@@ -77,6 +85,17 @@ export class LevantamientoDomain {
         })
 
         return cantDeterioros
+    }
+
+    // Metodo para calcular la criticidad de un sistema
+    @Expose()
+    public obtenerIndiceCriticidad(): number {
+        let criticidad: number = 0
+        this.sistemas.forEach((sistema) => {
+            criticidad += sistema.obtenerIndiceCriticidad()
+        })
+
+        return criticidad
     }
     // Fin de Operaciones
 

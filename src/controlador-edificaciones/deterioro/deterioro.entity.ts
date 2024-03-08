@@ -8,20 +8,18 @@ import { ValorCampoDefinido } from "../valor-campo-definido/valor-campo-definido
 export class Deterioro {
     @PrimaryGeneratedColumn()
     id: number
-    @Column({ unique: true })
+    @Column()
     idSistema: number
-    @Column({ unique: true })
+    @Column()
     idSubSistema: number
-    @Column({ unique: true })
+    @Column()
     idMaterial: number
-    @Column({ unique: true })
+    @Column()
     idTipoDeterioro: number
-    @ManyToOne(() => Levantamiento, levantamiento => levantamiento.deterioros)
+    @ManyToOne(() => Levantamiento, levantamiento => levantamiento.deterioros, { onDelete: "CASCADE" })
     levantamiento: Levantamiento
     @OneToMany(() => ValorCampoDefinido, valorCampoDefinido => valorCampoDefinido.deterioro)
     valorCamposDefinidos: Array<ValorCampoDefinido> // Atributo que representa los valores seleccionados para ese deterioro *por cada campo definido*
-    //Atributos para realizar calculos
-    sistema: Sistema // atributo que define la referencia de memoria del sistema al que pertenece el deterioro (Relacion Birideccional)
-    tipoDeterioro: TipoDeterioro // atributo que define la referencia de memoria del tipo de deterior al que pertenece el deterioro (Relacion Birideccional)
+
 
 }

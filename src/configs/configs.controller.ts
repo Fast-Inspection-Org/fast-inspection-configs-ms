@@ -7,14 +7,19 @@ export class ConfigsController {
     constructor(private configsService: ConfigsService) { }
 
     @Get("getAllConfigs") // Ruta para obtener todas las configuraciones registradas
-    public getAllConfigs() {
-        return this.configsService.getAllConfigs()
+    public async getAllConfigs() {
+        return await this.configsService.getAllConfigs()
     }
 
     @Get("getLastConfig") // Ruta para obtener la ultima configuración registrada
-    public getLastConfig() {
+    public async getLastConfig() {
 
-        return this.configsService.getLastConfig()
+        return await this.configsService.getLastConfig()
+    }
+
+    @Get("getConfigByVersion/:versionConfig") // Ruta para obtener la configuración con una versión en específico
+    public async getConfigByVersion(@Param("versionConfig", ParseIntPipe) versionConfig: number) {
+        return await this.configsService.getConfigByVersion(versionConfig)
     }
 
 
@@ -22,24 +27,24 @@ export class ConfigsController {
     public createConfigByOtherConfig(@Param("versionOtherConfig", ParseIntPipe) versionOtherConfig: number) {
         this.configsService.createConfigByOtherConfig(versionOtherConfig)
     }
-   
+
     @Post("createNewConfig")
     public async saveNewConfig(@Body() newConfig: ConfigDTO) {
-       await this.configsService.createConfig(newConfig)
-              
+        await this.configsService.createConfig(newConfig)
+
     }
 
     @Delete("deleteConfig/:version") // Ruta para eliminar una configuración en especifico (Método de super administrador)
     public async deleteConfig(@Param("version", ParseIntPipe) versionConfig: number) {
         try {
-            await  this.configsService.deleteConfig(versionConfig)
+            await this.configsService.deleteConfig(versionConfig)
         } catch (error) {
             throw new HttpException({
                 status: HttpStatus.INTERNAL_SERVER_ERROR,
                 error: 'No exite una configuración con ese id',
             }, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-      
+
     }
 
     @Delete("deleteAllConfigs") // Ruta para eliminar todas las configuraciones (Método de super administrador)

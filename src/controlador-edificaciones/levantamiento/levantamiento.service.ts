@@ -26,14 +26,34 @@ export class LevantamientoService {
 
 
     // Metodo obtener todos los levantamientos procesados y estructurados
-    public async getAllLevantamientoDomain() {
+    public async getAllLevantamientosDomain() {
         const levantamientosDomain: Array<LevantamientoDomain> = new Array<LevantamientoDomain>()
         // Se obtienen todos los levantamientos registrados en la base de datos
         const levantamientos: Array<Levantamiento> = await this.getAllLevantamientos();
         // Se recorren los levantamientos para realizar la estructuración de los mismos en clases de dominio
         levantamientos.forEach((levantamiento) => {
-     levantamientosDomain.push()
+            levantamientosDomain.push(new LevantamientoDomain(levantamiento.id, levantamiento.fechaInicio, levantamiento.fechaFinalizado,
+                levantamiento.edificacion, levantamiento.config, levantamiento.deterioros))
         })
+
+        return levantamientosDomain
+    }
+
+    // Metodo para obtener un Levantamiento estrcuturado con un id en especifico
+    public async getLevantamiento(id: number) {
+        let levantamienoDomain: LevantamientoDomain | undefined = undefined
+        const levantamiento: Levantamiento = await this.levantamientoRepository.findOne({ // se obtiene al levantamiento desde la base de datos
+            where: {
+                id: id
+            }
+        })
+
+        if (levantamiento)
+            levantamienoDomain = new LevantamientoDomain(levantamiento.id, levantamiento.fechaInicio, levantamiento.fechaFinalizado,
+                levantamiento.edificacion, levantamiento.config, levantamiento.deterioros) // se crea un levantamiento estrcuturado para ser mostrado
+
+        return levantamienoDomain
+
 
     }
 

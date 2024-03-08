@@ -4,6 +4,7 @@ import { Deterioro } from "src/controlador-edificaciones/deterioro/deterioro.ent
 import { MaterialConfig } from "src/configs/materiales-config/material-config.entity";
 import { Sistema } from "./sistema.domain";
 import { LevantamientoDomain } from "./levantamiento.domain";
+import { Exclude, Expose } from "class-transformer";
 
 export class SubSistema {
     //subSistemaConfig: SubsistemaConfig // referencia de memoria del subSistema definido en configuracion
@@ -43,8 +44,9 @@ export class SubSistema {
         return deteriorosMaterial
     }
 
-       // Operaciones
-       public obtenerCantidadDeterioros(): number {
+    // Operaciones
+    @Exclude()
+    public obtenerCantidadDeterioros(): number {
         let cantDeterioros: number = 0
 
         this.materiales.forEach((material) => {
@@ -52,6 +54,18 @@ export class SubSistema {
         })
 
         return cantDeterioros
+    }
+
+    // Metodo para calcular la criticidad de un subsistema
+    // Metodo para calcular la criticidad de un subsistema
+    @Expose()
+    public obtenerIndiceCriticidad(): number {
+        let criticidad: number = 0
+        this.materiales.forEach((material) => {
+            criticidad += material.obtenerIndiceCriticidad()
+        })
+
+        return criticidad
     }
     // Fin Operaciones
 
