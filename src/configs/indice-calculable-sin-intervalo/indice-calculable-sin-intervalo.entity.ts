@@ -28,7 +28,7 @@ export class IndiceCalculableSinIntervalo extends IndiceCalculable {
     // Metodo para obtener el indicador correspondiente a un valor calculado
     public obtenerIndicadorCalculo(valorCalculo: number): Indicador {
         let indicador: Indicador | undefined = undefined
-
+        
         for (let index = 0; index < this.indicadoresSinIntervalos.length && !indicador; index++) {
             if (this.indicadoresSinIntervalos[index].valor == valorCalculo) // si el valor calculado es igual 
                 indicador = this.indicadoresSinIntervalos[index]

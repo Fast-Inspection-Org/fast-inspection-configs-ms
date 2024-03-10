@@ -66,6 +66,7 @@ export class Material {
     public obtenerIndiceCriticidad() : number {
         let criticidad: number = 0
         this.tiposDeterioros.forEach((tipoDeterioro) => {
+            
             criticidad += tipoDeterioro.obtenerIndiceCriticidad().valor
         })
 

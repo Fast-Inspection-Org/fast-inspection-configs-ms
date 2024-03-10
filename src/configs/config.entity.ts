@@ -22,14 +22,14 @@ export class Config {
     @OneToMany(() => Herramienta, herramienta => herramienta.config, { eager: true })
     herramientas: Array<Herramienta> // Una configuracion puede tener muchas herramientas registradas
     @OneToMany(() => IndiceCalculable, indiceCalculable => indiceCalculable.config, { eager: true })
-    indicesCalculables: Array<IndiceCalculableIntervalo> // Atributo que representa los indices calculables definidos en la configuracion
+    indicesCalculables: Array<IndiceCalculable> // Atributo que representa los indices calculables definidos en la configuracion
     @OneToMany(() => SistemaConfig, sistemaConfig => sistemaConfig.config, { eager: true })
     sistemasConfig: Array<SistemaConfig> // Una configuracion tiene muchos sistemas definidos
     // Se define la herencia con las herramientas
 
 
     constructor(version?: number, nombre?: String, sistemasConfig?: Array<SistemaConfig>, herramientas?: Array<Herramienta>,
-        indicesCalculables?: Array<IndiceCalculableIntervalo>) {
+        indicesCalculables?: Array<IndiceCalculable>) {
         this.version = version
         this.nombre = nombre
         this.herramientas = herramientas
@@ -73,6 +73,7 @@ export class Config {
     // Metodo para obtener el indicador correspondiente a un valor calculado
     public obtenerIndicadorCalculo(valorCalculo: number, calculo: Calculos): Indicador {
         const indiceCalculable: IndiceCalculable = this.indicesCalculables.find((indice) => indice.calculo === calculo)
+        
         return indiceCalculable.obtenerIndicadorCalculo(valorCalculo) // se obtiene el indicador del valor calculo
     }
 

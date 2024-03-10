@@ -4,6 +4,8 @@ import { Levantamiento } from './levantamiento.entity';
 import { Repository } from 'typeorm';
 import { LevantamientoDTO } from './levantamiento.dto';
 import { LevantamientoDomain } from './estructura-levantamiento/levantamiento.domain';
+import { ConfigService } from '@nestjs/config';
+import { ConfigsService } from 'src/configs/configs.service';
 
 @Injectable()
 export class LevantamientoService {
@@ -27,16 +29,30 @@ export class LevantamientoService {
 
     // Metodo obtener todos los levantamientos procesados y estructurados
     public async getAllLevantamientosDomain() {
-        const levantamientosDomain: Array<LevantamientoDomain> = new Array<LevantamientoDomain>()
-        // Se obtienen todos los levantamientos registrados en la base de datos
         const levantamientos: Array<Levantamiento> = await this.getAllLevantamientos();
-        // Se recorren los levantamientos para realizar la estructuración de los mismos en clases de dominio
+
+        return this.createArrayLevantamientosDomain(levantamientos)
+    }
+
+    // Metodo para construir una lista de levantamientos domain (levantammientos estructurados y procesados)
+    private createArrayLevantamientosDomain(levantamientos: Array<Levantamiento>) {
+        const levantamientosDomain: Array<LevantamientoDomain> = new Array<LevantamientoDomain>()
         levantamientos.forEach((levantamiento) => {
             levantamientosDomain.push(new LevantamientoDomain(levantamiento.id, levantamiento.fechaInicio, levantamiento.fechaFinalizado,
                 levantamiento.edificacion, levantamiento.config, levantamiento.deterioros))
         })
 
         return levantamientosDomain
+    }
+
+    // Metodo para obtener los levantamientos de un edificio en especifico
+
+    public async getLevantamientosByEdificacion(idEdificacion: number) {
+        const levantamientos: Array<Levantamiento> = await this.levantamientoRepository.find({
+            where: {
+                edificacionId: idEdificacion
+            }
+        })
     }
 
     // Metodo para obtener un Levantamiento estrcuturado con un id en especifico

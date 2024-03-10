@@ -1,7 +1,8 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn, TableInheritance } from "typeorm"
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, TableInheritance } from "typeorm"
 import { Config } from "../config.entity"
+import { SistemaConfig } from "../sistemas-config/sistema-config.entity"
 
- export enum TipoHerramienta {
+export enum TipoHerramienta {
     AnalisisCriticidad = "herramientaAnalisisCriticidad"
 }
 
@@ -17,10 +18,12 @@ export abstract class Herramienta {
     tipo: string
     @Column()
     configVersion: number
-    @ManyToOne(() => Config, config => config.herramientas, { onDelete: "CASCADE"})
+    @ManyToOne(() => Config, config => config.herramientas, { onDelete: "CASCADE" })
     config: Config // atributo que representa la configuracion a la que pertenece la herramienta
+    @OneToMany(() => SistemaConfig, sistemaConfig => sistemaConfig.herramienta)
+    sistemasConfig: Array<SistemaConfig> // atributo que representa los sistemas de configuración que utilizan dicha herramienta
 
-    constructor (id?: number, nombre?: String, tipo?: string, config?: Config) {
+    constructor(id?: number, nombre?: String, tipo?: string, config?: Config) {
         this.id = id
         this.nombre = nombre
         this.tipo = tipo

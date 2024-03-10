@@ -31,7 +31,7 @@ export class IndiceCalculableIntervalo extends IndiceCalculable {
     // Metodo para obtener el indicador correspondiente a un valor calculado
     public obtenerIndicadorCalculo(valorCalculo: number): Indicador{
         let indicador: Indicador | undefined = undefined
-
+        
         for (let index = 0; index < this.indicadoresIntervalos.length && !indicador; index++) {
             if (this.indicadoresIntervalos[index].isRange(valorCalculo)) // si el valor calculado está en el rango del indicador, significa que encontramos el indicador
                 indicador = this.indicadoresIntervalos[index]

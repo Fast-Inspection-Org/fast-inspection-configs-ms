@@ -10,6 +10,8 @@ export class MaterialConfig {
     id: number // Atributo unico
     @Column()
     nombre: String
+    @Column()
+    subsistemaConfigId: number
     @ManyToOne(() => SubsistemaConfig, subsistemaConfig => subsistemaConfig.materialesConfig, { onDelete: "CASCADE" }) // se define la relacion de muchos a uno con SubSistema
     subsistemaConfig: SubsistemaConfig
     @OneToMany(() => TipoDeterioroConfig, tipoDeterioroConfig => tipoDeterioroConfig.materialConfig, { eager: true })
@@ -34,5 +36,5 @@ export class MaterialConfig {
             })
     }
 
-    
+
 }

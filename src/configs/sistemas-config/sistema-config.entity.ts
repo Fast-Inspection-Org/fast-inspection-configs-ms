@@ -9,7 +9,9 @@ export class SistemaConfig {
     id: number // atributo que representa el id unico del sistema
     @Column()
     nombre: String
-    @ManyToOne(() => Herramienta, { eager: true })
+    @Column()
+    herramientaId: number
+    @ManyToOne(() => Herramienta, herramienta => herramienta.sistemasConfig, { eager: true , onDelete: "CASCADE" })
     herramienta: Herramienta
     @OneToMany(() => SubsistemaConfig, subsistemaConfig => subsistemaConfig.sistemaConfig, { eager: true })
     subSistemasConfig: Array<SubsistemaConfig>

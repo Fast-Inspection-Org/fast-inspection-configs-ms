@@ -26,7 +26,7 @@ export class ConfigsService {
     //Metodo para obtener todas  las configuraciones
     public async getAllConfigs() {
         return await this.configuracionRepository.find({
-            relations: { "sistemasConfig": true }
+            loadEagerRelations: false // se indica una carga sin las relaciones de config
         })
     }
 

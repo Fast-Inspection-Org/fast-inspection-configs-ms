@@ -11,6 +11,8 @@ export class CampoDefinido {
     nombre: String // Atributo que define el nombre del campo por ejemplo: largo, ancho, profundidad, etc
     @Column()
     tipo: String //Atributo que define el tipo de campo por ejemplo: texto, numero, fecha etc, esto Sería un Enum
+    @Column()
+    tipoDeterioroConfigId: number
     @ManyToOne(() => TipoDeterioroConfig, tipoDeterioroConfig => tipoDeterioroConfig.camposDefinidos, { onDelete: "CASCADE" })
     tipoDeterioroConfig: TipoDeterioroConfig // Atributo que define el tipo de detioro configurado al que pertenece dicho campo
 

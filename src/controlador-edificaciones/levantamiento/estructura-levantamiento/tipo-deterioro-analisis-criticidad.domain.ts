@@ -10,7 +10,6 @@ import { Indicador } from "src/configs/indicador/indicador.entity";
 import { Expose } from "class-transformer";
 
 export class TipoDeterioroAnalisisCriticidad extends TipoDeterioro {
-
     camposAfectados: Array<Campo> // Representa los campos afectados por ese levantamieto
 
     constructor(id: number,
@@ -34,6 +33,7 @@ export class TipoDeterioroAnalisisCriticidad extends TipoDeterioro {
     // Metodo para obtener el indice de criticidad del tipo de deterioro
     @Expose()
     public obtenerIndiceCriticidad(): Indicador {
+        
         return this.levantamiento.obtenerIndicadorCalculo(this.obtenerIndiceFrecuencia() * this.obtenerIndiceDetectabilidad() * this.obtenerIndiceImportancia(), Calculos.Criticidad)
     }
     // Metodo para obtener el indice de detecatabilidad del tipo de deterioro
@@ -47,11 +47,18 @@ export class TipoDeterioroAnalisisCriticidad extends TipoDeterioro {
     }
     // Metodo para obtener el indice de frecuencia del tipo de deterioro
     private obtenerIndiceFrecuencia(): number {
-        return (this.obtenerCantidadDeterioros() / this.sistema.obtenerCantidadDeterioros()) * 100.0
+        const cantTotalDeteriorosSistema: number = this.sistema.obtenerCantidadDeterioros()
+        const cantTotalDeteriorosTipoDeterioro: number = this.obtenerCantidadDeterioros()
+        let porcientoOcurrencia: number = 0
+
+        if (cantTotalDeteriorosSistema != 0) // si la cantidad de deterioros del sistema es 0 entonces se calcula el pociento
+            (cantTotalDeteriorosTipoDeterioro / cantTotalDeteriorosSistema) * 100.0
+
+        return porcientoOcurrencia
     }
 
     // Metodo para obtener la sumatoria de las importancias de cada campo afectado
-    private obtenerSumatoriaImportancias() {
+    private obtenerSumatoriaImportancias(): number {
         let sumatoriaImportancia: number = 0
 
         // se ejecuta un recorrido por los campos y se ejecuta una suma

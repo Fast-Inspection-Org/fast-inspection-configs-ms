@@ -14,8 +14,12 @@ export class Levantamiento {
     fechaFinalizado: Date
     @OneToMany(() => Deterioro, deterioro => deterioro.levantamiento, { eager: true, cascade: true })
     deterioros: Array<Deterioro> // atributo que define a los deterios pertenecientes al levantamiento
+    @Column()
+    edificacionId: number
     @ManyToOne(() => Edificacion, edificacion => edificacion.levantamientos, { onDelete: "CASCADE" })
     edificacion: Edificacion // Atributo que define la edificacion a la cual pertenece el letantamiento
+    @Column()
+    configVersion: number
     @ManyToOne(() => Config, { eager: true, onDelete: "CASCADE" })
     config: Config // Define la configuración a la cual pertenece el levantamiento
 

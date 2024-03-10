@@ -21,6 +21,8 @@ export abstract class TipoDeterioroConfig {
     camposDefinidos: Array<CampoDefinido> // Atributo que representa los campos definidos para este tipo de deterioro
     @OneToMany(() => Causa, causa => causa.tipoDeterioroConfig, { eager: true })
     causas: Array<Causa> // Atributo que define las causas para este tipo de deterioro
+    @Column()
+    materialConfigId: number
     @ManyToOne(() => MaterialConfig, materialConfig => materialConfig.tiposDeteriorosConfig, { onDelete: "CASCADE" })
     materialConfig: MaterialConfig
     @Column()

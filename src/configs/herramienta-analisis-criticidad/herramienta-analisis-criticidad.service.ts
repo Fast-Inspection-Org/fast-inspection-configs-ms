@@ -17,19 +17,14 @@ export class HerramientaAnalisisCriticidadService {
     // Metodo para crear una nueva herramienta Analisis de Criticidad
     public async createHerramientaAnalisisCriticidad(herramientaAnalisisCriticidadDTO: HerramientaDTO, entityManager?: EntityManager) {
         if (! await this.getHerramientaConfigId(herramientaAnalisisCriticidadDTO.nombre, herramientaAnalisisCriticidadDTO.config.version)) { // si no existe esa herrramienta en la base de datos
-            try {
+          
                 if (!entityManager) // No se trata de una llamada con una transacción heredada
                 await this.herramientaAnalisisCriticidadRepository.manager.transaction(async (trasactionManager: EntityManager) => { // se crea una transacción para este procedimiento
                     await this.createHerramientaAnalisisCriticidadWithEntity(herramientaAnalisisCriticidadDTO, trasactionManager)
                 })
             else // se continua con la transacción heredada
                 await this.createHerramientaAnalisisCriticidadWithEntity(herramientaAnalisisCriticidadDTO, entityManager) 
-            } catch (error) {
-                throw new HttpException({
-                    status: HttpStatus.INTERNAL_SERVER_ERROR,
-                    error: 'La Herramienta no puede formar parte de una configuración que no existe',
-                }, HttpStatus.INTERNAL_SERVER_ERROR);
-            }
+           
             
         }
         else // si existe en la base de datos

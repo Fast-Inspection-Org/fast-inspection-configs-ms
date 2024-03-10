@@ -8,6 +8,8 @@ export class SubsistemaConfig {
     id: number
     @Column()
     nombre: String
+    @Column()
+    sistemaConfigId: number
     @ManyToOne(() => SistemaConfig, sistemaConfig => sistemaConfig.subSistemasConfig, { onDelete: "CASCADE" })
     sistemaConfig: SistemaConfig
     @OneToMany(() => MaterialConfig, materialConfig => materialConfig.subsistemaConfig, { eager: true })

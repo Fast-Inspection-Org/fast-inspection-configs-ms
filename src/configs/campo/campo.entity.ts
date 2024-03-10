@@ -12,6 +12,8 @@ export class Campo {
     nivelImportancia: number
     @Column()
     configVersion: number
+    @Column()
+    herramientaAnalisisCriticidadId: number
     @ManyToOne(() => HerramientaAnalisisCriticidad, herramientaAnalisisCriticidad => herramientaAnalisisCriticidad.campos, { onDelete: "CASCADE" })
     herramientaAnalisisCriticidad: HerramientaAnalisisCriticidad // Atributo que define a la herramienta analisis de criticidad que pertenece el campo
     @ManyToMany(() => TipoDeterioroAnalisisCriticidadConfig, tipoDeterioroAnalisisCriticidadConfig => tipoDeterioroAnalisisCriticidadConfig.camposAfectados)

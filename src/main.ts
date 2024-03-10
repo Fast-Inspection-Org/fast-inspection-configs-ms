@@ -10,7 +10,6 @@ async function bootstrap() {
     transform: true, // Habilita la transformación automática de objetos
     transformOptions: {
       enableImplicitConversion: true, // Habilita la conversión implícita de tipos
-      // Aquí puedes agregar más opciones según tus necesidades
     },
     // Otras opciones del ValidationPipe
   }));

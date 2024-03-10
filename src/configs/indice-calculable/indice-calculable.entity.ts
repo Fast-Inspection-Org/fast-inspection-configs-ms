@@ -23,6 +23,8 @@ export abstract class IndiceCalculable {
   nombre: String
   @Column()
   tipo: string
+  @Column()
+  configVersion: number
   @ManyToOne(() => Config, config => config.indicesCalculables, { onDelete: "CASCADE" })
   config: Config // Atributo que representa la configuracion donde esta definido los indices calculables
   @Column()

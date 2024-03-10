@@ -19,13 +19,12 @@ export class LevantamientoDomain {
     config: Config
 
 
-    constructor(id: number,
+    constructor (id: number,
         fechaInicio: Date,
         fechaFinalizado: Date,
         edificacion: Edificacion,
         config: Config,
         deteriorosLevantamiento: Array<Deterioro>) {
-
         this.id = id
         this.fechaInicio = fechaInicio
         this.fechaFinalizado = fechaFinalizado

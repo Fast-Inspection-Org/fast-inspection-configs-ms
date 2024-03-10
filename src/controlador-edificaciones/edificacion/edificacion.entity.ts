@@ -13,6 +13,6 @@ export class Edificacion {
     ubicacionX: number
     @Column("double precision")
     ubicacionY: number
-    @OneToMany(() => Levantamiento, levantamiento => levantamiento.edificacion, { eager: true, cascade: true })
+    @OneToMany(() => Levantamiento, levantamiento => levantamiento.edificacion, { cascade: true })
     levantamientos: Array<Levantamiento> // Atributo que define el historial de levantamientos realizados a una edificación
 }
