@@ -1,4 +1,4 @@
-import { Body, ClassSerializerInterceptor, Controller, Delete, Get, Param, Post, UseInterceptors } from '@nestjs/common';
+import { Body, ClassSerializerInterceptor, Controller, Delete, Get, Param, ParseIntPipe, Post, SerializeOptions, UseInterceptors } from '@nestjs/common';
 import { LevantamientoService } from './levantamiento.service';
 import { LevantamientoDTO } from './levantamiento.dto';
 
@@ -15,6 +15,15 @@ export class LevantamientoController {
   @Get("getAllLevantamientos")
   public async getAllLevantamientos() {
     return await this.levantamientoService.getAllLevantamientosDomain()
+  }
+
+  @UseInterceptors(ClassSerializerInterceptor)
+  @SerializeOptions({
+    groups : ["getLevantamiento"]
+  })
+  @Get("getLevantamiento/:id")
+  public async getLevantamiento(@Param("id", ParseIntPipe) idLevantamiento) {
+    return await this.levantamientoService.getLevantamiento(idLevantamiento)
   }
 
   @Post("createLevantamiento")

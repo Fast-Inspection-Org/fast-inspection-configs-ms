@@ -34,6 +34,8 @@ export class LevantamientoService {
         return this.createArrayLevantamientosDomain(levantamientos)
     }
 
+
+
     // Metodo para construir una lista de levantamientos domain (levantammientos estructurados y procesados)
     private createArrayLevantamientosDomain(levantamientos: Array<Levantamiento>) {
         const levantamientosDomain: Array<LevantamientoDomain> = new Array<LevantamientoDomain>()
@@ -68,8 +70,7 @@ export class LevantamientoService {
             levantamienoDomain = new LevantamientoDomain(levantamiento.id, levantamiento.fechaInicio, levantamiento.fechaFinalizado,
                 levantamiento.edificacion, levantamiento.config, levantamiento.deterioros) // se crea un levantamiento estrcuturado para ser mostrado
 
-        return levantamienoDomain
-
+        return levantamienoDomain // se retorna un levantamiento con la estructura definida
 
     }
 

@@ -10,3 +10,6 @@
 *Reenfocar herencia de entidades
 29/02/2024
 *Testear Algoritmo para la carga de configuraciones
+28/03/2024
+*Reestructurar algoritmo para la replicación de versiones de la configuración utilizando las operaciones de replicación definidas en las entidades
+*Extender el funcionamiento de los metodos de insercción completa de configuraciones esta vez para que funcionen si se desea añadir entidades

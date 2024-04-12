@@ -5,13 +5,14 @@ import { SistemaConfig } from "src/configs/sistemas-config/sistema-config.entity
 import { Deterioro } from "src/controlador-edificaciones/deterioro/deterioro.entity"
 import { Indicador } from "src/configs/indicador/indicador.entity"
 import { Calculos } from "src/configs/indice-calculable/indice-calculable.entity"
-import { Exclude, Expose } from "class-transformer"
+import { Exclude, Expose, Transform } from "class-transformer"
 
 export class LevantamientoDomain {
 
     id: number
     fechaInicio: Date
     fechaFinalizado: Date
+    @Expose({ groups: ["getLevantamiento"] })
     sistemas: Array<Sistema> // atributo que representa los sistemas del levantamiento
     @Exclude()
     edificacion: Edificacion // Atributo que define la edificacion a la cual pertenece el letantamiento

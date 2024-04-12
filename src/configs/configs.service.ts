@@ -61,20 +61,10 @@ export class ConfigsService {
 
     }
 
-    // Metodo para obtener una configuración en especifico
-    public async getConfig(versionConfig: number): Promise<Config> {
-
-        return await this.configuracionRepository.findOne({
-            where: {
-                version: versionConfig
-            }
-        })
-    }
-
-
+    
     // Metodo para crear una nueva configuración basada en otra
     public async createConfigByOtherConfig(versionOtherConfig: number) {
-        const otherConfig: Config = await this.getConfig(versionOtherConfig) // se obtiene la otra configuración
+        const otherConfig: Config = await this.getConfigByVersion(versionOtherConfig) // se obtiene la otra configuración
         otherConfig.replicarVersion() // se replica la versión de esta configuración para ser añadida a la base de datos como una configuración nueva
         await this.configuracionRepository.save(otherConfig)
     }
@@ -102,9 +92,6 @@ export class ConfigsService {
         if (configDTO.sistemasConfigs)
             await this.saveSistemasConfig(configDTO.sistemasConfigs, configInsertada, entityManager) // se insertan los sistemasConfig  pertenecientes a esta configuración en la base de datos
         //Además se utiliza await para que la transacción espere a que se realicen todas las operaciones en los demás servicios
-
-
-
 
     }
 
@@ -149,7 +136,7 @@ export class ConfigsService {
 
     // Metodo para eliminar una configuración en especifico (Metodo de super Administrador)
     public async deleteConfig(versionConfig: number) {
-        if (await this.getConfig(versionConfig)) // si existe la config
+        if (await this.getConfigByVersion(versionConfig)) // si existe la config
             await this.configuracionRepository.delete({ version: versionConfig })
         else
             throw new HttpException({
