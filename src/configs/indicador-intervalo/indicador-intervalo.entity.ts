@@ -2,14 +2,19 @@ import { ChildEntity, Column, ManyToOne } from "typeorm";
 import { Indicador } from "../indicador/indicador.entity";
 import { IndiceCalculableIntervalo } from "../indice-calculable-intervalo/indice-calculable-intervalo.entity";
 
+
 @ChildEntity("indicadorIntervalo")
 export class IndicadorIntervalo extends Indicador {
+    
     @Column()
     limiteInferior: number // Atributo que representa el limite inferior del intervalo
+    
     @Column()
     limiteSuperior: number // Atributo que representa el limite superior del intervalo
+    
     @Column()
     indiceCalculableIntervaloId: number
+   
     @ManyToOne(() => IndiceCalculableIntervalo, indiceCalculableIntervalo => indiceCalculableIntervalo.indicadoresIntervalos, { onDelete: "CASCADE" })
     indiceCalculableIntervalo: IndiceCalculableIntervalo // Atributo que define el indice calculable por intervalos al que pertenece el indicador
 

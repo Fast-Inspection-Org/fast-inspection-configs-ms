@@ -1,4 +1,4 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { ArrayOperator, Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { SistemaConfig } from "./sistemas-config/sistema-config.entity";
 import { HerramientaAnalisisCriticidad } from "./herramienta-analisis-criticidad/herrramienta-analisis-criticidad.entity";
 import { IndiceCalculableIntervalo } from "./indice-calculable-intervalo/indice-calculable-intervalo.entity";
@@ -73,8 +73,18 @@ export class Config {
     // Metodo para obtener el indicador correspondiente a un valor calculado
     public obtenerIndicadorCalculo(valorCalculo: number, calculo: Calculos): Indicador {
         const indiceCalculable: IndiceCalculable = this.indicesCalculables.find((indice) => indice.calculo === calculo)
-        
+
         return indiceCalculable.obtenerIndicadorCalculo(valorCalculo) // se obtiene el indicador del valor calculo
+    }
+
+    // Metodo para obtener los indicadores de un calculo en especifico
+    public obtenerInicadoresByIndiceCalculable(calculo: Calculos): Array<Indicador> | undefined {
+        const indiceCalculable: IndiceCalculable = this.indicesCalculables.find(indice => indice.calculo === calculo) // se encuentra el indice calculable
+        let indicadores: Array<Indicador> | undefined = undefined
+        if (indiceCalculable) // si fue encontrado un inidce calculable para el calculo
+            indicadores = indiceCalculable.obtenerIndicadores() // se obtienen los indicadores del indice
+
+        return indicadores
     }
 
 

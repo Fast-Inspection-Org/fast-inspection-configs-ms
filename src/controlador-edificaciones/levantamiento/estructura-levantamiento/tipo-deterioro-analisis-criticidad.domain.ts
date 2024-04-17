@@ -31,9 +31,8 @@ export class TipoDeterioroAnalisisCriticidad extends TipoDeterioro {
     // Operaciones
 
     // Metodo para obtener el indice de criticidad del tipo de deterioro
-    @Expose()
+    
     public obtenerIndiceCriticidad(): Indicador {
-        
         return this.levantamiento.obtenerIndicadorCalculo(this.obtenerIndiceFrecuencia() * this.obtenerIndiceDetectabilidad() * this.obtenerIndiceImportancia(), Calculos.Criticidad)
     }
     // Metodo para obtener el indice de detecatabilidad del tipo de deterioro

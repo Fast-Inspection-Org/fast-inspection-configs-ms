@@ -37,4 +37,15 @@ export class IndiceCalculableSinIntervalo extends IndiceCalculable {
 
         return indicador
     }
+
+     // Metodo para obtener todos los indicadores del inidce calculable
+     public obtenerIndicadores(): Array<Indicador> {
+        const indicadores: Array<Indicador> = new Array<Indicador>() // se crea una lista para almacenar los indicadores
+        // se almacenan los indicadores del indice en la lista de retorno
+        this.indicadoresSinIntervalos.forEach((indicador) => {
+            indicadores.push(indicador)
+        })
+
+        return indicadores
+    }
 }

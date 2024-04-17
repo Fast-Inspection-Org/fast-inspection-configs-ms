@@ -44,5 +44,6 @@ export abstract class IndiceCalculable {
 
   //Operaciones
   public abstract obtenerIndicadorCalculo(valorCalculo: number): Indicador;
+  public abstract obtenerIndicadores (): Array<Indicador>
 
 }

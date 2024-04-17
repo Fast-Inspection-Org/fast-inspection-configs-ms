@@ -3,4 +3,15 @@ https://fast-inspection.onrender.com/configs/createNewConfig (crear una nueva co
 https://fast-inspection.onrender.com/configs/getConfigByVersion/1 (obtener una configuración con un id en especifico)
 https://fast-inspection.onrender.com/edificacion/getAllEdificaciones (obtener todas las edificaciones)
 https://fast-inspection.onrender.com/edificacion/createEdificacion (crear una edificación)
- 
+https://fast-inspection.onrender.com/levantamiento/getTiposDeteriorosMaterialSubsistemaSistemaLevantamiento/10?sistema=80&subsistema=25&material=21 (obtener todos los tipos de deterioro asociados a un material en especifico componente de un levantamiento)
+https://fast-inspection.onrender.com/levantamiento/getMaterialesSubsistemaSistemaLevantamiento/10?sistema=80&subsistema=25 (obtener todos los materiales asociados a un subsistema en especifico componente de un levantamiento)
+https://fast-inspection.onrender.com/levantamiento/getSubsistemasSistemaLevantamiento/10?sistema=80
+ (obtener todos los subsistemas asociados a un sistema en especifico componente de un levantamiento)
+https://fast-inspection.onrender.com/levantamiento/getSistemasLevantamiento/10 (obtener todos los sistemas asociados a un levantamiento en especifico componente de un levantamiento)
+
+
+Locales:
+localHost:3000/levantamiento/getSistemasLevantamiento/10
+localHost:3000/levantamiento/getSubsistemasSistemaLevantamiento/10?sistema=80
+localHost:3000/levantamiento/getMaterialesSubsistemaSistemaLevantamiento/10?sistema=80&subsistema=25
+localHost:3000/levantamiento/getTiposDeteriorosMaterialSubsistemaSistemaLevantamiento/10?sistema=80&subsistema=25&material=21 

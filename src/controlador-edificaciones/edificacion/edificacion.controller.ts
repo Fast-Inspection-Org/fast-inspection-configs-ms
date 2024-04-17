@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post } from '@nestjs/common';
+import { Body, ClassSerializerInterceptor, Controller, Delete, Get, Param, ParseIntPipe, Post, UseInterceptors } from '@nestjs/common';
 import { EdificacionService } from './edificacion.service';
 import { EdificacionDTO } from './edificacion.dto';
 
@@ -6,11 +6,12 @@ import { EdificacionDTO } from './edificacion.dto';
 export class EdificacionController {
     constructor(private edificacionService: EdificacionService) { }
 
+    @UseInterceptors(ClassSerializerInterceptor)
     @Get("getAllEdificaciones")
     public async getAllEdificaciones() {
         return await this.edificacionService.getAllEdificaciones()
     }
-
+    @UseInterceptors(ClassSerializerInterceptor)
     @Get("getEdificacion/:id")
     public async getEdificacion(@Param("id", ParseIntPipe) idEdificacion: number) {
         return await this.edificacionService.getEdificacion(idEdificacion)

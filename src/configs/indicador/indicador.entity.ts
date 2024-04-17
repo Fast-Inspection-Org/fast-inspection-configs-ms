@@ -1,3 +1,4 @@
+
 import { Column, Entity, PrimaryGeneratedColumn, TableInheritance } from "typeorm";
 
 enum TipoIndicador {

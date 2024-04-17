@@ -10,14 +10,19 @@ export abstract class TipoDeterioro {
     //tipoDeterioroConfig: TipoDeterioroConfig // referencia de memoria del tipo de deterioro definido en configuracion
     id: number
     nombre: String
+    @Exclude()
     tipo: string
+    @Exclude()
     detectabilidad: number
     @Exclude()
     sistema: Sistema // referencia al sistema al cual forma parte del tipo de deterioro (Para ralización de los calculos)
     @Exclude()
     levantamiento: LevantamientoDomain // referencia al levantamiento al cual pertenece ( para la realización de los calculos)
+    @Exclude()
     camposDefinidos: Array<CampoDefinido> // Atributo que representa los campos definidos para este tipo de deterioro
+    @Exclude()
     causas: Array<Causa> // Atributo que define las causas para este tipo de deterioro
+    @Exclude()
     deterioros: Array<Deterioro> // atributo que define La *información* de los deterioros asociados a un tipo de material
 
 
@@ -43,10 +48,12 @@ export abstract class TipoDeterioro {
     }
 
     // Operaciones
-
+    // Metodo para obtener la criticidad del tipo de deterioro
+    @Expose()
+    public criticidad(): String {
+        return this.obtenerIndiceCriticidad().nombre
+    }
     public abstract obtenerIndiceCriticidad(): Indicador;
-
-
 
     // Metodo para obtener la cantidad de deterioros asociados a este tipo de deterioro
     @Expose()
