@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { IndicadorSinIntervalo } from './indicador-sin-intervalo.entity';
 import { EntityManager, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { IndicadorSinIntervaloDTO } from './indicador-sin-intervalo.dto';
 import { IndiceCalculableSinIntervalo } from '../indice-calculable-sin-intervalo/indice-calculable-sin-intervalo.entity';
 import { IndicadorDTO } from '../indicador/indicador.dto';
 

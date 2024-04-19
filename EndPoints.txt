@@ -8,10 +8,12 @@ https://fast-inspection.onrender.com/levantamiento/getMaterialesSubsistemaSistem
 https://fast-inspection.onrender.com/levantamiento/getSubsistemasSistemaLevantamiento/10?sistema=80
  (obtener todos los subsistemas asociados a un sistema en especifico componente de un levantamiento)
 https://fast-inspection.onrender.com/levantamiento/getSistemasLevantamiento/10 (obtener todos los sistemas asociados a un levantamiento en especifico componente de un levantamiento)
+https://fast-inspection.onrender.com/configs/createConfigByOtherConfig/34 (replicar una información en base a otra)
 
 
 Locales:
 localHost:3000/levantamiento/getSistemasLevantamiento/10
 localHost:3000/levantamiento/getSubsistemasSistemaLevantamiento/10?sistema=80
 localHost:3000/levantamiento/getMaterialesSubsistemaSistemaLevantamiento/10?sistema=80&subsistema=25
-localHost:3000/levantamiento/getTiposDeteriorosMaterialSubsistemaSistemaLevantamiento/10?sistema=80&subsistema=25&material=21 
+localHost:3000/levantamiento/getTiposDeteriorosMaterialSubsistemaSistemaLevantamiento/10?sistema=80&subsistema=25&material=21
+localHost:3000/configs/createConfigByOtherConfig/34 (replicar una información en base a otra) 

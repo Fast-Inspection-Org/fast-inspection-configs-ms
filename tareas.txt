@@ -13,3 +13,10 @@
 28/03/2024
 *Reestructurar algoritmo para la replicación de versiones de la configuración utilizando las operaciones de replicación definidas en las entidades
 *Extender el funcionamiento de los metodos de insercción completa de configuraciones esta vez para que funcionen si se desea añadir entidades
+16/04/2024
+*Optimizar los reportes
+17/04/2024
+*Terminar Replicación de Configuración con efoque de restablecimiento a estado DTO
+18/04/2024
+*Eliminar herencia de DTO
+* Terminar la sección sistema config DTO dentro del proceso de replicación de configuración

@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { IndicadorIntervalo } from './indicador-intervalo.entity';
 import { EntityManager, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { IndicadorIntervaloDTO } from './indicador-intervalo.dto';
 import { IndiceCalculableIntervalo } from '../indice-calculable-intervalo/indice-calculable-intervalo.entity';
 import { IndicadorDTO } from '../indicador/indicador.dto';
 

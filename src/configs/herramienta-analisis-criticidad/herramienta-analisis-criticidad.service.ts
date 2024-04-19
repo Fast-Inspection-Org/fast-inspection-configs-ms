@@ -6,7 +6,7 @@ import { HerramientaDTO } from '../herramientas/herramienta.dto';
 import { Config } from '../config.entity';
 import { CampoDTO } from '../campo/campo.dto';
 import { CampoService } from '../campo/campo.service';
-import { HerramientaAnalisisCriticidadDTO } from './herramienta-analisis-criticidad.dto';
+
 
 @Injectable()
 export class HerramientaAnalisisCriticidadService {
@@ -49,7 +49,7 @@ export class HerramientaAnalisisCriticidadService {
         return await this.herramientaAnalisisCriticidadRepository.find()
     }
     // Metodo auxiliar para crear una herramienta analisis de criticidad con la entityManager correspondiente
-    private async createHerramientaAnalisisCriticidadWithEntity(herramientaAnalisisCriticidadDTO: HerramientaAnalisisCriticidadDTO, entityManager: EntityManager) {
+    private async createHerramientaAnalisisCriticidadWithEntity(herramientaAnalisisCriticidadDTO: HerramientaDTO, entityManager: EntityManager) {
         const herramientaAnalisisCriticidad: HerramientaAnalisisCriticidad = new HerramientaAnalisisCriticidad(undefined, herramientaAnalisisCriticidadDTO.nombre,
             herramientaAnalisisCriticidadDTO.tipo, herramientaAnalisisCriticidadDTO.config instanceof
                 Config ? herramientaAnalisisCriticidadDTO.config : new Config(herramientaAnalisisCriticidadDTO.config.version)) // se obtiene una instancia de la herramienta entity para ser almacenada

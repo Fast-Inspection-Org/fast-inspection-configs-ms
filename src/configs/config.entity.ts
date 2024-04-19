@@ -1,8 +1,6 @@
-import { ArrayOperator, Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { SistemaConfig } from "./sistemas-config/sistema-config.entity";
-import { HerramientaAnalisisCriticidad } from "./herramienta-analisis-criticidad/herrramienta-analisis-criticidad.entity";
-import { IndiceCalculableIntervalo } from "./indice-calculable-intervalo/indice-calculable-intervalo.entity";
-import { IndiceCalculableSinIntervalo } from "./indice-calculable-sin-intervalo/indice-calculable-sin-intervalo.entity";
+
 import { Herramienta } from "./herramientas/herramienta.entity";
 import { Calculos, IndiceCalculable } from "./indice-calculable/indice-calculable.entity";
 import { Indicador } from "./indicador/indicador.entity";
@@ -13,7 +11,7 @@ import { Indicador } from "./indicador/indicador.entity";
 export class Config {
     @PrimaryGeneratedColumn()
     version: number // atributo que representa la version de la configuración y su identificador unico
-    @Column({ unique: true })
+    @Column()
     nombre: String
     @Column()
     descripcion: String

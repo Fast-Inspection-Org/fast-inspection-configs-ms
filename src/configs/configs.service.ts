@@ -14,6 +14,8 @@ import { IndiceCalculableDTO } from './indice-calculable/indice-calculable.dto';
 import { TipoIndiceCalculable } from './indice-calculable/indice-calculable.entity';
 
 
+
+
 @Injectable()
 export class ConfigsService {
     lastConfig: Config | undefined
@@ -61,12 +63,15 @@ export class ConfigsService {
 
     }
 
-    
-    // Metodo para crear una nueva configuración basada en otra
-    public async createConfigByOtherConfig(versionOtherConfig: number) {
+
+    // Metodo para crear una nueva configuración basada en otra (Replicación de Configuración)
+    public async createConfigByOtherConfig(versionOtherConfig: number, nombreConfig: String, descripcionConfig: String) {
         const otherConfig: Config = await this.getConfigByVersion(versionOtherConfig) // se obtiene la otra configuración
-        otherConfig.replicarVersion() // se replica la versión de esta configuración para ser añadida a la base de datos como una configuración nueva
-        await this.configuracionRepository.save(otherConfig)
+        const configDTO: ConfigDTO = new ConfigDTO() // se crea una config dto para ser almacenada en la base de datos
+        configDTO.constuirDTO(nombreConfig, descripcionConfig, otherConfig.herramientas, otherConfig.indicesCalculables,
+            otherConfig.sistemasConfig) // se construye un DTO con la información de la configuración a replicar
+
+        await this.createConfig(configDTO) // Luego se inserta en la base de datos dicha configuración
     }
 
 
@@ -113,6 +118,7 @@ export class ConfigsService {
         // Se indica por herramientas a que configuracion registrada en la base de datos pertenecen
         for (let index = 0; index < herramientas.length; index++) {
             herramientas[index].config = configInsertada
+
             if (herramientas[index].tipo === TipoHerramienta.AnalisisCriticidad) // si se trata de una herramienta analisis criticidad
                 await this.herramientaAnalisisCriticidadService.createHerramientaAnalisisCriticidad(herramientas[index], entityManager) // se manda a insertar al servicio de herramienta analisis criticidad la herramienta en la base de datos   
 

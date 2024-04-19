@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, Param, ParseIntPipe, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, Param, ParseIntPipe, Post, Query } from '@nestjs/common';
 import { ConfigsService } from './configs.service';
 import { ConfigDTO } from './config.dto';
 
@@ -24,12 +24,14 @@ export class ConfigsController {
 
 
     @Post("createConfigByOtherConfig/:versionOtherConfig")
-    public createConfigByOtherConfig(@Param("versionOtherConfig", ParseIntPipe) versionOtherConfig: number) {
-        this.configsService.createConfigByOtherConfig(versionOtherConfig)
+    public createConfigByOtherConfig(@Param("versionOtherConfig", ParseIntPipe) versionOtherConfig: number, @Query("nombreConfig") nombreConfig,
+        @Query("descripcionConfig") descripcionConfig) {
+        return this.configsService.createConfigByOtherConfig(versionOtherConfig, nombreConfig, descripcionConfig)
     }
 
     @Post("createNewConfig")
     public async saveNewConfig(@Body() newConfig: ConfigDTO) {
+
         await this.configsService.createConfig(newConfig)
 
     }
