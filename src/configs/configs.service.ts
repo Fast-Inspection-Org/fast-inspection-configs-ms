@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { Config } from './config.entity';
-import { EntityManager, Repository } from 'typeorm';
+import { Config, ConfigOrderBy } from './config.entity';
+import { EntityManager, Like, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ConfigDTO } from './config.dto';
 import { HerramientaAnalisisCriticidadService } from './herramienta-analisis-criticidad/herramienta-analisis-criticidad.service';
@@ -12,6 +12,7 @@ import { HerramientaDTO } from './herramientas/herramienta.dto';
 import { TipoHerramienta } from './herramientas/herramienta.entity';
 import { IndiceCalculableDTO } from './indice-calculable/indice-calculable.dto';
 import { TipoIndiceCalculable } from './indice-calculable/indice-calculable.entity';
+import { UpdateConfigDTO } from './config-update.dto';
 
 
 
@@ -26,8 +27,20 @@ export class ConfigsService {
         private sistemaConfigService: SistemasConfigService) { }
 
     //Metodo para obtener todas  las configuraciones
-    public async getAllConfigs() {
+    public async getAllConfigs(orderBy: ConfigOrderBy, version?: number, nombre?: String) {
+
+        const orderObject = {}
+        if (orderBy === ConfigOrderBy.Nombre)
+            orderObject[orderBy] = "ASC"
+        else if (orderBy === ConfigOrderBy.Version)
+            orderObject[orderBy] = "DESC"
+
         return await this.configuracionRepository.find({
+            where: {
+                version: version,
+                nombre: nombre ? Like(`%${nombre}%`) : nombre
+            },
+            order: orderObject,
             loadEagerRelations: false // se indica una carga sin las relaciones de config
         })
     }
@@ -63,6 +76,13 @@ export class ConfigsService {
 
     }
 
+    // Méotodo para obtener una configuración con un nombre en especifico (para validar repitencias de nombre)
+    public async getConfigByName(nombreConfig: String): Promise<Config> {
+        return await this.configuracionRepository.findOneBy({
+            nombre: nombreConfig
+        })
+    }
+
 
     // Metodo para crear una nueva configuración basada en otra (Replicación de Configuración)
     public async createConfigByOtherConfig(versionOtherConfig: number, nombreConfig: String, descripcionConfig: String) {
@@ -70,7 +90,6 @@ export class ConfigsService {
         const configDTO: ConfigDTO = new ConfigDTO() // se crea una config dto para ser almacenada en la base de datos
         configDTO.constuirDTO(nombreConfig, descripcionConfig, otherConfig.herramientas, otherConfig.indicesCalculables,
             otherConfig.sistemasConfig) // se construye un DTO con la información de la configuración a replicar
-
         await this.createConfig(configDTO) // Luego se inserta en la base de datos dicha configuración
     }
 
@@ -78,12 +97,16 @@ export class ConfigsService {
 
     // Metodo para crear una nueva configuración
     public async createConfig(cofingDTO: ConfigDTO, entityManager?: EntityManager) {
-        if (!entityManager) // No se trata de una llamada con una transacción heredada
-            await this.configuracionRepository.manager.transaction(async (transactionManager: EntityManager) => { // Se crea una transaccion para este procedimiento
-                await this.createConfigWithEntitiManager(cofingDTO, transactionManager)
-            })
-        else // se continua con la transacción heredada
-            await this.createConfigWithEntitiManager(cofingDTO, entityManager)
+        if (!await this.getConfigByName(cofingDTO.nombre)) { // si no existe un configuración con el mismo nombre
+            if (!entityManager) // No se trata de una llamada con una transacción heredada
+                await this.configuracionRepository.manager.transaction(async (transactionManager: EntityManager) => { // Se crea una transaccion para este procedimiento
+                    await this.createConfigWithEntitiManager(cofingDTO, transactionManager)
+                })
+            else // se continua con la transacción heredada
+                await this.createConfigWithEntitiManager(cofingDTO, entityManager)
+        }
+        else
+            throw new HttpException({ message: "Ya existe una configuración con ese nombre" }, HttpStatus.BAD_REQUEST)
     }
 
     // Metodo auxiliar para crear una configuración con la entityManager correspondiente
@@ -157,5 +180,15 @@ export class ConfigsService {
     public async deleteAllConfigs() {
 
         await this.configuracionRepository.delete({})
+    }
+
+    // Método para modificar una configuración en específico
+
+    public async updateConfig(version: number, updateConfigDTO: UpdateConfigDTO) {
+        const config: Config = await this.getConfigByName(updateConfigDTO.nombre)
+        if (!config || config.version === version) // si no existe un configuración con el mismo nombre o si la que existe es ella misma (significa esto ultimo que el usuario no cambió el nombre)
+            await this.configuracionRepository.update({ version: version }, updateConfigDTO)
+        else
+            throw new HttpException({ message: "Ya existe una configuración con ese nombre" }, HttpStatus.BAD_REQUEST)
     }
 }

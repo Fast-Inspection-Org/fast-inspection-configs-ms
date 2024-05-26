@@ -5,7 +5,10 @@ import { Herramienta } from "./herramientas/herramienta.entity";
 import { Calculos, IndiceCalculable } from "./indice-calculable/indice-calculable.entity";
 import { Indicador } from "./indicador/indicador.entity";
 
-
+export enum ConfigOrderBy{
+    Nombre = "nombre",
+    Version = "version"
+}
 
 @Entity("config")
 export class Config {

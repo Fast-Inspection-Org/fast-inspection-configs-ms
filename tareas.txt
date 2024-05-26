@@ -20,3 +20,9 @@
 18/04/2024
 *Eliminar herencia de DTO
 * Terminar la sección sistema config DTO dentro del proceso de replicación de configuración
+21/04/2024
+*Terminar controladores de los componentes de un levantamiento, en el apartado de configuración
+18/05/2024
+*Añadir Control de Roles y Autenticación a todas la rutas expuestas de la Api
+26/05/2024
+* Implementar carga Lazy a todas las entidades

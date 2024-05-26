@@ -25,7 +25,7 @@ export class SistemasConfigService {
                 await this.createSistemaConfigWithEntityManager(sistemaConfigDTO, entityManager)
         }
         else {
-            console.log("Entreeqeq")
+            
             throw new HttpException({
                 status: HttpStatus.INTERNAL_SERVER_ERROR,
                 error: 'Sistema con igual nombre',

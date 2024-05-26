@@ -5,6 +5,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigsModule } from './configs/configs.module';
 import { ControladorEdificacionesModule } from './controlador-edificaciones/controlador-edificaciones.module';
 import { ConfigModule } from '@nestjs/config';
+import { UsuarioModule } from './usuario/usuario.module';
+import { AuthModule } from './auth/auth.module';
 
 
 
@@ -33,7 +35,7 @@ import { ConfigModule } from '@nestjs/config';
             }
             : null,
       },
-    }), ConfigsModule, ControladorEdificacionesModule],
+    }), ConfigsModule, ControladorEdificacionesModule, UsuarioModule, AuthModule],
   controllers: [AppController],
   providers: [AppService],
 })
