@@ -30,9 +30,4 @@ export abstract class Herramienta {
         this.config = config
     }
 
-    public replicarVersion() {
-        this.id = undefined
-    }
-
-
 }

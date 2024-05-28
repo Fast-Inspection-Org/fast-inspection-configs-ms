@@ -14,35 +14,48 @@ export class Sistema {
     // sistemaConfig: SistemaConfig // referencia de memoria del sistema definido en configuracion
     id: number // atributo que representa el id unico del sistema
     nombre: String
+    criticidad: number
+    porcentajeData: [String, number][]
     @Exclude()
     subSistemas: Array<SubSistema>  // atributo que define La *información* de los subsistemas de un sistema
     @Exclude()
     herramienta: Herramienta // define la herramienta que va hacer utilizada en el sistema
     @Exclude()
     levantamiento: LevantamientoDomain
+    
 
-    constructor(id: number,
+    private constructor(id: number,
         nombre: String,
-        subSistemasConfig: Array<SubsistemaConfig>,
         herramienta: Herramienta,
         levantamiento: LevantamientoDomain,
-        deteriorosSistema: Array<Deterioro>) {
-
+    ) {
         this.id = id
         this.nombre = nombre
         this.herramienta = herramienta
         this.levantamiento = levantamiento
-        this.cargarSubSistemas(subSistemasConfig, deteriorosSistema, levantamiento) // se cargan los subsistemas pertenecientes al sistema
+    }
+
+    // constructor para cargas asíncronas
+    public static async createInstancie(id: number, nombre: String,
+        subSistemasConfig: Array<SubsistemaConfig>,
+        herramienta: Herramienta,
+        levantamiento: LevantamientoDomain,
+        deteriorosSistema: Array<Deterioro>): Promise<Sistema> {
+        const sistema: Sistema = new Sistema(id, nombre, herramienta, levantamiento)
+        await sistema.cargarSubSistemas(subSistemasConfig, deteriorosSistema, levantamiento) // se cargan los subsistemas pertenecientes al sistema
+
+        return sistema
     }
 
 
     // Metodo para determinar la cantidad de tipos de deterioro que coinciden con un indicador en específico
-    public cantTiposDeterioroWithIndicador(indicador: Indicador) {
+    public async cantTiposDeterioroWithIndicador(indicador: Indicador): Promise<number> {
         let cant: number = 0
         // se recorren todos los subsistemas del sistema y se les pregunta por la cantidad de tipos de deteriros que asociados que tienen un indicador en especifico
-        this.subSistemas.forEach((subsistema) => {
-            cant += subsistema.cantTiposDeterioroWithIndicador(indicador)
-        })
+        for (let index = 0; index < this.subSistemas.length; index++) {
+            const subsistema: SubSistema = this.subSistemas[index]
+            cant += await subsistema.cantTiposDeterioroWithIndicador(indicador)
+        }
         return cant
     }
 
@@ -58,12 +71,13 @@ export class Sistema {
     }
 
     // Metodo para estructurar la información de los subsistemas componenetes de un sistema 
-    private cargarSubSistemas(subSistemasConfig: Array<SubsistemaConfig>, deteriorosSistema: Array<Deterioro>, levantamiento: LevantamientoDomain) {
-        this.subSistemas = new Array<SubSistema>
-        subSistemasConfig.forEach((subSistemaConfig) => {
-            this.subSistemas.push(new SubSistema(subSistemaConfig.id, subSistemaConfig.nombre, subSistemaConfig.materialesConfig,
+    public async cargarSubSistemas(subSistemasConfig: Array<SubsistemaConfig>, deteriorosSistema: Array<Deterioro>, levantamiento: LevantamientoDomain) {
+        this.subSistemas = new Array<SubSistema>()
+        for (let index = 0; index < subSistemasConfig.length; index++) {
+            const subSistemaConfig: SubsistemaConfig = subSistemasConfig[index]
+            this.subSistemas.push(await SubSistema.createInstancie(subSistemaConfig.id, subSistemaConfig.nombre, await subSistemaConfig.materialesConfig,
                 this.determinarDeteriorosSubsistema(deteriorosSistema, subSistemaConfig.id), this, levantamiento))
-        })
+        }
     }
 
     // Metodo para obtener todos los deterioros del levantamiento pertenecientes a un subSistemaDado
@@ -125,37 +139,43 @@ export class Sistema {
         return cantDeterioros
     }
     // Metodo para calcular la criticidad de un sistema
-    @Expose()
-    public obtenerIndiceCriticidad(): number {
+  
+    public async obtenerIndiceCriticidad(): Promise<number> {
         let criticidad: number = 0
-        this.subSistemas.forEach((subsistema) => {
-            criticidad += subsistema.obtenerIndiceCriticidad()
-        })
+        for (let index = 0; index < this.subSistemas.length; index++) {
+            const subsistema: SubSistema = this.subSistemas[index]
+            criticidad += await subsistema.obtenerIndiceCriticidad()
+        }
+
+        this.criticidad = criticidad // se asigna el resultado del calculo para la serialización
 
         return criticidad
     }
 
     // Metodo para calcular el porcentaje de deterioros que presentan ese indicador
-    private obtenerPorcientoIndicador(indicador: Indicador): number {
+    private async obtenerPorcientoIndicador(indicador: Indicador): Promise<number> {
         let porciento: number = 0
         let totalTipoDeterioros: number = this.obtenerCantidadTiposDeterioros() // se obtiene la cantidad de tipos de deterioro en total
         if (totalTipoDeterioros) // si existe al menos un tipo de deterioro registrado en el sistema
-            porciento = this.cantTiposDeterioroWithIndicador(indicador) * 100 / totalTipoDeterioros
+            porciento = await this.cantTiposDeterioroWithIndicador(indicador) * 100 / totalTipoDeterioros
 
         return porciento
     }
 
     // Metodo para obtener el porcentaje de criticidad por indicador
-    @Expose()
-    public obtenerPorcentajeData() {
+
+    public async obtenerPorcentajeData() {
         const mapData: Map<String, number> = new Map<String, number>() // se crea un mapa para almacenar la info (la clave representa el inidicador; el valor representa el porcentaje)
         // Obtener los indicadores definidos para el analisis de criticidad
-        const indicadoresAnalisisCriticidad: Array<Indicador> | undefined = this.levantamiento.obtenerIndicadoresByIndiceCalculable(Calculos.Criticidad)  // se obtienen los indicadores del indice de criticidad
+        const indicadoresAnalisisCriticidad: Array<Indicador> | undefined = await this.levantamiento.obtenerIndicadoresByIndiceCalculable(Calculos.Criticidad)  // se obtienen los indicadores del indice de criticidad
 
         if (indicadoresAnalisisCriticidad) // si fue obtenido correctamente los indicadores del calculo
-            indicadoresAnalisisCriticidad.forEach((indicador) => { // se recorren los indicadores para por cada uno calcular su porcentaje 
-                mapData.set(indicador.nombre, this.obtenerPorcientoIndicador(indicador))
-            })
+            for (let index = 0; index < indicadoresAnalisisCriticidad.length; index++) {
+                const indicador: Indicador = indicadoresAnalisisCriticidad[index]
+                mapData.set(indicador.nombre, await this.obtenerPorcientoIndicador(indicador))
+            }
+
+            this.porcentajeData = Array.from(mapData.entries()) // se asigna el resultado del cálculo para la serialización
 
         return Array.from(mapData.entries()) // se convierte en array la info del map para ser serializada correctamente
 

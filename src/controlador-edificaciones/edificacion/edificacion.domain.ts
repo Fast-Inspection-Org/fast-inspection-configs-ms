@@ -4,6 +4,7 @@ import { LevantamientoDomain } from "../levantamiento/estructura-levantamiento/l
 export class EdificacionDomain {
     id: number // Atributo único
     nombre: String
+    criticidad: number
     direccion: String
     ubicacionX: number
     ubicacionY: number
@@ -20,11 +21,14 @@ export class EdificacionDomain {
     }
 
     // Metodo para obtener la criticidad de la edificación
-    @Expose()
-    public criticidad() { // Implementacion temporal
+    
+    public async obtenerCriticidad() { // Implementacion temporal
         let criticidad: number = 0;
         if (this.levantamientos.length != 0) // si hay al menos un levantamiento registrado para la edificacion
-            criticidad = this.levantamientos[this.levantamientos.length - 1].obtenerIndiceCriticidad()
+            criticidad = await this.levantamientos[this.levantamientos.length - 1].obtenerIndiceCriticidad()
+
+        this.criticidad = criticidad // se asigna el resultado del calculo para la serialización
+
         return criticidad
     }
 

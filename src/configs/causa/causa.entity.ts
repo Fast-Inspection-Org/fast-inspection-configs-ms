@@ -18,7 +18,4 @@ export class Causa {
         this.tipoDeterioroConfig = tipoDeterioroConfig
     }
 
-    public replicarVersion() {
-        this.id = undefined
-    }
 }

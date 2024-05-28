@@ -11,10 +11,10 @@ export class SistemaConfig {
     nombre: String
     @Column()
     herramientaId: number
-    @ManyToOne(() => Herramienta, herramienta => herramienta.sistemasConfig, { eager: true , onDelete: "CASCADE" })
-    herramienta: Herramienta
-    @OneToMany(() => SubsistemaConfig, subsistemaConfig => subsistemaConfig.sistemaConfig, { eager: true })
-    subSistemasConfig: Array<SubsistemaConfig>
+    @ManyToOne(() => Herramienta, herramienta => herramienta.sistemasConfig, { lazy: true , onDelete: "CASCADE" })
+    herramienta: Promise<Herramienta>
+    @OneToMany(() => SubsistemaConfig, subsistemaConfig => subsistemaConfig.sistemaConfig, { lazy: true })
+    subSistemasConfig: Promise<Array<SubsistemaConfig>>
     @Column()
     configVersion: number
     @ManyToOne(() => Config, config => config.sistemasConfig, { onDelete: "CASCADE" })
@@ -23,24 +23,9 @@ export class SistemaConfig {
     constructor(id?: number, nombre?: String, herramienta?: Herramienta, config?: Config) {
         this.id = id
         this.nombre = nombre
-        this.herramienta = herramienta
+        if (herramienta)
+        this.herramienta = Promise.resolve(herramienta)
         this.config = config
     }
 
-    public replicarVersion() {
-        this.id = undefined
-        this.replicarVersionHerramienta() // Se replica la version de la herramienta
-        this.replicarVersionSubSistemasConfig() // se replica la información de los subSistemas
-    }
-
-    private replicarVersionHerramienta() {
-        this.herramienta.replicarVersion()
-    }
-
-    private replicarVersionSubSistemasConfig() {
-        if (this.subSistemasConfig)
-            this.subSistemasConfig.forEach((subSistemaConfig) => {
-                subSistemaConfig.replicarVersion() // se replica la información del subSistemaConfig
-            })
-    }
 }

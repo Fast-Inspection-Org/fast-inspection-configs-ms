@@ -6,8 +6,8 @@ import { Config } from "../config.entity";
 
 @ChildEntity("herramientaAnalisisCriticidad")
 export class HerramientaAnalisisCriticidad extends Herramienta {
-    @OneToMany(() => Campo, campo => campo.herramientaAnalisisCriticidad, { eager: true })
-    campos: Array<Campo> // Campos definidos en la herramienta
+    @OneToMany(() => Campo, campo => campo.herramientaAnalisisCriticidad, { lazy: true })
+    campos: Promise<Array<Campo>> // Campos definidos en la herramienta
  
    
 
@@ -15,16 +15,5 @@ export class HerramientaAnalisisCriticidad extends Herramienta {
         super(id, nombre, tipo, config)
     }
 
-    public replicarVersion() {
-        super.replicarVersion()
-        this.replicarVersionCampos() // se replica la version de los campos
-    }
-
-
-    // Metodo para replicar la version de los campos
-    private replicarVersionCampos() {
-        this.campos.forEach((campo) => {
-            campo.replicarVersion() // se replica la version del campo
-        })
-    }
+   
 }

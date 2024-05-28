@@ -24,7 +24,5 @@ export abstract class Indicador {
         this.tipo = tipo
     }
 
-    public replicarVersion() {
-        this.id = undefined
-    }
+   
 }

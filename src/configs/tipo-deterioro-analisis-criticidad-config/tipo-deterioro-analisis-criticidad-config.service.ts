@@ -73,17 +73,24 @@ export class TipoDeterioroAnalisisCriticidadConfigService {
 
     private async saveCamposInTipoDeterioroAnalisisCriticidad(camposDTO: Array<CampoDTO>, tipoDeterioroAnalisiCriticidad: TipoDeterioroAnalisisCriticidadConfig,
         entityManager: EntityManager) {
+        // se crea el array para almacenar los campos afectados pertenecientes al tipo de deterioro
+        const camposAfectadosTipoDeterioro: Array<Campo> = new Array<Campo>()
         // Se indica por campo a que tipo de deterioro registrado en la base de datos pertenecen
         for (let index = 0; index < camposDTO.length; index++) {
             const campo: Campo | undefined = await this.campoService.getCampo(camposDTO[index].nombre, camposDTO[index].configVersion ? camposDTO[index].configVersion :
                 tipoDeterioroAnalisiCriticidad.materialConfig.subsistemaConfig.sistemaConfig.config.version, entityManager) // se obtiene el campo perteneciente a la herramienta
 
-            if (campo) // si fue encontrado el campo
-                tipoDeterioroAnalisiCriticidad.camposAfectados.push(campo) // se añade el campo como parte del campo del tipoDeterior analisis criticidad
+            if (campo) { // si fue encontrado el campo
+
+                camposAfectadosTipoDeterioro.push(campo) // se añade el campo como parte del campo del tipoDeterior analisis criticidad
+            }
             else
                 throw new HttpException("No se encontró campo", 401)
 
         }
+
+        // al final de haber guardado todos los campos se le asignan al tipo de deterioro
+        tipoDeterioroAnalisiCriticidad.camposAfectados = Promise.resolve(camposAfectadosTipoDeterioro)
 
     }
 

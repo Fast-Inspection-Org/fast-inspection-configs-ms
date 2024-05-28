@@ -41,7 +41,7 @@ export class ConfigsService {
                 nombre: nombre ? Like(`%${nombre}%`) : nombre
             },
             order: orderObject,
-            loadEagerRelations: false // se indica una carga sin las relaciones de config
+
         })
     }
 
@@ -88,8 +88,8 @@ export class ConfigsService {
     public async createConfigByOtherConfig(versionOtherConfig: number, nombreConfig: String, descripcionConfig: String) {
         const otherConfig: Config = await this.getConfigByVersion(versionOtherConfig) // se obtiene la otra configuración
         const configDTO: ConfigDTO = new ConfigDTO() // se crea una config dto para ser almacenada en la base de datos
-        configDTO.constuirDTO(nombreConfig, descripcionConfig, otherConfig.herramientas, otherConfig.indicesCalculables,
-            otherConfig.sistemasConfig) // se construye un DTO con la información de la configuración a replicar
+        await configDTO.constuirDTO(nombreConfig, descripcionConfig, await otherConfig.herramientas, await otherConfig.indicesCalculables,
+            await otherConfig.sistemasConfig) // se construye un DTO con la información de la configuración a replicar
         await this.createConfig(configDTO) // Luego se inserta en la base de datos dicha configuración
     }
 
@@ -112,7 +112,7 @@ export class ConfigsService {
     // Metodo auxiliar para crear una configuración con la entityManager correspondiente
     private async createConfigWithEntitiManager(configDTO: ConfigDTO, entityManager: EntityManager) {
 
-        const configInsertada: Config = await entityManager.save(this.configuracionRepository.create(configDTO)) // Se almacena en la base de datos la configuracion y se obtiene con su id
+        const configInsertada: Config = await entityManager.save(new Config(undefined, configDTO.nombre, configDTO.descripcion)) // Se almacena en la base de datos la configuracion y se obtiene con su id
         if (configDTO.herramientas)
             await this.saveHerramientasConfig(configDTO.herramientas, configInsertada, entityManager) // se insertan las herramientas pertenecientes a esta configuración en la base de datos
         if (configDTO.indicesCalculables)

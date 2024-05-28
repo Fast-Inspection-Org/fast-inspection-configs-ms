@@ -10,6 +10,7 @@ export abstract class TipoDeterioro {
     //tipoDeterioroConfig: TipoDeterioroConfig // referencia de memoria del tipo de deterioro definido en configuracion
     id: number
     nombre: String
+    criticidad: String
     @Exclude()
     tipo: string
     @Exclude()
@@ -48,18 +49,19 @@ export abstract class TipoDeterioro {
     }
 
     // Operaciones
-    // Metodo para obtener la criticidad del tipo de deterioro
-    @Expose()
-    public criticidad(): String {
-        return this.obtenerIndiceCriticidad().nombre
+    // Método para obtener la criticidad del tipo de deterioro
+   
+    public async obtenerCriticidad(): Promise<String> {
+        const indicadorCriticidad: Indicador = await this.obtenerIndiceCriticidad()
+        this.criticidad = indicadorCriticidad.nombre // se almacena el resultado cálculo para su posterior serialización
+        return indicadorCriticidad.nombre
     }
-    public abstract obtenerIndiceCriticidad(): Indicador;
+    public abstract obtenerIndiceCriticidad(): Promise<Indicador>;
 
-    // Metodo para obtener la cantidad de deterioros asociados a este tipo de deterioro
+    // Método para obtener la cantidad de deterioros asociados a este tipo de deterioro
     @Expose()
     public obtenerCantidadDeterioros(): number {
         return this.deterioros.length
     }
-
 
 }

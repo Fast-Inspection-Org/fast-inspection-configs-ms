@@ -15,6 +15,8 @@ export class LevantamientoDomain {
     id: number
     fechaInicio: Date
     fechaFinalizado: Date
+    criticidad: number // representa la criticidad del deterioro
+    porcentajeData: [String, number][]
     @Exclude()
     sistemas: Array<Sistema> // atributo que representa los sistemas del levantamiento
     @Exclude()
@@ -23,19 +25,33 @@ export class LevantamientoDomain {
     config: Config
 
 
-    constructor(id: number,
+    private constructor(id: number,
         fechaInicio: Date,
         fechaFinalizado: Date,
         edificacion: Edificacion,
         config: Config,
-        deteriorosLevantamiento: Array<Deterioro>) {
+    ) {
         this.id = id
         this.fechaInicio = fechaInicio
         this.fechaFinalizado = fechaFinalizado
         this.edificacion = edificacion
         this.config = config
-        this.cargarSistemas(config.sistemasConfig, deteriorosLevantamiento) // se carga la estructura del levantamiento
+
+    }
+
+    // constructor para cargas asíncronas
+
+    public static async createInstancie(id: number,
+        fechaInicio: Date,
+        fechaFinalizado: Date,
+        edificacion: Edificacion,
+        config: Config,
+        deteriorosLevantamiento: Array<Deterioro>): Promise<LevantamientoDomain> {
+
+        const levantamientoDomainIntancie: LevantamientoDomain = new LevantamientoDomain(id, fechaInicio, fechaFinalizado, edificacion, config)
+        await levantamientoDomainIntancie.cargarSistemas(await config.sistemasConfig, deteriorosLevantamiento)
         // Despues de cargada toda la inforamción del levantamiento, se procesan los calculos
+        return levantamientoDomainIntancie
     }
 
     // Getters
@@ -56,12 +72,13 @@ export class LevantamientoDomain {
 
 
     // Metodo para estructurar la información de los sistemas componenetes de un levantamiento
-    private cargarSistemas(sistemasConfig: Array<SistemaConfig>, deteriorosLevantamiento: Array<Deterioro>) {
+    public async cargarSistemas(sistemasConfig: Array<SistemaConfig>, deteriorosLevantamiento: Array<Deterioro>) {
         this.sistemas = new Array<Sistema>
-        sistemasConfig.forEach((sistemaConfig) => {
-            this.sistemas.push(new Sistema(sistemaConfig.id, sistemaConfig.nombre, sistemaConfig.subSistemasConfig, sistemaConfig.herramienta, this,
+        for (let index = 0; index < sistemasConfig.length; index++) {
+            const sistemaConfig = sistemasConfig[index]
+            this.sistemas.push(await Sistema.createInstancie(sistemaConfig.id, sistemaConfig.nombre, await sistemaConfig.subSistemasConfig, await sistemaConfig.herramienta, this,
                 this.determinarDeteriorosSistema(deteriorosLevantamiento, sistemaConfig.id)))
-        })
+        }
     }
 
     // Metodo para obtener todos los deterioros del levantamiento pertenecientes a un sistema dado
@@ -79,12 +96,14 @@ export class LevantamientoDomain {
     // Operaciones
 
     // Metodo para determinar la cantidad de tipos de deterioro que coinciden con un indicador en específico
-    private cantTiposDeterioroWithIndicador(indicador: Indicador) {
+    private async cantTiposDeterioroWithIndicador(indicador: Indicador): Promise<number> {
         let cant: number = 0
         // se recorren todos los sistemas del levantamiento y se les pregunta por la cantidad de tipos de deteriros que asociados que tienen un indicador en especifico
-        this.sistemas.forEach((sistema) => {
-            cant += sistema.cantTiposDeterioroWithIndicador(indicador)
-        })
+        for (let index = 0; index < this.sistemas.length; index++) {
+            const sistema: Sistema = this.sistemas[index]
+            cant += await sistema.cantTiposDeterioroWithIndicador(indicador)
+
+        }
         return cant
     }
 
@@ -100,8 +119,8 @@ export class LevantamientoDomain {
     }
 
     // Metodo para obtener el indicador correspondiente a un valor calculado
-    public obtenerIndicadorCalculo(valorCalculo: number, calculo: Calculos): Indicador {
-        return this.config.obtenerIndicadorCalculo(valorCalculo, calculo) // se obtiene el valor del inidicador necesario
+    public async obtenerIndicadorCalculo(valorCalculo: number, calculo: Calculos): Promise<Indicador> {
+        return await this.config.obtenerIndicadorCalculo(valorCalculo, calculo) // se obtiene el valor del inidicador necesario
     }
 
     @Expose()
@@ -116,14 +135,18 @@ export class LevantamientoDomain {
     }
 
     // Metodo para calcular la criticidad de un sistema
-    @Expose()
-    public obtenerIndiceCriticidad(): number {
-        let criticidad: number = 0
-        this.sistemas.forEach((sistema) => {
-            criticidad += sistema.obtenerIndiceCriticidad()
-        })
 
-        return criticidad
+    public async obtenerIndiceCriticidad(): Promise<number> {
+        let criticidad: number = 0
+        for (let index = 0; index < this.sistemas.length; index++) {
+            const sistema = this.sistemas[index]
+            criticidad += await sistema.obtenerIndiceCriticidad()
+        }
+
+        this.criticidad = criticidad
+
+        return this.criticidad
+
     }
 
 
@@ -170,33 +193,36 @@ export class LevantamientoDomain {
     }
 
     // Metodo para obtener todos los indiadores definidos en el calculo en especifico
-    public obtenerIndicadoresByIndiceCalculable(calculo: Calculos): Array<Indicador> | undefined {
-        return this.config.obtenerInicadoresByIndiceCalculable(calculo)
+    public async obtenerIndicadoresByIndiceCalculable(calculo: Calculos): Promise<Array<Indicador> | undefined> {
+        return await this.config.obtenerInicadoresByIndiceCalculable(calculo)
     }
 
     // Metodo para calcular el porcentaje de deterioros que presentan ese indicador
-    private obtenerPorcientoIndicador(indicador: Indicador): number {
+    private async obtenerPorcientoIndicador(indicador: Indicador): Promise<number> {
         let porciento: number = 0
         let totalTipoDeterioros: number = this.obtenerCantidadTiposDeterioros() // se obtiene la cantidad de tipos de deterioro en total
         if (totalTipoDeterioros) // si existe al menos un tipo de deterioro registrado en el levantamiento
-            porciento = this.cantTiposDeterioroWithIndicador(indicador) * 100 / totalTipoDeterioros
+            porciento = await (this.cantTiposDeterioroWithIndicador(indicador)) * 100 / totalTipoDeterioros
 
         return porciento
     }
 
     // Metodo para obtener el porcentaje de criticidad por indicador
-    @Expose()
-    public obtenerPorcentajeData() {
+
+    public async obtenerPorcentajeData(): Promise<[String, number][]> {
         const mapData: Map<String, number> = new Map<String, number>() // se crea un mapa para almacenar la info (la clave representa el inidicador; el valor representa el porcentaje)
         // Obtener los indicadores definidos para el analisis de criticidad
-        const indicadoresAnalisisCriticidad: Array<Indicador> | undefined = this.obtenerIndicadoresByIndiceCalculable(Calculos.Criticidad)  // se obtienen los indicadores del indice de criticidad
+        const indicadoresAnalisisCriticidad: Array<Indicador> | undefined = await this.obtenerIndicadoresByIndiceCalculable(Calculos.Criticidad)  // se obtienen los indicadores del indice de criticidad
 
         if (indicadoresAnalisisCriticidad) // si fue obtenido correctamente los indicadores del calculo
-            indicadoresAnalisisCriticidad.forEach((indicador) => { // se recorren los indicadores para por cada uno calcular su porcentaje 
-                mapData.set(indicador.nombre, this.obtenerPorcientoIndicador(indicador))
-            })
+            for (let index = 0; index < indicadoresAnalisisCriticidad.length; index++) {
+                const indicador: Indicador = indicadoresAnalisisCriticidad[index]
+                mapData.set(indicador.nombre, await this.obtenerPorcientoIndicador(indicador))
+            }
 
-        return Array.from(mapData.entries()) // se convierte en array la info del map para ser serializada correctamente
+        this.porcentajeData = Array.from(mapData.entries()) // se convierte en array la info del map para ser serializada correctamente
+
+        return this.porcentajeData
 
     }
 

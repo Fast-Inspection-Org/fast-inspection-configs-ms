@@ -25,4 +25,7 @@
 18/05/2024
 *Añadir Control de Roles y Autenticación a todas la rutas expuestas de la Api
 26/05/2024
-* Implementar carga Lazy a todas las entidades
+*Implementar carga Lazy a todas las entidades
+26/05/2024
+*Encapsular lógica de construcción en los constructores de las entidades
+*Ejecutar pruebas de los cambios realizados para la carga lazy de las entidades

@@ -7,8 +7,8 @@ import { Indicador } from "../indicador/indicador.entity";
 @ChildEntity("indiceCalculableIntervalo")
 export class IndiceCalculableIntervalo extends IndiceCalculable {
 
-    @OneToMany(() => IndicadorIntervalo, indicadorIntervalo => indicadorIntervalo.indiceCalculableIntervalo, { eager: true })
-    indicadoresIntervalos: Array<IndicadorIntervalo> // Un indice calculable por intervalos puede tener varios indicadores de intervalos
+    @OneToMany(() => IndicadorIntervalo, indicadorIntervalo => indicadorIntervalo.indiceCalculableIntervalo, { lazy: true })
+    indicadoresIntervalos: Promise<Array<IndicadorIntervalo>> // Un indice calculable por intervalos puede tener varios indicadores de intervalos
 
 
 
@@ -17,24 +17,13 @@ export class IndiceCalculableIntervalo extends IndiceCalculable {
     }
 
 
-    public replicarVersion() {
-        super.replicarVersion()
-        this.replicarVersionIndicadoresIntervalos() // se replica la version de los indicadores intervalos
-    }
-
-    private replicarVersionIndicadoresIntervalos() {
-        this.indicadoresIntervalos.forEach((indicadorIntervalo) => {
-            indicadorIntervalo.replicarVersion() // se replica la version del indicador intervalo
-        })
-    }
-
     // Metodo para obtener el indicador correspondiente a un valor calculado
-    public obtenerIndicadorCalculo(valorCalculo: number): Indicador {
+    public async obtenerIndicadorCalculo(valorCalculo: number): Promise<Indicador> {
         let indicador: Indicador | undefined = undefined
-
-        for (let index = 0; index < this.indicadoresIntervalos.length && !indicador; index++) {
-            if (this.indicadoresIntervalos[index].isRange(valorCalculo)) // si el valor calculado está en el rango del indicador, significa que encontramos el indicador
-                indicador = this.indicadoresIntervalos[index]
+        const inidicadoresIntervalos: Array<IndicadorIntervalo> = await this.indicadoresIntervalos
+        for (let index = 0; index < inidicadoresIntervalos.length && !indicador; index++) {
+            if (inidicadoresIntervalos[index].isRange(valorCalculo)) // si el valor calculado está en el rango del indicador, significa que encontramos el indicador
+                indicador = inidicadoresIntervalos[index]
 
         }
 
@@ -42,10 +31,11 @@ export class IndiceCalculableIntervalo extends IndiceCalculable {
     }
 
     // Metodo para obtener todos los indicadores del inidce calculable
-    public obtenerIndicadores(): Array<Indicador> {
+    public async obtenerIndicadores(): Promise<Array<Indicador>> {
         const indicadores: Array<Indicador> = new Array<Indicador>() // se crea una lista para almacenar los indicadores
+        const inidicadoresIntervalos: Array<IndicadorIntervalo> = await this.indicadoresIntervalos
         // se almacenan los indicadores del indice en la lista de retorno
-        this.indicadoresIntervalos.forEach((indicador) => {
+        inidicadoresIntervalos.forEach((indicador) => {
             indicadores.push(indicador)
         })
 

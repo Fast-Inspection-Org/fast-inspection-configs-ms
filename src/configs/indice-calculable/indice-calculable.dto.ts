@@ -19,6 +19,7 @@ export class IndiceCalculableDTO {
         this.nombre = nombre
         this.tipo = tipo
         this.calculo = calculo
+        
         if (indicadoresIntervalos)
             this.construirIndicadoresIntervaloDTO(indicadoresIntervalos) // se construyen indicadores intervalos DTO basado de en la información de su representación entity
         if (indicadoresSinIntervalos)

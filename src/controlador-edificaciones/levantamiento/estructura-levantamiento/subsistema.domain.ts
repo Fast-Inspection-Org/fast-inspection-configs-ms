@@ -13,24 +13,34 @@ export class SubSistema {
     //subSistemaConfig: SubsistemaConfig // referencia de memoria del subSistema definido en configuracion
     id: number
     nombre: String
+    criticidad: number
+    porcentajeData: [String, number][]
     @Exclude()
     materiales: Array<Material> // atributo que define La *información* de los materiales de un subSistema
     @Exclude()
     levantamiento: LevantamientoDomain
 
-    constructor(id: number,
+    private constructor(id: number,
         nombre: String,
-        materialesConfig: Array<MaterialConfig>,
-        deteriorosSubsistema: Array<Deterioro>,
-        sistema: Sistema,
         levantamiento: LevantamientoDomain) {
 
         this.id = id
         this.nombre = nombre
         this.levantamiento = levantamiento
-        this.cargarMateriales(materialesConfig, deteriorosSubsistema, sistema, levantamiento) // se cargan los materiales pertenecientes al subsistema
     }
 
+    // constructor para cargas asíncronas
+    public static async createInstancie(id: number,
+        nombre: String,
+        materialesConfig: Array<MaterialConfig>,
+        deteriorosSubsistema: Array<Deterioro>,
+        sistema: Sistema,
+        levantamiento: LevantamientoDomain): Promise<SubSistema> {
+        const subSistemaInstancie: SubSistema = new SubSistema(id, nombre, levantamiento)
+        await subSistemaInstancie.cargarMateriales(materialesConfig, deteriorosSubsistema, sistema, levantamiento)
+
+        return subSistemaInstancie
+    }
 
     // Getts
 
@@ -42,35 +52,37 @@ export class SubSistema {
         return this.materiales.find(material => material.id === idMaterial)
     }
 
-      // Metodo para obtener los tipos de deteriro asociados a un material en especifico
-      public getTiposDeteriorosMaterial(idMaterial: number) {
+    // Metodo para obtener los tipos de deteriro asociados a un material en especifico
+    public getTiposDeteriorosMaterial(idMaterial: number) {
         const material: Material = this.getMaterial(idMaterial); // se obtiene al material
         let tiposDeterioros: Array<TipoDeterioro> | undefined = undefined;
 
         if (material) // se fue encontrado el material
-        tiposDeterioros = material.getTiposDeterioros() // se obtienen los tipos de deterioro asociados al material
+            tiposDeterioros = material.getTiposDeterioros() // se obtienen los tipos de deterioro asociados al material
 
         return tiposDeterioros
 
     }
 
     // Metodo para determinar la cantidad de tipos de deterioro que coinciden con un indicador en específico
-    public cantTiposDeterioroWithIndicador(indicador: Indicador) {
+    public async cantTiposDeterioroWithIndicador(indicador: Indicador): Promise<number> {
         let cant: number = 0
         // se recorren todos los materiales del subsistema y se les pregunta por la cantidad de tipos de deteriros que asociados que tienen un indicador en especifico
-        this.materiales.forEach((material) => {
-            cant += material.cantTiposDeterioroWithIndicador(indicador)
-        })
+        for (let index = 0; index < this.materiales.length; index++) {
+            const material: Material = this.materiales[index]
+            cant += await material.cantTiposDeterioroWithIndicador(indicador)
+        }
         return cant
     }
 
     // Metodo para cargar los materiales del subsistema
-    public cargarMateriales(materialesConfig: Array<MaterialConfig>, deteriorosSubsistema: Array<Deterioro>, sistema: Sistema, levantamiento: LevantamientoDomain) {
+    public async cargarMateriales(materialesConfig: Array<MaterialConfig>, deteriorosSubsistema: Array<Deterioro>, sistema: Sistema, levantamiento: LevantamientoDomain) {
         this.materiales = new Array<Material>
-        materialesConfig.forEach((materialConfig) => {
-            this.materiales.push(new Material(materialConfig.id, materialConfig.nombre, materialConfig.tiposDeteriorosConfig,
+        for (let index = 0; index < materialesConfig.length; index++) {
+            const materialConfig: MaterialConfig = materialesConfig[index]
+            this.materiales.push(await Material.createInstancie(materialConfig.id, materialConfig.nombre, await materialConfig.tiposDeteriorosConfig,
                 this.determinarDeteriorosMaterial(deteriorosSubsistema, materialConfig.id), sistema, levantamiento))
-        })
+        }
     }
 
     // Metodo para obtener todos los deterioros del subsistema pertenecientes a al material
@@ -96,7 +108,7 @@ export class SubSistema {
     }
 
     // Operaciones
-    @Exclude()
+    @Expose()
     public obtenerCantidadDeterioros(): number {
         let cantDeterioros: number = 0
 
@@ -109,37 +121,43 @@ export class SubSistema {
 
     // Metodo para calcular la criticidad de un subsistema
     // Metodo para calcular la criticidad de un subsistema
-    @Expose()
-    public obtenerIndiceCriticidad(): number {
+  
+    public async obtenerIndiceCriticidad(): Promise<number> {
         let criticidad: number = 0
-        this.materiales.forEach((material) => {
-            criticidad += material.obtenerIndiceCriticidad()
-        })
+        for (let index = 0; index < this.materiales.length; index++) {
+            const material: Material = this.materiales[index]
+            criticidad += await material.obtenerIndiceCriticidad()
+        }
+
+        this.criticidad = criticidad // se almacena el resultado del cálculo para la serialización
 
         return criticidad
     }
 
     // Metodo para calcular el porcentaje de deterioros que presentan ese indicador
-    private obtenerPorcientoIndicador(indicador: Indicador): number {
+    private async obtenerPorcientoIndicador(indicador: Indicador): Promise<number> {
         let porciento: number = 0
         let totalTipoDeterioros: number = this.obtenerCantidadTiposDeterioros() // se obtiene la cantidad de tipos de deterioro en total
         if (totalTipoDeterioros) // si existe al menos un tipo de deterioro registrado en el subsistema
-            porciento = this.cantTiposDeterioroWithIndicador(indicador) * 100 / totalTipoDeterioros
+            porciento = await this.cantTiposDeterioroWithIndicador(indicador) * 100 / totalTipoDeterioros
 
         return porciento
     }
 
     // Metodo para obtener el porcentaje de criticidad por indicador
-    @Expose()
-    public obtenerPorcentajeData() {
+    
+    public async obtenerPorcentajeData() {
         const mapData: Map<String, number> = new Map<String, number>() // se crea un mapa para almacenar la info (la clave representa el inidicador; el valor representa el porcentaje)
         // Obtener los indicadores definidos para el analisis de criticidad
-        const indicadoresAnalisisCriticidad: Array<Indicador> | undefined = this.levantamiento.obtenerIndicadoresByIndiceCalculable(Calculos.Criticidad)  // se obtienen los indicadores del indice de criticidad
+        const indicadoresAnalisisCriticidad: Array<Indicador> | undefined = await this.levantamiento.obtenerIndicadoresByIndiceCalculable(Calculos.Criticidad)  // se obtienen los indicadores del indice de criticidad
 
         if (indicadoresAnalisisCriticidad) // si fue obtenido correctamente los indicadores del calculo
-            indicadoresAnalisisCriticidad.forEach((indicador) => { // se recorren los indicadores para por cada uno calcular su porcentaje 
-                mapData.set(indicador.nombre, this.obtenerPorcientoIndicador(indicador))
-            })
+            for (let index = 0; index < indicadoresAnalisisCriticidad.length; index++) {
+                const indicador: Indicador = indicadoresAnalisisCriticidad[index]
+                mapData.set(indicador.nombre, await this.obtenerPorcientoIndicador(indicador))
+            }
+
+            this.porcentajeData = Array.from(mapData.entries()) // se almacena el resultado del cálculo para la serialización
 
         return Array.from(mapData.entries()) // se convierte en array la info del map para ser serializada correctamente
 

@@ -15,4 +15,12 @@ export class Edificacion {
     ubicacionY: number
     @OneToMany(() => Levantamiento, levantamiento => levantamiento.edificacion, { cascade: true })
     levantamientos: Array<Levantamiento> // Atributo que define el historial de levantamientos realizados a una edificación
+
+    constructor(id?: number, nombre?: String, direccion?: String, ubicacionX?: number, ubicacionY?: number) {
+        this.id = id
+        this.nombre = nombre
+        this.direccion = direccion
+        this.ubicacionX = ubicacionX
+        this.ubicacionY = ubicacionY
+    }
 }

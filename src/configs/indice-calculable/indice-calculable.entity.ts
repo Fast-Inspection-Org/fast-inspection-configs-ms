@@ -38,12 +38,9 @@ export abstract class IndiceCalculable {
     this.calculo = calculo
   }
 
-  public replicarVersion() {
-    this.id = undefined
-  }
-
+ 
   //Operaciones
-  public abstract obtenerIndicadorCalculo(valorCalculo: number): Indicador;
-  public abstract obtenerIndicadores (): Array<Indicador>
+  public  abstract obtenerIndicadorCalculo(valorCalculo: number): Promise<Indicador>;
+  public abstract obtenerIndicadores (): Promise<Array<Indicador>>
 
 }

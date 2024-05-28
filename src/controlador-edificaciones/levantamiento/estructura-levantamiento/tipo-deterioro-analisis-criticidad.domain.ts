@@ -31,18 +31,20 @@ export class TipoDeterioroAnalisisCriticidad extends TipoDeterioro {
     // Operaciones
 
     // Metodo para obtener el indice de criticidad del tipo de deterioro
-    
-    public obtenerIndiceCriticidad(): Indicador {
-        return this.levantamiento.obtenerIndicadorCalculo(this.obtenerIndiceFrecuencia() * this.obtenerIndiceDetectabilidad() * this.obtenerIndiceImportancia(), Calculos.Criticidad)
+
+    public async obtenerIndiceCriticidad(): Promise<Indicador> {
+        return await this.levantamiento.obtenerIndicadorCalculo(this.obtenerIndiceFrecuencia() * await this.obtenerIndiceDetectabilidad() * await this.obtenerIndiceImportancia(), Calculos.Criticidad)
     }
     // Metodo para obtener el indice de detecatabilidad del tipo de deterioro
-    private obtenerIndiceDetectabilidad(): number {
-        return this.levantamiento.obtenerIndicadorCalculo(this.detectabilidad, Calculos.Detectabilidad).valor // se manda a obtener el valor del indicador para este valor calculado
+    private async obtenerIndiceDetectabilidad(): Promise<number> {
+        const indicador: Indicador = await this.levantamiento.obtenerIndicadorCalculo(this.detectabilidad, Calculos.Detectabilidad)
+        return indicador.valor // se manda a obtener el valor del indicador para este valor calculado
     }
     // Metodo para obtener el indice de importancia del tipo de deterioro
-    private obtenerIndiceImportancia(): number {
+    private async obtenerIndiceImportancia(): Promise<number> {
         // Lo primero es obtener la sumatoria de las importancias de cada campo afectado y luego se obtiene un indicador
-        return this.levantamiento.obtenerIndicadorCalculo(this.obtenerSumatoriaImportancias(), Calculos.Impacto).valor
+        const indicador: Indicador = await this.levantamiento.obtenerIndicadorCalculo(this.obtenerSumatoriaImportancias(), Calculos.Impacto)
+        return indicador.valor
     }
     // Metodo para obtener el indice de frecuencia del tipo de deterioro
     private obtenerIndiceFrecuencia(): number {

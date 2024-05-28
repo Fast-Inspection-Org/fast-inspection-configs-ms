@@ -13,9 +13,10 @@ import { Edificacion } from './edificacion/edificacion.entity';
 import { Levantamiento } from './levantamiento/levantamiento.entity';
 import { ValorCampoDefinidoController } from './valor-campo-definido/valor-campo-definido.controller';
 import { ValorCampoDefinidoService } from './valor-campo-definido/valor-campo-definido.service';
+import { ValorCampoDefinido } from './valor-campo-definido/valor-campo-definido.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Deterioro, Edificacion, Levantamiento])],
+  imports: [TypeOrmModule.forFeature([Deterioro, Edificacion, Levantamiento, ValorCampoDefinido])],
   controllers: [ControladorEdificacionesController, EdificacionController, LevantamientoController, DeterioroController, ValorCampoDefinidoController],
   providers: [ControladorEdificacionesService, EdificacionService, LevantamientoService, DeterioroService, ValorCampoDefinidoService]
 })

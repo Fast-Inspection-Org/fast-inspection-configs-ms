@@ -17,7 +17,7 @@ export class Campo {
     @ManyToOne(() => HerramientaAnalisisCriticidad, herramientaAnalisisCriticidad => herramientaAnalisisCriticidad.campos, { onDelete: "CASCADE" })
     herramientaAnalisisCriticidad: HerramientaAnalisisCriticidad // Atributo que define a la herramienta analisis de criticidad que pertenece el campo
     @ManyToMany(() => TipoDeterioroAnalisisCriticidadConfig, tipoDeterioroAnalisisCriticidadConfig => tipoDeterioroAnalisisCriticidadConfig.camposAfectados)
-    tipoDeterioroAnalisisCriticidadConfig: TipoDeterioroAnalisisCriticidadConfig
+    tipoDeterioroAnalisisCriticidadConfig: Promise<Array<TipoDeterioroAnalisisCriticidadConfig>>
 
     constructor(nombre: String, nivelImportancia: number, configVersion: number, herramientaAnalisisCriticidad: HerramientaAnalisisCriticidad) {
         this.nombre = nombre
@@ -26,7 +26,4 @@ export class Campo {
         this.herramientaAnalisisCriticidad = herramientaAnalisisCriticidad
     }
 
-    public replicarVersion() {
-        this.id = undefined
-    }
 }

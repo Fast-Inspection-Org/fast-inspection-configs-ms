@@ -23,8 +23,5 @@ export class CampoDefinido {
         this.tipoDeterioroConfig = tipoDeterioroConfig
     }
 
-    public replicarVersion() {
-        this.id = undefined
-    }
 
 }

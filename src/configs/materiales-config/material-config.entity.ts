@@ -14,27 +14,13 @@ export class MaterialConfig {
     subsistemaConfigId: number
     @ManyToOne(() => SubsistemaConfig, subsistemaConfig => subsistemaConfig.materialesConfig, { onDelete: "CASCADE" }) // se define la relacion de muchos a uno con SubSistema
     subsistemaConfig: SubsistemaConfig
-    @OneToMany(() => TipoDeterioroConfig, tipoDeterioroConfig => tipoDeterioroConfig.materialConfig, { eager: true })
-    tiposDeteriorosConfig: Array<TipoDeterioroConfig> // Un material tiene muchos tipos de deterioros asociados
+    @OneToMany(() => TipoDeterioroConfig, tipoDeterioroConfig => tipoDeterioroConfig.materialConfig, { lazy: true })
+    tiposDeteriorosConfig: Promise<Array<TipoDeterioroConfig>> // Un material tiene muchos tipos de deterioros asociados
 
     constructor(id?: number, nombre?: String, subsistemaConfig?: SubsistemaConfig) {
         this.id = id
         this.nombre = nombre
         this.subsistemaConfig = subsistemaConfig
     }
-
-
-    public replicarVersion() {
-        this.id = undefined
-        this.replicarVersionTiposDeteriorosConfig() // se replica la información de los tipo de detioro analisis criticdad configurados
-    }
-
-    private replicarVersionTiposDeteriorosConfig() {
-        if (this.tiposDeteriorosConfig)
-            this.tiposDeteriorosConfig.forEach((tipoDeterioroConfig) => {
-                tipoDeterioroConfig.replicarVersion() // se replica la version del tipo de deterioro analisis de criticidad
-            })
-    }
-
 
 }

@@ -17,10 +17,10 @@ export abstract class TipoDeterioroConfig {
     nombre: String
     @Column()
     tipo: string
-    @OneToMany(() => CampoDefinido, campoDefinido => campoDefinido.tipoDeterioroConfig, { eager: true })
-    camposDefinidos: Array<CampoDefinido> // Atributo que representa los campos definidos para este tipo de deterioro
-    @OneToMany(() => Causa, causa => causa.tipoDeterioroConfig, { eager: true })
-    causas: Array<Causa> // Atributo que define las causas para este tipo de deterioro
+    @OneToMany(() => CampoDefinido, campoDefinido => campoDefinido.tipoDeterioroConfig, { lazy: true })
+    camposDefinidos: Promise<Array<CampoDefinido>> // Atributo que representa los campos definidos para este tipo de deterioro
+    @OneToMany(() => Causa, causa => causa.tipoDeterioroConfig, { lazy: true })
+    causas: Promise<Array<Causa>> // Atributo que define las causas para este tipo de deterioro
     @Column()
     materialConfigId: number
     @ManyToOne(() => MaterialConfig, materialConfig => materialConfig.tiposDeteriorosConfig, { onDelete: "CASCADE" })
@@ -34,26 +34,6 @@ export abstract class TipoDeterioroConfig {
         this.tipo = tipo
         this.materialConfig = materialConfig
         this.detectabilidad = detectabilidad
-    }
-
-    public replicarVersion() {
-        this.id = undefined
-        this.replicarVersionCamposDefinidosConfig() // se replica la información de los campos definidos para este tipo de deterioro
-        this.replicarVersionCausas() // se replica la información de las causas definidas para este tipo de deterioro
-    }
-
-    // Metodo para replicar la información de los campos definidos para este tipo de deterioro
-    private replicarVersionCamposDefinidosConfig() {
-        this.camposDefinidos.forEach((campoDefinidoConfig) => {
-            campoDefinidoConfig.replicarVersion() // se replica la versión del campoDefinido
-        })
-    }
-
-    //Metodo para replicar la información de las causas de este tipo de deterioro
-    private replicarVersionCausas() {
-        this.causas.forEach((causa) => {
-            causa.replicarVersion() // se replica la version de la causa
-        })
     }
 
 }
