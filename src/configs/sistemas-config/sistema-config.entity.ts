@@ -7,11 +7,11 @@ import { Herramienta } from "../herramientas/herramienta.entity";
 export class SistemaConfig {
     @PrimaryGeneratedColumn()
     id: number // atributo que representa el id unico del sistema
-    @Column()
+    @Column({nullable: true})
     nombre: String
     @Column()
     herramientaId: number
-    @ManyToOne(() => Herramienta, herramienta => herramienta.sistemasConfig, { lazy: true , onDelete: "CASCADE" })
+    @ManyToOne(() => Herramienta, herramienta => herramienta.sistemasConfig, { lazy: true, onDelete: "CASCADE" })
     herramienta: Promise<Herramienta>
     @OneToMany(() => SubsistemaConfig, subsistemaConfig => subsistemaConfig.sistemaConfig, { lazy: true })
     subSistemasConfig: Promise<Array<SubsistemaConfig>>
@@ -24,8 +24,28 @@ export class SistemaConfig {
         this.id = id
         this.nombre = nombre
         if (herramienta)
-        this.herramienta = Promise.resolve(herramienta)
+            this.herramienta = Promise.resolve(herramienta)
         this.config = config
+    }
+
+    // Método para obtener la cantidad de subsistemas del sistema
+
+    public async cantSubsistemasConfig (): Promise<number> {
+          const subSistemasConfig: Array<SubsistemaConfig> = await this.subSistemasConfig // se obtienen los subsistemas config del sistema
+
+          return subSistemasConfig.length
+    }
+
+    public async getNombreHerramienta(): Promise<String> {
+        const herramienta: Herramienta = await this.herramienta // se carga la herramienta
+
+        return herramienta.nombre // se retorna el nombre de la herramienta
+    }
+
+    public async getHerramienta(): Promise<Herramienta> {
+        const herramienta: Herramienta = await this.herramienta // se carga la herramienta
+
+        return herramienta // se retorna el nombre de la herramienta
     }
 
 }

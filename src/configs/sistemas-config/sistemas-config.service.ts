@@ -1,22 +1,41 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { SistemaConfig } from './sistema-config.entity';
-import { EntityManager, Repository } from 'typeorm';
+import { EntityManager, Like, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { SistemaConfigDTO } from './sistema-config.dto';
 import { Herramienta } from '../herramientas/herramienta.entity';
 import { Config } from '../config.entity';
 import { SubsistemaConfigDTO } from '../subsistemas-config/subsistema-config.dto';
 import { SubsistemasConfigService } from '../subsistemas-config/subsistemas-config.service';
+import { SistemaConfigSerializable } from './sistema-config.serializable';
+import { UpdateSistemaConfigDTO } from './update-sistema-config.dto';
+import { HerramientasService } from '../herramientas/herramientas.service';
 
 
 @Injectable()
 export class SistemasConfigService {
 
     constructor(@InjectRepository(SistemaConfig) private sistemaConfigRepository: Repository<SistemaConfig>,
-        private subSistemaConfigService: SubsistemasConfigService) { }
+        private subSistemaConfigService: SubsistemasConfigService, private herramientaService: HerramientasService) { }
+
+    // Método para buscar un sistema config por el nombre
+
+    public async getSistemaConfig(id?: number, nombre?: String, configVersion?: number) {
+        return await this.sistemaConfigRepository.findOne({
+            where: {
+                id: id,
+                nombre: nombre,
+                configVersion: configVersion
+            }
+        })
+    }
+
+
+
+
 
     public async createSistemaConfig(sistemaConfigDTO: SistemaConfigDTO, entityManager?: EntityManager) {
-        if (!await this.getSistemaConfigIdConfigVersion(sistemaConfigDTO.nombre, sistemaConfigDTO.config.version)) { // si no existe el sistema config
+        if (!(await this.getSistemaConfig(undefined, sistemaConfigDTO.nombre, sistemaConfigDTO.config.version))) { // si no existe el sistema config
             if (!entityManager) // No se trata de una llamada con una transacción heredada
                 await this.sistemaConfigRepository.manager.transaction(async (transactionManager: EntityManager) => { // Se crea una transaccion para este procedimiento
                     await this.createSistemaConfigWithEntityManager(sistemaConfigDTO, transactionManager)
@@ -25,7 +44,7 @@ export class SistemasConfigService {
                 await this.createSistemaConfigWithEntityManager(sistemaConfigDTO, entityManager)
         }
         else {
-            
+
             throw new HttpException({
                 status: HttpStatus.INTERNAL_SERVER_ERROR,
                 error: 'Sistema con igual nombre',
@@ -35,28 +54,49 @@ export class SistemasConfigService {
 
     }
 
+    // Método para actualizar la información de un Sistema Config
+    public async updateSistemaConfigDTO(idSistemaConfig: number, updateSistemaConfigDTO: UpdateSistemaConfigDTO /* representa los datos a actualizar del sistema config */) {
+        const sistemaConfig: SistemaConfig = await this.getSistemaConfig(undefined /*se indica que no se va a filtar por este campo */,
+            updateSistemaConfigDTO.nombre, updateSistemaConfigDTO.configVersion)
+
+        if (!sistemaConfig || sistemaConfig.id === idSistemaConfig) { // si no existe un configuración con el mismo nombre o si la que existe es ella misma (significa esto ultimo que el usuario  cambió el nombre de ese sistema config por otro)
+            const sistemaConfigUpdate: SistemaConfig = await this.getSistemaConfig(idSistemaConfig) // se obtiene el sistema config a modificar
+            sistemaConfigUpdate.nombre = updateSistemaConfigDTO.nombre // se actualiza el nombre
+            const herramienta: Herramienta = await this.herramientaService.getHerramientaById(updateSistemaConfigDTO.herramienta.id) // se obtiene la herramienta 
+            if (herramienta) // si fue encontrada herramienta con ese id
+                sistemaConfigUpdate.herramienta = Promise.resolve(herramienta) // se actualiza la herramienta del sistema
+            await this.sistemaConfigRepository.save(sistemaConfigUpdate) // se actualiza la información del sistema config en la base de datos
+        }
+        else
+            throw new HttpException({ message: "Ya existe un sistema con ese nombre" }, HttpStatus.BAD_REQUEST)
+    }
+
 
     // Metodo para obtener todos los sistemas config
-    public async getAllSistemasConfig(versionConfig?: number) {
-        if (!versionConfig)
-            return await this.sistemaConfigRepository.find() // no hay filtros
-        else
-            return await this.sistemaConfigRepository.find({ // filtro de config
-                where: {
-                    configVersion: versionConfig
-                }
-            })
-    }
-
-    private async getSistemaConfigIdConfigVersion(nombre: String, verionConfig: number) {
-        return this.sistemaConfigRepository.findOne({
+    public async getAllSistemasConfig(versionConfig?: number, nombre?: String, nombreHerramienta?: String): Promise<Array<SistemaConfigSerializable>> {
+        const sistemasConfigSerializable: Array<SistemaConfigSerializable> = new Array<SistemaConfigSerializable>()
+        // se obtienen los sistemas config que cumplen con los valores de los filtros
+        const sistemasConfig: Array<SistemaConfig> = await this.sistemaConfigRepository.find({ // filtro de config
             where: {
-                nombre: nombre,
-                configVersion: verionConfig
+                configVersion: versionConfig,
+                nombre: nombre ? Like(`%${nombre}%`) : nombre
             }
         })
-    }
 
+        // se fueron encontrados sistemas con esas características
+        if (sistemasConfig) {
+            for (let index = 0; index < sistemasConfig.length; index++) {
+                const sistemaConfig: SistemaConfig = sistemasConfig[index] // se obtiene el sistema config siguiente en la iteración
+                // Se añade a la lista de sistemas que van a ser serializados la información que es necesario serializar del sistema configuración
+                const sistemaConfigSerializable: SistemaConfigSerializable = new SistemaConfigSerializable(sistemaConfig.id, sistemaConfig.nombre, await sistemaConfig.cantSubsistemasConfig(),
+                    await sistemaConfig.getHerramienta(), sistemaConfig.configVersion) // se construye el sistema config serializable
+                if ((nombreHerramienta && sistemaConfigSerializable.herramienta.nombre.toLocaleLowerCase().includes(nombreHerramienta.toString().toLocaleLowerCase()) || !nombreHerramienta))
+                    sistemasConfigSerializable.push(sistemaConfigSerializable)
+            }
+        }
+
+        return sistemasConfigSerializable
+    }
 
 
     private async createSistemaConfigWithEntityManager(sistemaConfigDTO: SistemaConfigDTO, entityManager: EntityManager) {
@@ -84,6 +124,9 @@ export class SistemasConfigService {
         // fin del proceso de busqueda de la herramienta
 
         if (herramientaAsignada) { // si fue posible encontrar una herramienta
+
+            // Si no existe un sistema config con el mismo nombre en esa configuración
+
             // Se crea el sistemaConfig
             const sistemaConfig: SistemaConfig = new SistemaConfig(undefined, sistemaConfigDTO.nombre, herramientaAsignada, sistemaConfigDTO.config
                 instanceof Config ? sistemaConfigDTO.config : new Config(sistemaConfigDTO.config.version)) // se crea un sistema config listo para ser insertado
@@ -92,10 +135,10 @@ export class SistemasConfigService {
 
             if (sistemaConfigDTO.subSistemasConfig)
                 await this.saveSubSistemasConfig(sistemaConfigDTO.subSistemasConfig, sistemaConfigInsertado, entityManager) // se inserta en la base de datos los subSistemasConfig pertenecientes a este sistemaConfig
+
         }
         else
             throw new HttpException("Herramienta no encontrada dentro de la configuración", 500)
-
     }
 
 
@@ -106,6 +149,11 @@ export class SistemasConfigService {
             subSistemasConfigDTO[index].sistemaConfig = sistemaConfigInsertado // Registro
             await this.subSistemaConfigService.createSubSistemaConfig(subSistemasConfigDTO[index], entityManager) // Se manda a insertar al servicio de subSistemaConfig en la base de datos
         }
+    }
+
+    // Método para eliminar un sistema config en específico
+    public async deleteSistemaConfig(idSistemaConfig: number) {
+        await this.sistemaConfigRepository.delete({ id: idSistemaConfig })
     }
 
 }
