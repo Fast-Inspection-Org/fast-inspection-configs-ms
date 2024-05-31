@@ -1,4 +1,15 @@
-import { Controller } from '@nestjs/common';
+import { Controller, Delete, Get, Param, ParseIntPipe, Query } from '@nestjs/common';
+import { TipoDeterioroConfig } from './tipo-deterioro-config.entity';
+import { TipoDeteriorosConfigService } from './tipo-deterioros-config.service';
 
 @Controller('tipo-deterioros-config')
-export class TipoDeteriorosConfigController {}
+export class TipoDeteriorosConfigController {
+    constructor(private tipoDeterioroConfigService: TipoDeteriorosConfigService) { }
+
+
+    @Delete("deleteTipoDeterioroConfig/:id")
+    public async deleteTipoDeterioro(@Param("id", ParseIntPipe) idTipoDeterioro: number) {
+        this.tipoDeterioroConfigService.deleteTipoDeterioroConfig(idTipoDeterioro)
+    }
+
+}

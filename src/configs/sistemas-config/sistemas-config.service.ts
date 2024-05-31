@@ -18,7 +18,7 @@ export class SistemasConfigService {
     constructor(@InjectRepository(SistemaConfig) private sistemaConfigRepository: Repository<SistemaConfig>,
         private subSistemaConfigService: SubsistemasConfigService, private herramientaService: HerramientasService) { }
 
-    // Método para buscar un sistema config por el nombre
+    
 
     public async getSistemaConfig(id?: number, nombre?: String, configVersion?: number) {
         return await this.sistemaConfigRepository.findOne({
@@ -31,10 +31,8 @@ export class SistemasConfigService {
     }
 
 
-
-
-
     public async createSistemaConfig(sistemaConfigDTO: SistemaConfigDTO, entityManager?: EntityManager) {
+        // si no existe un sistema con ese nombre
         if (!(await this.getSistemaConfig(undefined, sistemaConfigDTO.nombre, sistemaConfigDTO.config.version))) { // si no existe el sistema config
             if (!entityManager) // No se trata de una llamada con una transacción heredada
                 await this.sistemaConfigRepository.manager.transaction(async (transactionManager: EntityManager) => { // Se crea una transaccion para este procedimiento

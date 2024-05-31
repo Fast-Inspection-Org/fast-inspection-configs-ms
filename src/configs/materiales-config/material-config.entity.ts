@@ -7,7 +7,7 @@ import { TipoDeterioro } from "src/controlador-edificaciones/levantamiento/estru
 @Entity("materialConfig")
 export class MaterialConfig {
     @PrimaryGeneratedColumn()
-    id: number // Atributo unico
+    id: number // Atributo unico 
     @Column()
     nombre: String
     @Column()
@@ -21,6 +21,13 @@ export class MaterialConfig {
         this.id = id
         this.nombre = nombre
         this.subsistemaConfig = subsistemaConfig
+    }
+
+    // Método para obtener la cantidad de tipos de deterioros asociados al material
+    public async cantTiposDeterioros(): Promise<number> {
+        const tiposDeteriorosConfig: Array<TipoDeterioroConfig> = await this.tiposDeteriorosConfig // se obtienen los tipos de deterioro asociados al material
+
+        return tiposDeteriorosConfig.length
     }
 
 }

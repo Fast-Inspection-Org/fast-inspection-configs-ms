@@ -36,4 +36,12 @@ export abstract class TipoDeterioroConfig {
         this.detectabilidad = detectabilidad
     }
 
+    // Método para obtener la cantidad de causas del tipo de deterioro
+
+    public async cantCausas(): Promise<number> {
+        const causas: Array<Causa> = await this.causas // se cargan las cuasas de la base de datos
+
+        return causas.length
+    }
+
 }

@@ -13,8 +13,15 @@ export class TipoDeterioroAnalisisCriticidadConfig extends TipoDeterioroConfig {
     constructor(id?: number, nombre?: String, tipo?: string, materialConfig?: MaterialConfig, detectabilidad?: number, camposAfectados?: Array<Campo>) {
         super(id, nombre, tipo, materialConfig, detectabilidad)
         if (camposAfectados)
-        this.camposAfectados = Promise.resolve(camposAfectados)
-        
+            this.camposAfectados = Promise.resolve(camposAfectados)
+
+    }
+
+
+    public async cantCamposAfectados(): Promise<number> {
+        const camposAfectados: Array<Campo> = await this.camposAfectados // se cargan de la base de datos los campos afectados
+
+        return camposAfectados.length
     }
 
 

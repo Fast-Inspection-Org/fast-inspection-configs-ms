@@ -40,7 +40,7 @@ export class ConfigsController {
     }
 
     @Post("createNewConfig")
-    @UseGuards(AuthGuard) // verifica el acceso a la solicitud
+    //@UseGuards(AuthGuard) // verifica el acceso a la solicitud
     public async saveNewConfig(@Body() newConfig: ConfigDTO, @Req() req: RequestWithUser) {
         // se debe registrar traza
         return await this.configsService.createConfig(newConfig)
