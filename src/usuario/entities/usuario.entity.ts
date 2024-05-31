@@ -20,6 +20,6 @@ export class Usuario {
     contrasena: string
     @Column({ unique: true, nullable: false })
     email: string
-    @Column({ nullable: false })
+    @Column({ nullable: true })
     rol: RolEnum
 }

@@ -1,8 +1,8 @@
-import { BadRequestException, HttpException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { UpdateUsuarioDto } from './dto/update-usuario.dto';
-import { Repository } from 'typeorm';
-import { Usuario } from './entities/usuario.entity';
+import { Like, Repository } from 'typeorm';
+import { RolEnum, Usuario } from './entities/usuario.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 @Injectable()
@@ -13,41 +13,51 @@ export class UsuarioService {
     // se encripta la contraseña
     createUsuarioDto.contrasena = await bcrypt.hash(createUsuarioDto.contrasena, 10)
     const userEntity = this.ususarioRepository.create(createUsuarioDto) // se crea un usuario entity basado en la información del usuario dto
+    // se verifica que no exista un usuario con el mismo nombre o email
+
+    if (await this.findOneByEmail(createUsuarioDto.email)) // se existe un usuario con el mismo email
+      throw new HttpException("Ya este email tiene asociado una cuenta", HttpStatus.BAD_REQUEST)
+    if (await this.findOneByNombreUsuario(createUsuarioDto.nombreUsuario))
+      throw new HttpException("Ya el nombre usuario está siendo usado", HttpStatus.BAD_REQUEST)
+
     return await this.ususarioRepository.save(userEntity); // se almacena al usuario en la base de datos
   }
 
-  public async findOneByEmail(email: string) {
-    const userEntity: Usuario = await this.ususarioRepository.findOneBy({ email: email })
-    if (!userEntity) // si no fue encontrado un usuario con ese email
-      throw new NotFoundException(`No fue encontrado un usuario con email ${email}`);
+  public async findOneByEmail(email: string): Promise<Usuario | undefined> {
+    const userEntity: Usuario | undefined = await this.ususarioRepository.findOneBy({ email: email })
 
     return userEntity
   }
 
   // Metodo para obtener un usuario por su nombre de usuario
-  public async findOneByNombreUsuario(nombreUsuario: string) {
-    const userEntity: Usuario = await this.ususarioRepository.findOneBy({ nombreUsuario: nombreUsuario })
-    if (!userEntity) // si no fue encontrado un usuario con ese email
-      throw new NotFoundException(`No fue encontrado un usuario con nombre de usuario ${nombreUsuario}`);
+  public async findOneByNombreUsuario(nombreUsuario: string): Promise<Usuario | undefined> {
+    const userEntity: Usuario | undefined = await this.ususarioRepository.findOneBy({ nombreUsuario: nombreUsuario })
 
     return userEntity
   }
 
- 
 
-  findAll() {
-    return this.ususarioRepository.find();
+
+  public async findAll(nombre?: string, rol?: RolEnum): Promise<Array<Usuario>> {
+    return await this.ususarioRepository.find({
+      where: {
+        nombreUsuario: nombre ? Like(`%${nombre}%`) : nombre,
+        rol: rol
+      }
+    });
   }
 
-  findOne(id: number) {
+  public async findOne(id: number) {
     return `This action returns a #${id} usuario`;
   }
 
-  update(id: number, updateUsuarioDto: UpdateUsuarioDto) {
-    return `This action updates a #${id} usuario`;
+  // Método para actualizar la información de un usuario
+  public async update(id: number, updateUsuarioDto: UpdateUsuarioDto) {
+    await this.ususarioRepository.update({ id: id }, updateUsuarioDto)
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} usuario`;
+  // Método para eliminar un usuario en específico
+  public async delete(id: number) {
+    await this.ususarioRepository.delete({ id: id })
   }
 }

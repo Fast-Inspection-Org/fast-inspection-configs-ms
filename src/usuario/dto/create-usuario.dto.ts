@@ -4,5 +4,5 @@ export class CreateUsuarioDto {
     nombreUsuario: string
     contrasena: string
     email: string
-    rol: RolEnum
+    rol?: RolEnum
 }

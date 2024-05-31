@@ -14,10 +14,6 @@ export class AuthController {
 
     @Post("registrer")
     public async registrer(@Body() userDTO: CreateUsuarioDto) {
-        try {
-            await this.authService.registrer(userDTO)
-        } catch (error) {
-            throw new BadRequestException("Error en la inserccion del usuario") // se indica del error y se retorna una respuesta personalizada
-        }
+           return await this.authService.registrer(userDTO)     
     }
 }

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request, UseInterceptors, ClassSerializerInterceptor } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request, UseInterceptors, ClassSerializerInterceptor, Query, ParseIntPipe } from '@nestjs/common';
 import { UsuarioService } from './usuario.service';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { UpdateUsuarioDto } from './dto/update-usuario.dto';
@@ -13,31 +13,31 @@ export class UsuarioController {
   constructor(private readonly usuarioService: UsuarioService) { }
 
   @Post()
-  create(@Body() createUsuarioDto: CreateUsuarioDto) {
-    return this.usuarioService.create(createUsuarioDto);
+  public async create(@Body() createUsuarioDto: CreateUsuarioDto) {
+    return await this.usuarioService.create(createUsuarioDto);
   }
 
   @Get("allUsers")
   @UseInterceptors(ClassSerializerInterceptor) // se indica que se usan interceptores para personalizar la serialización del objeto de retorno del método
-  @Roles([RolEnum.Administrador]) // se autoriza el acceso solo al rol administrador
-  @UseGuards(AuthGuard, RolGuard) // verifica el acceso a la solicitud
-  public findAll(@Request() req) {
+  //@Roles([RolEnum.Administrador]) // se autoriza el acceso solo al rol administrador
+  //@UseGuards(AuthGuard, RolGuard) // verifica el acceso a la solicitud
+  public async findAll(@Request() req, @Query("nombre") nombre: string, @Query("rol") rol: RolEnum) {
     // con el request luego se registra una traza de auditoria
-    return this.usuarioService.findAll();
+    return await this.usuarioService.findAll(nombre, rol);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usuarioService.findOne(+id);
+  public async findOne(@Param('id', ParseIntPipe) id: number) {
+    return await this.usuarioService.findOne(id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUsuarioDto: UpdateUsuarioDto) {
-    return this.usuarioService.update(+id, updateUsuarioDto);
+  @Patch('updateUser/:id')
+ public async update(@Param('id', ParseIntPipe) id: number, @Body() updateUsuarioDto: UpdateUsuarioDto) {
+    return  await this.usuarioService.update(id, updateUsuarioDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usuarioService.remove(+id);
+  @Delete('deleteUser/:id')
+  public async delete(@Param('id', ParseIntPipe) id: number) {
+    return await this.usuarioService.delete(id)
   }
 }
