@@ -18,7 +18,7 @@ export class SistemasConfigService {
     constructor(@InjectRepository(SistemaConfig) private sistemaConfigRepository: Repository<SistemaConfig>,
         private subSistemaConfigService: SubsistemasConfigService, private herramientaService: HerramientasService) { }
 
-    
+
 
     public async getSistemaConfig(id?: number, nombre?: String, configVersion?: number) {
         return await this.sistemaConfigRepository.findOne({
@@ -61,7 +61,7 @@ export class SistemasConfigService {
             const sistemaConfigUpdate: SistemaConfig = await this.getSistemaConfig(idSistemaConfig) // se obtiene el sistema config a modificar
             sistemaConfigUpdate.nombre = updateSistemaConfigDTO.nombre // se actualiza el nombre
             const herramienta: Herramienta = await this.herramientaService.getHerramientaById(updateSistemaConfigDTO.herramienta.id) // se obtiene la herramienta
-           
+
             if (herramienta) { // si fue encontrada herramienta con ese id
                 sistemaConfigUpdate.herramientaId = herramienta.id // se actualiza el id de la herramienta
             }
@@ -156,4 +156,24 @@ export class SistemasConfigService {
         await this.sistemaConfigRepository.delete({ id: idSistemaConfig })
     }
 
+    // Operaciones
+
+    // Método para determinar la herramienta del sistema al cual pertenece un material dado
+    public async getHerramientaSistemaMaterial(idMaterial: number, versionConfig: number): Promise<Herramienta | undefined> {
+        let herramienta: Herramienta | undefined = undefined
+        // se obtienen todos los sistemas de la base de datos
+        const sistemasConfig: Array<SistemaConfig> = await this.sistemaConfigRepository.find({ // se otienen todos los sistemas pertenecientes a una configuración
+            where: {
+                configVersion: versionConfig
+            }
+        })
+
+        for (let index = 0; index < sistemasConfig.length && !herramienta; index++) {
+            const sistemaConfig: SistemaConfig = sistemasConfig[index]
+            if (await sistemaConfig.isContainsMaterial(idMaterial)) // si el sistema config contiene al material
+                herramienta = await sistemaConfig.herramienta
+        }
+
+        return herramienta
+    }
 }

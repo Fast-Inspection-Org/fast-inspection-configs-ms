@@ -7,7 +7,7 @@ import { Herramienta } from "../herramientas/herramienta.entity";
 export class SistemaConfig {
     @PrimaryGeneratedColumn()
     id: number // atributo que representa el id unico del sistema
-    @Column({nullable: true})
+    @Column({ nullable: true })
     nombre: String
     @Column()
     herramientaId: number
@@ -30,10 +30,10 @@ export class SistemaConfig {
 
     // Método para obtener la cantidad de subsistemas del sistema
 
-    public async cantSubsistemasConfig (): Promise<number> {
-          const subSistemasConfig: Array<SubsistemaConfig> = await this.subSistemasConfig // se obtienen los subsistemas config del sistema
+    public async cantSubsistemasConfig(): Promise<number> {
+        const subSistemasConfig: Array<SubsistemaConfig> = await this.subSistemasConfig // se obtienen los subsistemas config del sistema
 
-          return subSistemasConfig.length
+        return subSistemasConfig.length
     }
 
     public async getNombreHerramienta(): Promise<String> {
@@ -46,6 +46,21 @@ export class SistemaConfig {
         const herramienta: Herramienta = await this.herramienta // se carga la herramienta
 
         return herramienta // se retorna el nombre de la herramienta
+    }
+
+    
+    public async isContainsMaterial(idMaterial: number): Promise<boolean> {
+        let isContains: boolean = false
+        // se obtienen los subsistemas del sistema
+        const subsistemasConfig: Array<SubsistemaConfig> = await this.subSistemasConfig
+
+        for (let index = 0; index < subsistemasConfig.length && !isContains; index++) {
+            const subsistemaConfig: SubsistemaConfig = subsistemasConfig[index]
+            if (await subsistemaConfig.isContainsMaterial(idMaterial)) // si al menos un subsistema contiene al material
+                isContains = true
+        }
+
+        return isContains
     }
 
 }

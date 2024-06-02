@@ -27,4 +27,20 @@ export class SubsistemaConfig {
         return materiales.length
     }
 
+    // Método para verificar si un material pertenece al subistema
+
+    public async isContainsMaterial(idMaterial: number): Promise<boolean> {
+        let isContains: boolean = false
+        // se obtienen los materiales del subsistemas
+        const materialesConfig: Array<MaterialConfig> = await this.materialesConfig
+
+        for (let index = 0; index < materialesConfig.length && !isContains; index++) {
+            const materialConfig: MaterialConfig = materialesConfig[index]
+            if (materialConfig.id === idMaterial)
+                isContains = true // se encontró el material
+        }
+
+        return isContains
+    }
+
 }

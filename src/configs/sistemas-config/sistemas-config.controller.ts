@@ -24,16 +24,21 @@ export class SistemasConfigController {
         return await this.sistemaConfigService.getAllSistemasConfig()
     }
 
-    
+
     @Get("getAllBelongConfig/:version")
     //@UseGuards(AuthGuard)
     public async getAllBelongConfig(@Param("version") versionConfig: number, @Query("nombre") nombre: String, @Query("nombreHerramienta") nombreHerramienta: String) {
-        
+
         return await this.sistemaConfigService.getAllSistemasConfig(versionConfig, nombre, nombreHerramienta)
     }
 
     @Delete("deleteSistemaConfig/:id")
     public async deleteSistemaConfig(@Param("id", ParseIntPipe) idSistema: number) {
         return await this.sistemaConfigService.deleteSistemaConfig(idSistema)
+    }
+
+    @Get("getHerramientaSistemaMaterial/:idMaterial/:versionConfig")
+    public async getHerramientaSistemaMaterial(@Param("idMaterial", ParseIntPipe) idMaterial: number, @Param("versionConfig", ParseIntPipe) versionConfig: number) {
+        return await this.sistemaConfigService.getHerramientaSistemaMaterial(idMaterial, versionConfig)
     }
 }
