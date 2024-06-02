@@ -10,7 +10,6 @@ export class HerramientaAnalisisCriticidad extends Herramienta {
     campos: Promise<Array<Campo>> // Campos definidos en la herramienta
  
    
-
     constructor( id?: number, nombre?: String, tipo?: string, config?: Config) {
         super(id, nombre, tipo, config)
     }

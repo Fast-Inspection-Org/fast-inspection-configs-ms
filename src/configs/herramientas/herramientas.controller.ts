@@ -1,4 +1,4 @@
-import { Controller, Get, Param, ParseIntPipe, UseGuards } from '@nestjs/common';
+import { Controller, Delete, Get, Param, ParseIntPipe, Query, UseGuards } from '@nestjs/common';
 import { HerramientasService } from './herramientas.service';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
 
@@ -6,9 +6,8 @@ import { AuthGuard } from 'src/auth/guards/auth.guard';
 export class HerramientasController {
     constructor(private herramientaService: HerramientasService) { }
 
-    @Get("getAllHerramientasBelongConfig/:versionConfig")
-    @UseGuards(AuthGuard)
-    public async getAllHerramientasBelongConfig(@Param("versionConfig", ParseIntPipe) versionConfig: number) {
-        return this.herramientaService.getAllHerramientasBelongConfig(versionConfig)
+    @Delete("deleteHerramienta/:id")
+    public async deleteHerramienta(@Param("id", ParseIntPipe) idHerramienta: number) {
+        return await this.herramientaService.deleteHerramienta(idHerramienta)
     }
 }

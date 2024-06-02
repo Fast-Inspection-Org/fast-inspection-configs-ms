@@ -29,3 +29,9 @@
 26/05/2024
 *Encapsular lógica de construcción en los constructores de las entidades
 *Ejecutar pruebas de los cambios realizados para la carga lazy de las entidades
+01/06/2024
+*Terminar de Establecer parámetros Query de filtros para las peticiones GET
+02/06/2024
+*No es necesario pasar como parametro de ruta la version de pertenencia de cada registro a 
+actualizar en lugar de eso es mejor buscar el registro por su id y por ahí entonces ejecutar la modificación.
+Por tanto la tarea sería modificar cada endpoint que se haya implementado de la anterior forma
