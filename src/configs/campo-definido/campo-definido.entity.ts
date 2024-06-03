@@ -1,10 +1,17 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn, TableInheritance } from "typeorm";
 import { TipoDeterioroConfig } from "../tipo-deterioros-config/tipo-deterioro-config.entity";
 
+export enum TiposCamposDefinidos {
+    Imagen = "CampoDefinidoImagen",
+    Texto = "CampoDefinidoTexto",
+    Numerico = "CampoDefinidoNumerico",
+    Seleccion = "CampoDefinidoSeleccion"
+}
 
 
 @Entity("campoDefinido")
-export class CampoDefinido {
+@TableInheritance({ column: { type: "varchar", name: "tipo" } })
+export abstract class CampoDefinido {
     @PrimaryGeneratedColumn()
     id: number // Atributo unico
     @Column()

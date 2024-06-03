@@ -51,12 +51,24 @@ import { SubsistemaConfig } from './subsistemas-config/subsistema-config.entity'
 import { TipoDeterioroConfig } from './tipo-deterioros-config/tipo-deterioro-config.entity';
 import { TipoDeterioroAnalisisCriticidadConfig } from './tipo-deterioro-analisis-criticidad-config/tipo-deterioro-analisis-criticidad-config.entity';
 import { Config } from './config.entity';
+import { CampoDefinidoTextoService } from './campo-definido-texto/campo-definido-texto.service';
+import { CampoDefinidoImagenService } from './campo-definido-imagen/campo-definido-imagen.service';
+import { CampoDefinidoNumericoService } from './campo-definido-numerico/campo-definido-numerico.service';
+import { CampoDefinidoSeleccionService } from './campo-definido-seleccion/campo-definido-seleccion.service';
+import { CampoDefinidoTextoController } from './campo-definido-texto/campo-definido-texto.controller';
+import { CampoDefinidoImagenController } from './campo-definido-imagen/campo-definido-imagen.controller';
+import { CampoDefinidoNumericoController } from './campo-definido-numerico/campo-definido-numerico.controller';
+import { CampoDefinidoSeleccionController } from './campo-definido-seleccion/campo-definido-seleccion.controller';
+import { CampoDefinidoTexto } from './campo-definido-texto/entities/campo-definido-texto.entity';
+import { CampoDefinidoImagen } from './campo-definido-imagen/entities/campo-definido-imagen.entity';
+import { CampoDefinidoNumerico } from './campo-definido-numerico/entities/campo-definido-numerico.entity';
+import { CampoDefinidoSeleccion } from './campo-definido-seleccion/entities/campo-definido-seleccion.entity';
 
 
 @Module({
   imports: [TypeOrmModule.forFeature([Config, Campo, CampoDefinido, Causa, Herramienta, HerramientaAnalisisCriticidad, Indicador, IndicadorIntervalo, IndicadorSinIntervalo,
-    IndiceCalculable, IndiceCalculableIntervalo, IndiceCalculableSinIntervalo, MaterialConfig, SistemaConfig, SubsistemaConfig, TipoDeterioroConfig, TipoDeterioroAnalisisCriticidadConfig])],
-  controllers: [ConfigsController, SistemasConfigController, SubsistemasConfigController, MaterialesConfigController, TipoDeteriorosConfigController, HerramientasController, HerramientaAnalisisCriticidadController, CampoController, TipoDeterioroAnalisisCriticidadConfigController, IndiceCalculableController, IndiceCalculableIntervaloController, IndiceCalculableSinIntervaloController, IndicadorController, IndicadorIntervaloController, IndicadorSinIntervaloController, CampoDefinidoController, CausaController],
-  providers: [ConfigsService, SistemasConfigService, SubsistemasConfigService, MaterialesConfigService, TipoDeteriorosConfigService, HerramientasService, HerramientaAnalisisCriticidadService, CampoService, TipoDeterioroAnalisisCriticidadConfigService, IndiceCalculableService, IndiceCalculableIntervaloService, IndiceCalculableSinIntervaloService, IndicadorService, IndicadorIntervaloService, IndicadorSinIntervaloService, CampoDefinidoService, CausaService]
+    IndiceCalculable, IndiceCalculableIntervalo, IndiceCalculableSinIntervalo, MaterialConfig, SistemaConfig, SubsistemaConfig, TipoDeterioroConfig, TipoDeterioroAnalisisCriticidadConfig, CampoDefinidoTexto, CampoDefinidoImagen, CampoDefinidoNumerico, CampoDefinidoSeleccion])],
+  controllers: [ConfigsController, SistemasConfigController, SubsistemasConfigController, MaterialesConfigController, TipoDeteriorosConfigController, HerramientasController, HerramientaAnalisisCriticidadController, CampoController, TipoDeterioroAnalisisCriticidadConfigController, IndiceCalculableController, IndiceCalculableIntervaloController, IndiceCalculableSinIntervaloController, IndicadorController, IndicadorIntervaloController, IndicadorSinIntervaloController, CampoDefinidoController, CausaController, CampoDefinidoTextoController, CampoDefinidoImagenController, CampoDefinidoNumericoController, CampoDefinidoSeleccionController],
+  providers: [ConfigsService, SistemasConfigService, SubsistemasConfigService, MaterialesConfigService, TipoDeteriorosConfigService, HerramientasService, HerramientaAnalisisCriticidadService, CampoService, TipoDeterioroAnalisisCriticidadConfigService, IndiceCalculableService, IndiceCalculableIntervaloService, IndiceCalculableSinIntervaloService, IndicadorService, IndicadorIntervaloService, IndicadorSinIntervaloService, CampoDefinidoService, CausaService, CampoDefinidoTextoService, CampoDefinidoImagenService, CampoDefinidoNumericoService, CampoDefinidoSeleccionService]
 })
 export class ConfigsModule { }

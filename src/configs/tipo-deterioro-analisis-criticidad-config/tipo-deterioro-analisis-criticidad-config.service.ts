@@ -5,7 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { TipoDeterioroConfig } from '../tipo-deterioros-config/tipo-deterioro-config.entity';
 import { MaterialConfig } from '../materiales-config/material-config.entity';
 import { TipoDeterioroConfigDTO } from '../tipo-deterioros-config/tipo-deterioro-config.dto';
-import { CampoDefinido } from '../campo-definido/campo-definido.entity';
+import { CampoDefinido, TiposCamposDefinidos } from '../campo-definido/campo-definido.entity';
 import { CampoDefinidoDTO } from '../campo-definido/campo-definido.dto';
 import { CampoDefinidoService } from '../campo-definido/campo-definido.service';
 import { Causa } from '../causa/causa.entity';
@@ -18,12 +18,20 @@ import { Console } from 'console';
 import { TipoDeterioroAnalisisCriticidadConfigSerializable } from './tipo-deterioro-analisis-criticidad-config.serializable';
 import { retry } from 'rxjs';
 import { UpdateTipoDeterioroAnalisisCriticidadConfigDTO } from './update-tipo-deterioro-analisis-criticidad-config.dt';
+import { CampoDefinidoTextoService } from '../campo-definido-texto/campo-definido-texto.service';
+import { CampoDefinidoImagen } from '../campo-definido-imagen/entities/campo-definido-imagen.entity';
+import { CampoDefinidoImagenService } from '../campo-definido-imagen/campo-definido-imagen.service';
+import { CampoDefinidoSeleccionService } from '../campo-definido-seleccion/campo-definido-seleccion.service';
+import { CampoDefinidoNumericoService } from '../campo-definido-numerico/campo-definido-numerico.service';
 
 @Injectable()
 export class TipoDeterioroAnalisisCriticidadConfigService {
 
     constructor(@InjectRepository(TipoDeterioroAnalisisCriticidadConfig) private tipoDeterioroAnalisisCriticidadRepository: Repository<TipoDeterioroAnalisisCriticidadConfig>,
-        private campoDefinidoService: CampoDefinidoService,
+        private campoDefinidoTextoService: CampoDefinidoTextoService,
+        private campoDefinidoImagenService: CampoDefinidoImagenService,
+        private campoDefinidoSeleccionService: CampoDefinidoSeleccionService,
+        private campoDefinidoNumericoService: CampoDefinidoNumericoService,
         private causasService: CausaService,
         private campoService: CampoService) { }
 
@@ -35,10 +43,11 @@ export class TipoDeterioroAnalisisCriticidadConfigService {
         // Se obtienen los tipos de deterioro de la base de datos
         const tiposDeteriorosAnalisisCriticidadConfig: Array<TipoDeterioroAnalisisCriticidadConfig> = await this.tipoDeterioroAnalisisCriticidadRepository.find({
             where: {
-                id: idMaterialConfig,
+                materialConfigId: idMaterialConfig,
                 nombre: nombre ? Like(`%${nombre}%`) : nombre
             }
         })
+
 
         for (let index = 0; index < tiposDeteriorosAnalisisCriticidadConfig.length; index++) {
             const tipoDeterioroAnalisisCriticidadConfig: TipoDeterioroAnalisisCriticidadConfig = tiposDeteriorosAnalisisCriticidadConfig[index]
@@ -111,7 +120,14 @@ export class TipoDeterioroAnalisisCriticidadConfigService {
         // Se indica por campoDefinido a que tipo de deterioro registrado en la base de datos pertenecen
         for (let index = 0; index < camposDefinidosDTO.length; index++) {
             camposDefinidosDTO[index].tipoDeterioroConfig = tipoDeterioroAnalisisCriticidadConfigInsertado // Se Registra
-            await this.campoDefinidoService.createCampoDefinido(camposDefinidosDTO[index], entityManager) // Se manda al servicio a crear un campo definido y a insertarlo en la base de datos
+            if (camposDefinidosDTO[index].tipo == TiposCamposDefinidos.Numerico) // si el campo definido es de tipo numérico
+                await this.campoDefinidoNumericoService.createCampoDefinido(camposDefinidosDTO[index], entityManager) // Se manda al servicio a crear un campo definido y a insertarlo en la base de datos
+            else if (camposDefinidosDTO[index].tipo == TiposCamposDefinidos.Texto) // si el campo definido es de tipo texto
+                await this.campoDefinidoTextoService.createCampoDefinido(camposDefinidosDTO[index], entityManager) // Se manda al servicio a crear un campo definido y a insertarlo en la base de datos
+            else if (camposDefinidosDTO[index].tipo == TiposCamposDefinidos.Imagen) // si el campo definido es de tipo imagen
+                await this.campoDefinidoImagenService.createCampoDefinido(camposDefinidosDTO[index], entityManager) // Se manda al servicio a crear un campo definido y a insertarlo en la base de datos
+            else if (camposDefinidosDTO[index].tipo == TiposCamposDefinidos.Seleccion) // si el campo definido es de tipo selección
+                await this.campoDefinidoSeleccionService.createCampoDefinido(camposDefinidosDTO[index], entityManager) // Se manda al servicio a crear un campo definido y a insertarlo en la base de datos
         }
 
     }

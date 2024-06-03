@@ -16,7 +16,7 @@ export abstract class TipoDeterioroConfig {
     @Column()
     nombre: String
     @Column()
-    tipo: string
+    tipo: String
     @OneToMany(() => CampoDefinido, campoDefinido => campoDefinido.tipoDeterioroConfig, { lazy: true })
     camposDefinidos: Promise<Array<CampoDefinido>> // Atributo que representa los campos definidos para este tipo de deterioro
     @OneToMany(() => Causa, causa => causa.tipoDeterioroConfig, { lazy: true })
@@ -28,7 +28,7 @@ export abstract class TipoDeterioroConfig {
     @Column()
     detectabilidad: number
 
-    constructor(id?: number, nombre?: String, tipo?: string, materialConfig?: MaterialConfig, detectabilidad?: number) {
+    constructor(id?: number, nombre?: String, tipo?: String, materialConfig?: MaterialConfig, detectabilidad?: number) {
         this.id = id;
         this.nombre = nombre
         this.tipo = tipo

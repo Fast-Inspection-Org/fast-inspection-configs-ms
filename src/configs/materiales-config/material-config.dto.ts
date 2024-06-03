@@ -23,6 +23,7 @@ export class MaterialConfigDTO {
         for (let index = 0; index < tiposDeteriorosConfig.length; index++) {
             const tipoDeterioroConfig: TipoDeterioroConfig = tiposDeteriorosConfig[index]
             const tipoDeterioroConfigDTO: TipoDeterioroConfigDTO = new TipoDeterioroConfigDTO() // se crea un tipo de deterioro config DTO basasdo en la información del tipo de deterioro config entity
+            // si es de tipo deterioro analisis criticidad
             tipoDeterioroConfigDTO.constuirDTO(tipoDeterioroConfig.nombre, tipoDeterioroConfig.tipo, await tipoDeterioroConfig.camposDefinidos,
                await tipoDeterioroConfig.causas, tipoDeterioroConfig instanceof TipoDeterioroAnalisisCriticidadConfig ? tipoDeterioroConfig.detectabilidad : undefined,
                 tipoDeterioroConfig instanceof TipoDeterioroAnalisisCriticidadConfig ? await tipoDeterioroConfig.camposAfectados : undefined

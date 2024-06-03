@@ -14,7 +14,7 @@ export class TipoDeterioroAnalisisCriticidad extends TipoDeterioro {
 
     constructor(id: number,
         nombre: String,
-        tipo: string,
+        tipo: String,
         detectabilidad: number,
         sistema: Sistema,
         levantamiento: LevantamientoDomain,

@@ -10,7 +10,7 @@ export class TipoDeterioroAnalisisCriticidadConfig extends TipoDeterioroConfig {
     camposAfectados: Promise<Array<Campo>> // atributo que define los campos afectados por este tipo de deterioro
 
 
-    constructor(id?: number, nombre?: String, tipo?: string, materialConfig?: MaterialConfig, detectabilidad?: number, camposAfectados?: Array<Campo>) {
+    constructor(id?: number, nombre?: String, tipo?: String, materialConfig?: MaterialConfig, detectabilidad?: number, camposAfectados?: Array<Campo>) {
         super(id, nombre, tipo, materialConfig, detectabilidad)
         if (camposAfectados)
             this.camposAfectados = Promise.resolve(camposAfectados)

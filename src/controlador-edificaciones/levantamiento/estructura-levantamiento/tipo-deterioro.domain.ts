@@ -12,7 +12,7 @@ export abstract class TipoDeterioro {
     nombre: String
     criticidad: String
     @Exclude()
-    tipo: string
+    tipo: String
     @Exclude()
     detectabilidad: number
     @Exclude()
@@ -29,7 +29,7 @@ export abstract class TipoDeterioro {
 
     constructor(id: number,
         nombre: String,
-        tipo: string,
+        tipo: String,
         detectabilidad: number,
         sistema: Sistema,
         levantamiento: LevantamientoDomain,
