@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import { Body, ClassSerializerInterceptor, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, UseInterceptors } from '@nestjs/common';
 import { HerramientaAnalisisCriticidadService } from './herramienta-analisis-criticidad.service';
 import { HerramientaDTO } from '../herramientas/herramienta.dto';
 import { UpdateHerramientaAnalisisCriticidadDTO } from './update-herramienta-analisis-criticidad.dto';
@@ -28,6 +28,12 @@ export class HerramientaAnalisisCriticidadController {
     @Get("getAllHerramientasAnalisisCritcidad")
     public async getAll(@Query("versionConfig") versionConfig: string, @Query("nombre") nombre: string) {
         return await this.herramientaAnalisisCriticidadService.getAllHerrramientasAnalisisCriticidad(versionConfig ? parseInt(versionConfig) : undefined, nombre)
+    }
+
+    @UseInterceptors(ClassSerializerInterceptor)
+    @Get("getCamposHerramienta/:id")
+    public async getCamposHerramienta(@Param("id", ParseIntPipe) idHerramienta: number) {
+        return await this.herramientaAnalisisCriticidadService.getCamposAfectados(idHerramienta)
     }
 
     @Delete("deleteHerramientaAnalisisCritcidad/:id")

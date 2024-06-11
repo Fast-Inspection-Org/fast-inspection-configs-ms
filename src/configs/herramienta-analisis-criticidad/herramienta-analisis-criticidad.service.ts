@@ -8,6 +8,7 @@ import { CampoDTO } from '../campo/campo.dto';
 import { CampoService } from '../campo/campo.service';
 import { HerramientasService } from '../herramientas/herramientas.service';
 import { UpdateHerramientaAnalisisCriticidadDTO } from './update-herramienta-analisis-criticidad.dto';
+import { Campo } from '../campo/campo.entity';
 
 
 
@@ -92,6 +93,14 @@ export class HerramientaAnalisisCriticidadService {
         }
         else
             throw new HttpException("Ya existe una herramienta con ese nombre en la base de datos", HttpStatus.BAD_REQUEST);
+    }
+
+    // Método para obtener los Campos Afectados definidos en la Herramienta
+    public async getCamposAfectados(idHerramienta: number): Promise<Array<Campo>> {
+        // Se obtiene la herramienta analisis de criticidad
+           const herramientaAnalisisCriticidad: HerramientaAnalisisCriticidad = await this.getHerramientaAnalisisCriticdad(idHerramienta)
+
+           return await herramientaAnalisisCriticidad.campos
     }
 }
 

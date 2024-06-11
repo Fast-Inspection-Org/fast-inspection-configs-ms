@@ -28,7 +28,7 @@ export class CampoDefinidoImagenService {
       instanceof TipoDeterioroConfig ? campoDefinidoDTO.tipoDeterioroConfig : function () {
         if (campoDefinidoDTO.tipoDeterioroConfig.tipo === TipoTipoDeterioro.TipoDeterioroAnalisisCriticidad) // si es un tipo de deterioro analisis de criticidad
           return new TipoDeterioroAnalisisCriticidadConfig(campoDefinidoDTO.tipoDeterioroConfig.id)
-      }(), campoDefinidoDTO.url) // se crea un campo definido para ser insertado en la base de datos
+      }()) // se crea un campo definido para ser insertado en la base de datos
 
     await entityManager.save(campoDefinido) /*Se inserta el campo definido en la base de datos*/
   }

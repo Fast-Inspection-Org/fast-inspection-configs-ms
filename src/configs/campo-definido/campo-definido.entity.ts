@@ -17,13 +17,13 @@ export abstract class CampoDefinido {
     @Column()
     nombre: String // Atributo que define el nombre del campo por ejemplo: largo, ancho, profundidad, etc
     @Column()
-    tipo: String //Atributo que define el tipo de campo por ejemplo: texto, numero, fecha etc, esto Sería un Enum o una tabla en la base de datos
+    tipo: TiposCamposDefinidos //Atributo que define el tipo de campo por ejemplo: texto, numero, fecha etc, esto Sería un Enum o una tabla en la base de datos
     @Column()
     tipoDeterioroConfigId: number
     @ManyToOne(() => TipoDeterioroConfig, tipoDeterioroConfig => tipoDeterioroConfig.camposDefinidos, { onDelete: "CASCADE" })
     tipoDeterioroConfig: TipoDeterioroConfig // Atributo que define el tipo de detioro configurado al que pertenece dicho campo
 
-    constructor(id?: number, nombre?: String, tipo?: String, tipoDeterioroConfig?: TipoDeterioroConfig) {
+    constructor(id?: number, nombre?: String, tipo?: TiposCamposDefinidos, tipoDeterioroConfig?: TipoDeterioroConfig) {
         this.id = id
         this.nombre = nombre
         this.tipo = tipo
