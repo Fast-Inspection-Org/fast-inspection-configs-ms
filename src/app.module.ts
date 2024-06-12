@@ -8,6 +8,9 @@ import { ConfigModule } from '@nestjs/config';
 import { UsuarioModule } from './usuario/usuario.module';
 import { AuthModule } from './auth/auth.module';
 
+import { MailerModule } from '@nestjs-modules/mailer';
+
+
 
 
 
@@ -35,7 +38,18 @@ import { AuthModule } from './auth/auth.module';
             }
             : null,
       },
-    }), ConfigsModule, ControladorEdificacionesModule, UsuarioModule, AuthModule],
+    }), ConfigsModule, ControladorEdificacionesModule, UsuarioModule, AuthModule,
+    AuthModule,
+    MailerModule.forRoot({
+      transport: {
+        host: process.env.EMAIL_HOST, //
+        auth: {
+          user: process.env.EMAIL_USERNAME,
+          pass: process.env.EMAIL_PASSWORD,
+        },
+      },
+    }),
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
