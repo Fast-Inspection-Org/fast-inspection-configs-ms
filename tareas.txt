@@ -37,3 +37,5 @@ actualizar en lugar de eso es mejor buscar el registro por su id y por ahí ento
 Por tanto la tarea sería modificar cada endpoint que se haya implementado de la anterior forma
 08/06/2024
 *Rectificar atributos de la entidad campo definido de tipo Imagen, ya que no es necesario que tenga el nombre
+12/06/2024
+*Verificar restricciones con respecto a los campos definidos, campos afectados, causas de un tipo de deterioro

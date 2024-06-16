@@ -26,8 +26,9 @@ import { CampoDefinidoNumericoService } from '../campo-definido-numerico/campo-d
 
 @Injectable()
 export class TipoDeterioroAnalisisCriticidadConfigService {
-
+    // En vez de inyectar los Servicios de los campos definidos aquí, lo mejor es inyectarlos en el servicio padre llamado "CampoDefinidoService"
     constructor(@InjectRepository(TipoDeterioroAnalisisCriticidadConfig) private tipoDeterioroAnalisisCriticidadRepository: Repository<TipoDeterioroAnalisisCriticidadConfig>,
+        private campoDefinidoService: CampoDefinidoService,
         private campoDefinidoTextoService: CampoDefinidoTextoService,
         private campoDefinidoImagenService: CampoDefinidoImagenService,
         private campoDefinidoSeleccionService: CampoDefinidoSeleccionService,
@@ -63,7 +64,7 @@ export class TipoDeterioroAnalisisCriticidadConfigService {
 
     // Método para obtener un tipo de deterioro analisis de criticidad
 
-    public async getTipoDeterioroAnalisisCriticidadConfig(idTipoDeterioroConfig?: number, idMaterialConfig?: number, nombre?: String) {
+    private async getTipoDeterioroAnalisisCriticidadConfig(idTipoDeterioroConfig?: number, idMaterialConfig?: number, nombre?: String) {
         return await this.tipoDeterioroAnalisisCriticidadRepository.findOne({
             where: {
                 id: idTipoDeterioroConfig,
@@ -71,6 +72,29 @@ export class TipoDeterioroAnalisisCriticidadConfigService {
                 nombre: nombre
             }
         })
+    }
+
+
+    // Método para obtener un tipo de deterioro analisis de criticidad serializable
+
+    public async getTipoDeterioroAnalisisCriticidadConfigSerializable(idTipoDeterioroConfig?: number, idMaterialConfig?: number, nombre?: String) {
+        const tipoDeterioroAnalisisCriticidadConfig: TipoDeterioroAnalisisCriticidadConfig = await this.tipoDeterioroAnalisisCriticidadRepository.findOne({
+            where: {
+                id: idTipoDeterioroConfig,
+                materialConfigId: idMaterialConfig,
+                nombre: nombre
+            }
+        })
+
+        // Se retorna un objeto con la información del tipo de deterioro análisis de criticidad que se desea serializar
+        return {
+            id: tipoDeterioroAnalisisCriticidadConfig.id,
+            nombre: tipoDeterioroAnalisisCriticidadConfig.nombre,
+            camposDefinidos: await tipoDeterioroAnalisisCriticidadConfig.camposDefinidos,
+            causas: await tipoDeterioroAnalisisCriticidadConfig.causas,
+            detectabilidad: tipoDeterioroAnalisisCriticidadConfig.detectabilidad,
+            camposAfectados: await tipoDeterioroAnalisisCriticidadConfig.camposAfectados,
+        }
     }
 
     public async createTipoDeterioroAnalisisCriticidadConfig(tipoDeterioroAnalisisCriticidadConfigDTO: TipoDeterioroConfigDTO, entityManager?: EntityManager) {
@@ -185,23 +209,70 @@ export class TipoDeterioroAnalisisCriticidadConfigService {
     }
 
     // IMPLEMENTAR
-    /*public async updateTipoDeterioroConfigAnalisisCriticidadConfig(idTipoDeterioroAnalisisCriticidadConfig: number, idMaterialConfig: number,
+    public async updateTipoDeterioroConfigAnalisisCriticidadConfig(idTipoDeterioroAnalisisCriticidadConfig: number,
         updateTipoDeterioroConfigAnalisisCriticidadConfigDTO: UpdateTipoDeterioroAnalisisCriticidadConfigDTO) {
-        await this.tipoDeterioroAnalisisCriticidadRepository.manager.transaction(async (transactionManager: EntityManager) => { // Se crea una transaccion para este procedimiento
-            const tipoDeterioroAnalisisCriticidadConfig: TipoDeterioroAnalisisCriticidadConfig = await this.getTipoDeterioroAnalisisCriticidadConfig(undefined, idMaterialConfig,
-                updateTipoDeterioroConfigAnalisisCriticidadConfigDTO.nombre)
+        // se busca el tipo de deterioro analisis criticidad a modificar
+        const tipoDeterioroAnalisisCriticidadConfigUpdate: TipoDeterioroAnalisisCriticidadConfig = await
+            this.getTipoDeterioroAnalisisCriticidadConfig(idTipoDeterioroAnalisisCriticidadConfig)
+        // se busca un tipo de deterioro que posea el mismo nombre que el nuevo nombre del tipo de deterioro
+        const tipoDeterioroAnalisisCriticidadConfig: TipoDeterioroAnalisisCriticidadConfig = await this.getTipoDeterioroAnalisisCriticidadConfig(undefined,
+            tipoDeterioroAnalisisCriticidadConfigUpdate.materialConfigId, updateTipoDeterioroConfigAnalisisCriticidadConfigDTO.nombre)
 
+        await this.tipoDeterioroAnalisisCriticidadRepository.manager.transaction(async (transactionManager: EntityManager) => { // Se crea una transaccion para este procedimiento
             // Si no existe un tipo de deterioro analisis de criticidad con el mismo nombre o si el encontrado es el mismo
             if (!tipoDeterioroAnalisisCriticidadConfig || tipoDeterioroAnalisisCriticidadConfig.id === idTipoDeterioroAnalisisCriticidadConfig) {
-                // se busca el tipo de deterioro analisis criticidad a modificar
-                const tipoDeterioroAnalisisCriticidadConfigUpdate: TipoDeterioroAnalisisCriticidadConfig = await
-                    this.getTipoDeterioroAnalisisCriticidadConfig(idTipoDeterioroAnalisisCriticidadConfig)
+
                 // Se modifican su propiedades
+                // Se actualiza el nombre del registro
                 tipoDeterioroAnalisisCriticidadConfigUpdate.nombre = updateTipoDeterioroConfigAnalisisCriticidadConfigDTO.nombre
-                
+                // Se actualiza la detectabilidad del registro
+                tipoDeterioroAnalisisCriticidadConfigUpdate.detectabilidad = updateTipoDeterioroConfigAnalisisCriticidadConfigDTO.detectabilidad
+                // Se actualizan sus relaciones
+                // Se actualizan las causas registradas
+                await this.actualizarCausasTipoDeterioroAnalisisCriticidad(tipoDeterioroAnalisisCriticidadConfigUpdate, updateTipoDeterioroConfigAnalisisCriticidadConfigDTO.causas,
+                    transactionManager)
+                // Se actualizan los campos definidos registrados
+                await this.actualizarCamposDefinidosTipoDeterioroAnalisisCriticidad(tipoDeterioroAnalisisCriticidadConfigUpdate,
+                    updateTipoDeterioroConfigAnalisisCriticidadConfigDTO.camposDefinidos, transactionManager)
+                // Se actualizan los campos afectados registrados como parte de la relación de mucho a mucho
+                await this.actualizarCamposAfectadosTipoDeterioroAnalisisCriticidad(tipoDeterioroAnalisisCriticidadConfigUpdate,
+                    updateTipoDeterioroConfigAnalisisCriticidadConfigDTO.camposAfectados, transactionManager)
+
+                // Se salva el campo afectado en la base de datos 
+                await transactionManager.save(tipoDeterioroAnalisisCriticidadConfigUpdate)
             }
             else
                 throw new HttpException("Ya existe un tipo de deterioro con ese nombre", HttpStatus.BAD_REQUEST)
         })
-    }*/
+    }
+
+    private async actualizarCausasTipoDeterioroAnalisisCriticidad(tipoDeterioroAnalisisCriticidadUpdate: TipoDeterioroAnalisisCriticidadConfig, causas: Array<CausaDTO>,
+        entityManager: EntityManager
+    ) {
+        // Lo primero es eliminar todas las causas pertenecientes al tipo de deterioro análisis criticdad
+        await this.causasService.deleteCausas(tipoDeterioroAnalisisCriticidadUpdate.id)
+        // Luego se insertan las nuevas causas del tipo de deterioro
+        await this.saveCausas(causas, tipoDeterioroAnalisisCriticidadUpdate, entityManager)
+    }
+
+    private async actualizarCamposDefinidosTipoDeterioroAnalisisCriticidad(tipoDeterioroAnalisisCriticidadUpdate: TipoDeterioroAnalisisCriticidadConfig, camposDefinidos: Array<CampoDefinidoDTO>,
+        entityManager: EntityManager
+    ) {
+        // Lo primero es eliminar todos los campos definidos pertenecientes al tipo de deterioro análisis criticidad
+        await this.campoDefinidoService.deleteCamposDefinidos(tipoDeterioroAnalisisCriticidadUpdate.id, entityManager)
+        // Luego se insertan los nuevos campos definidos del tipo de deterioro
+        await this.saveCamposDefinidos(camposDefinidos, tipoDeterioroAnalisisCriticidadUpdate, entityManager)
+
+    }
+
+    private async actualizarCamposAfectadosTipoDeterioroAnalisisCriticidad(tipoDeterioroAnalisisCriticidadUpdate: TipoDeterioroAnalisisCriticidadConfig, camposAfectados: Array<CampoDTO>,
+        entityManager: EntityManager
+    ) {
+
+        // Lo primero es eliminar todos los campos afectados de la relación de muchos a muchos del tipo de deterioro análisis criticidad
+        // Debido a que una relación de mucho a mucho con las cascadas habilitadas ejecuta de forma automática la acción de eliminación
+        // Directamente se salvarán los nuevos campos como parte del tipo de deterioro análisis criticidad a modificar
+        await this.saveCamposInTipoDeterioroAnalisisCriticidad(camposAfectados, tipoDeterioroAnalisisCriticidadUpdate, entityManager)
+    }
+
 }

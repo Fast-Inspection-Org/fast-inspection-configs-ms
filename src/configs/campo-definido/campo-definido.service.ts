@@ -11,6 +11,19 @@ export class CampoDefinidoService {
 
     constructor(@InjectRepository(CampoDefinido) private campoDefinidoRepository: Repository<CampoDefinido>) { }
 
-
+    // Método para eliminar campos definidos
+    public async deleteCamposDefinidos(idTipoDeterioro?: number, entityManager?: EntityManager) {
+        // si se trata de una transacción heredada
+        if (entityManager) {
+            await entityManager.delete(CampoDefinido, {
+                tipoDeterioroConfigId: idTipoDeterioro
+            })
+        }
+        else {
+            await this.campoDefinidoRepository.delete({
+                tipoDeterioroConfigId: idTipoDeterioro
+            })
+        }
+    }
 
 }

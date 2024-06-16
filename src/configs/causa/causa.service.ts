@@ -30,4 +30,19 @@ export class CausaService {
 
         await entityManager.save(causa) // se inserta en la base de datos la cuasa 
     }
+
+    // Método para eliminar causas
+    public async deleteCausas(idTipoDeterioro: number, entityManager?: EntityManager) {
+        if (entityManager) { // si se trata de una transacción heredada
+            await entityManager.delete(Causa, {
+                tipoDeterioroConfigId: idTipoDeterioro
+            })
+        }
+        else {
+            await this.causaRepository.delete({
+                tipoDeterioroConfigId: idTipoDeterioro
+            })
+        }
+
+    }
 }

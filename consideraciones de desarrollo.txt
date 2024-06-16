@@ -1,3 +1,4 @@
 Servidor:
 Crear algoritmo lógico para organizar en memoria interna la información de los deterioros de un levantamiento, y no sobrecargar la base de datos
 Los nombres de los sistemas - subsistemas - materiales - tipos de deterioro no se pueden repetir solamente en el nivel al que pertenezcan en el árbol
+// En vez de inyectar los Servicios de los campos definidos en el servicio de tipo de deterioro análsis de criticidad, lo mejor es inyectarlos en el servicio padre llamado "CampoDefinidoService"
