@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { MaterialConfig } from './material-config.entity';
-import { EntityManager, Repository } from 'typeorm';
+import { EntityManager, Like, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MaterialConfigDTO } from './material-config.dto';
 import { SubsistemaConfig } from '../subsistemas-config/subsistema-config.entity';
@@ -24,7 +24,7 @@ export class MaterialesConfigService {
         const materialesConfig: Array<MaterialConfig> = await this.materialConfigRepository.find({
             where: {
                 subsistemaConfigId: idSubsistemaConfig,
-                nombre: nombre
+                nombre: nombre ? Like(`%${nombre}%`) : nombre
             }
         })
 

@@ -57,6 +57,7 @@ export class HerramientaAnalisisCriticidadService {
         })
     }
 
+    
     // Metodo auxiliar para crear una herramienta analisis de criticidad con la entityManager correspondiente
     private async createHerramientaAnalisisCriticidadWithEntity(herramientaAnalisisCriticidadDTO: HerramientaDTO, entityManager: EntityManager) {
         const herramientaAnalisisCriticidad: HerramientaAnalisisCriticidad = new HerramientaAnalisisCriticidad(undefined, herramientaAnalisisCriticidadDTO.nombre,

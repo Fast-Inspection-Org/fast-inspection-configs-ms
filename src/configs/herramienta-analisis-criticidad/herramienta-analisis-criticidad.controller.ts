@@ -30,6 +30,11 @@ export class HerramientaAnalisisCriticidadController {
         return await this.herramientaAnalisisCriticidadService.getAllHerrramientasAnalisisCriticidad(versionConfig ? parseInt(versionConfig) : undefined, nombre)
     }
 
+    @Get("getHerramientaAnalisisCriticidad/:id")
+    public async getHerramientaAnalisisCriticidad(@Param("id", ParseIntPipe) idHerramienta: number) {
+        return await this.herramientaAnalisisCriticidadService.getHerramientaAnalisisCriticdad(idHerramienta)
+    }
+
     @UseInterceptors(ClassSerializerInterceptor)
     @Get("getCamposHerramienta/:id")
     public async getCamposHerramienta(@Param("id", ParseIntPipe) idHerramienta: number) {

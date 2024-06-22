@@ -39,3 +39,7 @@ Por tanto la tarea sería modificar cada endpoint que se haya implementado de la
 *Rectificar atributos de la entidad campo definido de tipo Imagen, ya que no es necesario que tenga el nombre
 12/06/2024
 *Verificar restricciones con respecto a los campos definidos, campos afectados, causas de un tipo de deterioro
+18/06/2024
+*Realizar algoritmos para verificar la completitud de una herramienta y configuración
+22/06/2024
+*Decidir acciones a ejecutar despues de la eliminación de un registro
