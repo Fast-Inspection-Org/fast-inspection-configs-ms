@@ -3,16 +3,17 @@ import { Calculos, IndiceCalculable } from "../indice-calculable/indice-calculab
 import { IndicadorIntervalo } from "../indicador-intervalo/indicador-intervalo.entity";
 import { Config } from "../config.entity";
 import { Indicador } from "../indicador/indicador.entity";
+import { Exclude } from "class-transformer";
 
 @ChildEntity("indiceCalculableIntervalo")
 export class IndiceCalculableIntervalo extends IndiceCalculable {
-
+    @Exclude()
     @OneToMany(() => IndicadorIntervalo, indicadorIntervalo => indicadorIntervalo.indiceCalculableIntervalo, { lazy: true })
     indicadoresIntervalos: Promise<Array<IndicadorIntervalo>> // Un indice calculable por intervalos puede tener varios indicadores de intervalos
 
 
 
-    constructor(id?: number, nombre?: String, config?: Config, tipo?: string, calculo?: number) {
+    constructor(id?: number, nombre?: String, config?: Config, tipo?: string, calculo?: Calculos) {
         super(id, nombre, config, tipo, calculo)
     }
 

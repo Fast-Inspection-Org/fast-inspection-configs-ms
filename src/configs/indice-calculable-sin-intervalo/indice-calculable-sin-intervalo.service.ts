@@ -1,17 +1,28 @@
 import { Injectable } from '@nestjs/common';
-import { EntityManager, Repository } from 'typeorm';
+import { EntityManager, Like, Repository } from 'typeorm';
 import { IndiceCalculableSinIntervalo } from './indice-calculable-sin-intervalo.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Config } from '../config.entity';
 import { IndicadorSinIntervaloService } from '../indicador-sin-intervalo/indicador-sin-intervalo.service';
 import { IndiceCalculableDTO } from '../indice-calculable/indice-calculable.dto';
 import { IndicadorDTO } from '../indicador/indicador.dto';
+import { Calculos } from '../indice-calculable/indice-calculable.entity';
 
 @Injectable()
 export class IndiceCalculableSinIntervaloService {
 
     constructor(@InjectRepository(IndiceCalculableSinIntervalo) private indiceCalculableSinIntervaloRepository: Repository<IndiceCalculableSinIntervalo>,
         private indicadorSinIntervaloService: IndicadorSinIntervaloService) { }
+
+    public async getAllIndicesCalculablesSinIntervalos(nombre?: String, calculo?: Calculos, versionConfig?: number) {
+        return await this.indiceCalculableSinIntervaloRepository.find({
+            where: {
+                nombre: nombre ? Like(`%${nombre}%`) : nombre,
+                calculo: calculo,
+                configVersion: versionConfig
+            }
+        })
+    }
 
     public async createIndiceCalculableSinIntervalo(indiceCalculableSinIntervaloDTO: IndiceCalculableDTO, entityManager?: EntityManager) {
         if (!entityManager) // No se trata de una llamada con una transacción heredada

@@ -435,7 +435,7 @@
     {
       "nombre": "Indice Calculable Detectabilidad",
       "tipo": "indiceCalculableSinIntervalo",
-      "calculo": 0,
+      "calculo": "Detectabilidad",
       "indicadoresSinIntervalos": [
         {
           "nombre": "baja",
@@ -457,7 +457,7 @@
     {
       "nombre": "Indice Calculable Impacto ",
       "tipo": "indiceCalculableIntervalo",
-      "calculo": 1,
+      "calculo": "Impacto",
       "indicadoresIntervalos": [
         {
           "nombre": "baja",
@@ -485,7 +485,7 @@
     {
       "nombre": "Indice Calculable Frecuencia ",
       "tipo": "indiceCalculableIntervalo",
-      "calculo": 2,
+      "calculo": "Frecuencia",
       "indicadoresIntervalos": [
         {
           "nombre": "baja",
@@ -513,7 +513,7 @@
     {
       "nombre": "Indice Calculable Criticidad ",
       "tipo": "indiceCalculableIntervalo",
-      "calculo": 3,
+      "calculo": "Criticidad",
       "indicadoresIntervalos": [
         {
           "nombre": "baja",

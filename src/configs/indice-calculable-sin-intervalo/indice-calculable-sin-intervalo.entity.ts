@@ -1,5 +1,5 @@
 import { ChildEntity, Entity, ManyToOne, OneToMany } from "typeorm";
-import { IndiceCalculable } from "../indice-calculable/indice-calculable.entity";
+import { Calculos, IndiceCalculable } from "../indice-calculable/indice-calculable.entity";
 import { IndicadorSinIntervalo } from "../indicador-sin-intervalo/indicador-sin-intervalo.entity";
 import { Config } from "../config.entity";
 import { Indicador } from "../indicador/indicador.entity";
@@ -10,7 +10,7 @@ export class IndiceCalculableSinIntervalo extends IndiceCalculable {
     indicadoresSinIntervalos: Promise<Array<IndicadorSinIntervalo>> // Atributo que define los indicadores sin intervalos del indice calculable sin intervalos
 
 
-    constructor(id?: number, nombre?: String, config?: Config, tipo?: string, calculo?: number) {
+    constructor(id?: number, nombre?: String, config?: Config, tipo?: string, calculo?: Calculos) {
         super(id, nombre, config, tipo, calculo)
     }
 

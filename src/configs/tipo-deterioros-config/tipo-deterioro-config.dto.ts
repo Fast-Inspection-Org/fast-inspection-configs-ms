@@ -54,13 +54,13 @@ export class TipoDeterioroConfigDTO {
         camposDefinidos.forEach((campoDefinido) => {
             const campoDefinidoDTO: CampoDefinidoDTO = new CampoDefinidoDTO() // se crea un campo defindo  DTO basasdo en la información del campo definido  entity
             if (campoDefinido instanceof CampoDefinidoTexto) // si es de tipo texto
-                campoDefinidoDTO.constuirDTO(campoDefinido.nombre, campoDefinido.tipo) // se construye con la información de un tipo de deteriro tipo texto
+                campoDefinidoDTO.constuirDTO(undefined, campoDefinido.nombre, campoDefinido.tipo) // se construye con la información de un tipo de deteriro tipo texto
             else if (campoDefinido instanceof CampoDefinidoImagen) // si es de tipo imagen
-                campoDefinidoDTO.constuirDTO(campoDefinido.nombre, campoDefinido.tipo) // se construye con la información de un tipo de deteriro tipo imagen
+                campoDefinidoDTO.constuirDTO(undefined, campoDefinido.nombre, campoDefinido.tipo) // se construye con la información de un tipo de deteriro tipo imagen
             else if (campoDefinido instanceof CampoDefinidoNumerico) // si es de tipo numerico
-                campoDefinidoDTO.constuirDTO(campoDefinido.nombre, campoDefinido.tipo, campoDefinido.inicioIntervalo, campoDefinido.finalIntervalo, campoDefinido.unidadMedida) // se construye con la información de un tipo de deteriro tipo numerico
+                campoDefinidoDTO.constuirDTO(undefined, campoDefinido.nombre, campoDefinido.tipo, campoDefinido.inicioIntervalo, campoDefinido.finalIntervalo, campoDefinido.unidadMedida) // se construye con la información de un tipo de deteriro tipo numerico
             else if (campoDefinido instanceof CampoDefinidoSeleccion) // si es de tipo selección
-                campoDefinidoDTO.constuirDTO(campoDefinido.nombre, campoDefinido.tipo, undefined, undefined, undefined,JSON.parse(campoDefinido.opciones.toString())) // se construye con la información de un tipo de deteriro tipo imagen
+                campoDefinidoDTO.constuirDTO(undefined, campoDefinido.nombre, campoDefinido.tipo, undefined, undefined, undefined, JSON.parse(campoDefinido.opciones.toString())) // se construye con la información de un tipo de deteriro tipo imagen
 
             this.camposDefinidos.push(campoDefinidoDTO) // se añade a la lista de campos definidos dto el campo definido dto creado
         })

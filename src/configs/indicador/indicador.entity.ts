@@ -1,7 +1,7 @@
 
 import { Column, Entity, PrimaryGeneratedColumn, TableInheritance } from "typeorm";
 
-enum TipoIndicador {
+export enum TipoIndicador {
     IndicadorIntervalo = "indicadorIntervalo",
     IndicadorSinIntervalo = "indicadorSinIntervalo"
 }
@@ -16,9 +16,9 @@ export abstract class Indicador {
     @Column()
     valor: number
     @Column()
-    tipo: string
+    tipo: TipoIndicador
 
-    constructor(id?: number, nombre?: String, valor?: number, tipo?: string) {
+    constructor(id?: number, nombre?: String, valor?: number, tipo?: TipoIndicador) {
         this.nombre = nombre
         this.valor = valor
         this.tipo = tipo

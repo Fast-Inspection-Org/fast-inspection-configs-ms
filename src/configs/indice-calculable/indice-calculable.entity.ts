@@ -1,6 +1,7 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn, TableInheritance } from "typeorm";
 import { Config } from "../config.entity";
 import { Indicador } from "../indicador/indicador.entity";
+import { Exclude } from "class-transformer";
 
 export enum TipoIndiceCalculable {
   InidiceCalculableIntervalo = "indiceCalculableIntervalo",
@@ -8,10 +9,10 @@ export enum TipoIndiceCalculable {
 }
 
 export enum Calculos {
-  Detectabilidad = 0,
-  Impacto = 1,
-  Frecuencia = 2,
-  Criticidad = 3
+  Detectabilidad = "Detectabilidad",
+  Impacto = "Impacto",
+  Frecuencia = "Frecuencia",
+  Criticidad = "Criticidad"
 }
 
 @Entity("indiceCalculable")
@@ -23,14 +24,16 @@ export abstract class IndiceCalculable {
   nombre: String
   @Column()
   tipo: string
+  @Exclude()
   @Column()
   configVersion: number
+  @Exclude()
   @ManyToOne(() => Config, config => config.indicesCalculables, { onDelete: "CASCADE" })
   config: Config // Atributo que representa la configuracion donde esta definido los indices calculables
   @Column()
-  calculo: number  // Atributo que hace referencia al calculo indicado para este indice
+  calculo: Calculos  // Atributo que hace referencia al calculo indicado para este indice
 
-  constructor(id?: number, nombre?: String, config?: Config, tipo?: string, calculo?: number) {
+  constructor(id?: number, nombre?: String, config?: Config, tipo?: string, calculo?: Calculos) {
     this.id = id
     this.nombre = nombre
     this.config = config

@@ -16,7 +16,8 @@ export class CampoDefinidoDTO {
 
 
 
-    public constuirDTO(nombre: String, tipo: TiposCamposDefinidos, inicioIntervalo?: number, finalIntervalo?: number, unidadMedida?: String, opciones?: Array<String>) { // Constructor para construir un objeto DTO basado en un Objeto Entity
+    public constuirDTO(id?: number, nombre?: String, tipo?: TiposCamposDefinidos, inicioIntervalo?: number, finalIntervalo?: number, unidadMedida?: String, opciones?: Array<String>) { // Constructor para construir un objeto DTO basado en un Objeto Entity
+        this.id = id
         this.nombre = nombre
         this.tipo = tipo
         this.inicioIntervalo = inicioIntervalo

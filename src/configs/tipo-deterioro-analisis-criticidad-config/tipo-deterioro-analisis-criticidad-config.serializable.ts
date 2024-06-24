@@ -3,6 +3,7 @@ export class TipoDeterioroAnalisisCriticidadConfigSerializable {
     nombre: String
     cantCamposAfectados: number
     cantCausas: number
+    
 
     constructor(id: number, nombre: String, cantCamposAfectados: number, cantCausas: number) {
         this.id = id

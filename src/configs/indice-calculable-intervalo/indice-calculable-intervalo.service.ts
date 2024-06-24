@@ -1,17 +1,40 @@
 import { Injectable } from '@nestjs/common';
 import { IndiceCalculableIntervalo } from './indice-calculable-intervalo.entity';
-import { EntityManager, Repository } from 'typeorm';
+import { EntityManager, Like, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Config } from '../config.entity';
 import { IndicadorIntervaloService } from '../indicador-intervalo/indicador-intervalo.service';
 import { IndiceCalculableDTO } from '../indice-calculable/indice-calculable.dto';
 import { IndicadorDTO } from '../indicador/indicador.dto';
+import { Calculos } from '../indice-calculable/indice-calculable.entity';
 
 @Injectable()
 export class IndiceCalculableIntervaloService {
 
     constructor(@InjectRepository(IndiceCalculableIntervalo) private indiceCalculableIntervalorRepository: Repository<IndiceCalculableIntervalo>,
         private indicadorIntervaloService: IndicadorIntervaloService) { }
+
+
+    public async getAllIndicesCalculablesIntervalos(nombre?: String, calculo?: Calculos, versionConfig?: number) {
+        return await this.indiceCalculableIntervalorRepository.find({
+            where: {
+                nombre: nombre ? Like(`%${nombre}%`) : nombre,
+                calculo: calculo,
+                configVersion: versionConfig
+            }
+        })
+    }
+
+    public async getIndiceCalculableIntervalos(idIndiceCalculable: number, nombre?: String, calculo?: Calculos, versionConfig?: number) {
+        return await this.indiceCalculableIntervalorRepository.findOne({
+            where: {
+                id: idIndiceCalculable,
+                nombre: nombre,
+                calculo: calculo,
+                configVersion: versionConfig
+            }
+        })
+    }
 
     public async createIndiceCalculableIntervalo(indiceCalculableIntervaloDTO: IndiceCalculableDTO, entityManager?: EntityManager) {
         if (!entityManager) // No se trata de una llamada con una transacción heredada
@@ -40,5 +63,9 @@ export class IndiceCalculableIntervaloService {
             indicadoresIntervalosDTO[index].indiceCalculableIntervalo = indiceCalculableIntervaloInsertado // se le asigna el indice calculable insertado al indicador
             await this.indicadorIntervaloService.createIndicadorIntervalo(indicadoresIntervalosDTO[index], entityManager) // se manda a crear al servicio el indicador
         }
+    }
+
+    public async updateIndiceCalculableIntervalos () {
+
     }
 }

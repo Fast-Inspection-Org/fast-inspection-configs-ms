@@ -23,6 +23,9 @@ import { CampoDefinidoImagen } from '../campo-definido-imagen/entities/campo-def
 import { CampoDefinidoImagenService } from '../campo-definido-imagen/campo-definido-imagen.service';
 import { CampoDefinidoSeleccionService } from '../campo-definido-seleccion/campo-definido-seleccion.service';
 import { CampoDefinidoNumericoService } from '../campo-definido-numerico/campo-definido-numerico.service';
+import { CampoDefinidoTexto } from '../campo-definido-texto/entities/campo-definido-texto.entity';
+import { CampoDefinidoNumerico } from '../campo-definido-numerico/entities/campo-definido-numerico.entity';
+import { CampoDefinidoSeleccion } from '../campo-definido-seleccion/entities/campo-definido-seleccion.entity';
 
 @Injectable()
 export class TipoDeterioroAnalisisCriticidadConfigService {
@@ -86,11 +89,39 @@ export class TipoDeterioroAnalisisCriticidadConfigService {
             }
         })
 
+        // se obtiene la lista de los campos definidos del tipo de deterioro
+        const camposDefinidos: Array<CampoDefinido> = await tipoDeterioroAnalisisCriticidadConfig.camposDefinidos
+        // se crea la lista con los campos definidos del tipo de deterioro
+        const camposDefinidosTipoDeterioro: Array<CampoDefinidoDTO> = new Array<CampoDefinidoDTO>()
+
+        for (let index = 0; index < camposDefinidos.length; index++) {
+            const campoDefinido = camposDefinidos[index];
+            const campoDefinidoDTO: CampoDefinidoDTO = new CampoDefinidoDTO()
+            if (campoDefinido instanceof CampoDefinidoTexto) { // si es de tipo texto
+                campoDefinidoDTO.constuirDTO(campoDefinido.id, campoDefinido.nombre, campoDefinido.tipo) // se crea un dto solo con la información del campo definido tipo texto
+            }
+            else if (campoDefinido instanceof CampoDefinidoImagen) { // si es de tipo imagen
+                campoDefinidoDTO.constuirDTO(campoDefinido.id, campoDefinido.nombre, campoDefinido.tipo) // se crea un dto solo con la información del campo definido tipo imagen
+            }
+            else if (campoDefinido instanceof CampoDefinidoNumerico) { // si es de tipo numérico
+                campoDefinidoDTO.constuirDTO(campoDefinido.id, campoDefinido.nombre, campoDefinido.tipo, campoDefinido.inicioIntervalo, campoDefinido.finalIntervalo,
+                    campoDefinido.unidadMedida
+                ) // se crea un dto solo con la información del campo definido tipo númerico
+            }
+            else if (campoDefinido instanceof CampoDefinidoSeleccion) { // si es de tipo selección
+                campoDefinidoDTO.constuirDTO(campoDefinido.id, campoDefinido.nombre, campoDefinido.tipo, undefined, undefined,
+                    undefined, JSON.parse(campoDefinido.opciones.toString())
+                ) // se crea un dto solo con la información del campo definido tipo númerico
+            }
+
+            camposDefinidosTipoDeterioro.push(campoDefinidoDTO)
+        }
+
         // Se retorna un objeto con la información del tipo de deterioro análisis de criticidad que se desea serializar
         return {
             id: tipoDeterioroAnalisisCriticidadConfig.id,
             nombre: tipoDeterioroAnalisisCriticidadConfig.nombre,
-            camposDefinidos: await tipoDeterioroAnalisisCriticidadConfig.camposDefinidos,
+            camposDefinidos: camposDefinidosTipoDeterioro,
             causas: await tipoDeterioroAnalisisCriticidadConfig.causas,
             detectabilidad: tipoDeterioroAnalisisCriticidadConfig.detectabilidad,
             camposAfectados: await tipoDeterioroAnalisisCriticidadConfig.camposAfectados,
