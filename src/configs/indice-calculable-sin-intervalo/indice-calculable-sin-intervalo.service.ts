@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { EntityManager, Like, Repository } from 'typeorm';
 import { IndiceCalculableSinIntervalo } from './indice-calculable-sin-intervalo.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -7,6 +7,8 @@ import { IndicadorSinIntervaloService } from '../indicador-sin-intervalo/indicad
 import { IndiceCalculableDTO } from '../indice-calculable/indice-calculable.dto';
 import { IndicadorDTO } from '../indicador/indicador.dto';
 import { Calculos } from '../indice-calculable/indice-calculable.entity';
+import { UpdateIndiceCalculableSinIntervaloDTO } from './update-indice-calculable-sin-intervalo.dto';
+import { IndiceCalculableIntervalo } from '../indice-calculable-intervalo/indice-calculable-intervalo.entity';
 
 @Injectable()
 export class IndiceCalculableSinIntervaloService {
@@ -22,6 +24,40 @@ export class IndiceCalculableSinIntervaloService {
                 configVersion: versionConfig
             }
         })
+    }
+
+    // Método para buscar a un indice calculable sin intervalo que cumpla con cierta restrcciones
+    public async getIndiceCalculableSinIntervalo(idIndiceCalculable?: number, nombre?: String, calculo?: Calculos, versionConfig?: number) {
+        return await this.indiceCalculableSinIntervaloRepository.findOne({
+            where: {
+                id: idIndiceCalculable,
+                nombre: nombre,
+                calculo: calculo,
+                configVersion: versionConfig
+            }
+        })
+    }
+
+    // Método para obtener un indice calculable sin intervalo con todas sus relaciones
+    public async getIndiceCalculableSinIntervaloWithRelations(idIndiceCalculable: number) {
+        // se obtiene el indice deseado de la base de datos del servidor
+        const indiceCalculableSinIntervalo: IndiceCalculableSinIntervalo = await this.indiceCalculableSinIntervaloRepository.findOne({
+            where: {
+                id: idIndiceCalculable
+            }
+        })
+
+        // Si fue encontrado el indice calculable
+        if (indiceCalculableSinIntervalo)
+            return {
+                id: indiceCalculableSinIntervalo.id,
+                nombre: indiceCalculableSinIntervalo.nombre,
+                calculo: indiceCalculableSinIntervalo.calculo,
+                tipo: indiceCalculableSinIntervalo.tipo,
+                indicadoresSinIntervalos: await indiceCalculableSinIntervalo.indicadoresSinIntervalos
+            }
+        else
+            throw new HttpException("No fue encontrado el indice calculable", HttpStatus.BAD_REQUEST)
     }
 
     public async createIndiceCalculableSinIntervalo(indiceCalculableSinIntervaloDTO: IndiceCalculableDTO, entityManager?: EntityManager) {
@@ -51,6 +87,39 @@ export class IndiceCalculableSinIntervaloService {
             indicadoresSinIntervalosDTO[index].indiceCalculableSinIntervalo = indiceCalculableSinIntervaloInsertado // se le asigna el indice calculable insertado al indicador
             await this.indicadorSinIntervaloService.createIndicadorSinIntervalo(indicadoresSinIntervalosDTO[index], entityManager) // se manda a crear al servicio el indicador
         }
+    }
+
+    // Método para actualizar la información de un indice calculable sin intervalo
+    public async updateIndiceCalculableSinIntervalos(idIndiceCalculableSinIntervalo: number, updateIndiceCalculableSinIntervaloDTO: UpdateIndiceCalculableSinIntervaloDTO) {
+        // se busca el indice calculable sin intervalos a modificar
+        const indiceCalculableSinIntervaloUpdate: IndiceCalculableSinIntervalo = await this.getIndiceCalculableSinIntervalo(idIndiceCalculableSinIntervalo)
+        // se busca un indice calculable que posea el mismo nombre
+        const indiceCalculableSinIntervalo: IndiceCalculableSinIntervalo = await this.getIndiceCalculableSinIntervalo(undefined, updateIndiceCalculableSinIntervaloDTO.nombre, undefined,
+            indiceCalculableSinIntervaloUpdate.configVersion)
+
+        await this.indiceCalculableSinIntervaloRepository.manager.transaction(async (transactionManager: EntityManager) => {
+            // Si no existe un indice calculable sin intervalo con el mismo nombre o si el encontrado es el mismo
+            if (!indiceCalculableSinIntervalo || indiceCalculableSinIntervalo.id === idIndiceCalculableSinIntervalo) {
+                // se actualiza la información de los atributos del indice calculable
+                indiceCalculableSinIntervaloUpdate.nombre = updateIndiceCalculableSinIntervaloDTO.nombre // se actualiza el nombre
+                indiceCalculableSinIntervaloUpdate.calculo = updateIndiceCalculableSinIntervaloDTO.calculo // se actualiza el calculo
+                // se actualiza la información de los indicadores sin intervalo del indice calculable sin intervalos
+                await this.actualizarIndicadoresSinIntervalo(indiceCalculableSinIntervaloUpdate, updateIndiceCalculableSinIntervaloDTO.indicadoresSinIntervalo, transactionManager)
+
+                // se actualizan los cambios en la base de datos
+                await transactionManager.save(indiceCalculableSinIntervaloUpdate)
+            }
+        })
+    }
+
+    // Método para actualizar la información de los indicadores sin intervalos
+    private async actualizarIndicadoresSinIntervalo(indiceCalculableSinIntervaloUpdate: IndiceCalculableSinIntervalo, indicadoresSinIntervalo: Array<IndicadorDTO>, entityManager: EntityManager) {
+        // Lo primero es eliminar todos los indicadores pertenecientes al indice calculable
+        await this.indicadorSinIntervaloService.deleteIndicadores(undefined, indiceCalculableSinIntervaloUpdate.id, entityManager)
+
+        // Luego se insertan los nuevos indicadores del indice calculable
+        await this.saveIndicadoresSinIntervalosByIndiceCalculableIntervalo(indicadoresSinIntervalo, indiceCalculableSinIntervaloUpdate, entityManager)
+
     }
 
 }

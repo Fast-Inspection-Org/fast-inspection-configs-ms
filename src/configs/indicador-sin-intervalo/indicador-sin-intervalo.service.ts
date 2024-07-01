@@ -27,4 +27,15 @@ export class IndicadorSinIntervaloService {
 
         await entityManager.save(indicadorSinIntervalo) // se inserta el indicador sin intervalo en la base de datos
     }
+
+       // Método para eliminar indicadores sin intervalo
+       public async deleteIndicadores(idIndicador?: number, idIndiceCalculable?: number, entityManager?: EntityManager) {
+        // si se trata de una transacción heredada
+        if (entityManager) {
+            await entityManager.delete(IndicadorSinIntervalo, { indiceCalculableSinIntervaloId: idIndiceCalculable })
+        }
+        else {
+            await this.indicadorSinIntervaloRepository.delete({ indiceCalculableSinIntervaloId: idIndiceCalculable })
+        }
+    }
 }

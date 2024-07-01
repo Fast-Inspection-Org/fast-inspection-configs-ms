@@ -27,4 +27,15 @@ export class IndicadorIntervaloService {
         const indicadorIntervaloInsertado: IndicadorIntervalo = await entityManager.save(indicadorIntervalo) // se inserta el indicador en la base de datos y se obtiene la instancia insertada
     }
 
+    // Método para eliminar indicadores tipo intervalo
+    public async deleteIndicadores(idIndicador?: number, idIndiceCalculable?: number, entityManager?: EntityManager) {
+        // si se trata de una transacción heredada
+        if (entityManager) {
+            await entityManager.delete(IndicadorIntervalo, { indiceCalculableIntervaloId: idIndiceCalculable })
+        }
+        else {
+            await this.indicadorIntervaloRepository.delete({ indiceCalculableIntervaloId: idIndiceCalculable })
+        }
+    }
+
 }

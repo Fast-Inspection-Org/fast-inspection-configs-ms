@@ -19,6 +19,7 @@ export abstract class Indicador {
     tipo: TipoIndicador
 
     constructor(id?: number, nombre?: String, valor?: number, tipo?: TipoIndicador) {
+        this.id = id
         this.nombre = nombre
         this.valor = valor
         this.tipo = tipo
