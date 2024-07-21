@@ -1,9 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { IndiceCalculable } from './indice-calculable.entity';
+import { Calculos, IndiceCalculable } from './indice-calculable.entity';
 import { Repository } from 'typeorm';
-import { IndiceCalculableIntervalo } from '../indice-calculable-intervalo/indice-calculable-intervalo.entity';
-import { IndiceCalculableSinIntervalo } from '../indice-calculable-sin-intervalo/indice-calculable-sin-intervalo.entity';
+
 
 @Injectable()
 export class IndiceCalculableService {
@@ -14,5 +13,17 @@ export class IndiceCalculableService {
         await this.indiceCalculableRepository.delete({ id: idIndiceCalculable })
     }
 
-    
+    // Método para obtener un indice calculable segun los filtros
+    public async getIndiceCalculable(idIndiceCalculable: number, nombre?: String, calculo?: Calculos, versionConfig?: number) {
+        return await this.indiceCalculableRepository.findOne({
+            where: {
+                id: idIndiceCalculable,
+                nombre: nombre,
+                calculo: calculo,
+                configVersion: versionConfig
+            }
+        })
+    }
+
+
 }

@@ -7,10 +7,10 @@ import { Exclude } from "class-transformer";
 @ChildEntity("indicadorIntervalo")
 export class IndicadorIntervalo extends Indicador {
 
-    @Column()
+    @Column({ type: "double precision" })
     limiteInferior: number // Atributo que representa el limite inferior del intervalo
 
-    @Column()
+    @Column({ type: "double precision" })
     limiteSuperior: number // Atributo que representa el limite superior del intervalo
     @Exclude()
     @Column()

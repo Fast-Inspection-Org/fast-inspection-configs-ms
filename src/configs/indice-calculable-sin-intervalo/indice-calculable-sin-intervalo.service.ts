@@ -6,15 +6,16 @@ import { Config } from '../config.entity';
 import { IndicadorSinIntervaloService } from '../indicador-sin-intervalo/indicador-sin-intervalo.service';
 import { IndiceCalculableDTO } from '../indice-calculable/indice-calculable.dto';
 import { IndicadorDTO } from '../indicador/indicador.dto';
-import { Calculos } from '../indice-calculable/indice-calculable.entity';
+import { Calculos, IndiceCalculable } from '../indice-calculable/indice-calculable.entity';
 import { UpdateIndiceCalculableSinIntervaloDTO } from './update-indice-calculable-sin-intervalo.dto';
 import { IndiceCalculableIntervalo } from '../indice-calculable-intervalo/indice-calculable-intervalo.entity';
+import { IndiceCalculableService } from '../indice-calculable/indice-calculable.service';
 
 @Injectable()
 export class IndiceCalculableSinIntervaloService {
 
     constructor(@InjectRepository(IndiceCalculableSinIntervalo) private indiceCalculableSinIntervaloRepository: Repository<IndiceCalculableSinIntervalo>,
-        private indicadorSinIntervaloService: IndicadorSinIntervaloService) { }
+        private indicadorSinIntervaloService: IndicadorSinIntervaloService, private indiceCalculableService: IndiceCalculableService) { }
 
     public async getAllIndicesCalculablesSinIntervalos(nombre?: String, calculo?: Calculos, versionConfig?: number) {
         return await this.indiceCalculableSinIntervaloRepository.find({
@@ -61,12 +62,23 @@ export class IndiceCalculableSinIntervaloService {
     }
 
     public async createIndiceCalculableSinIntervalo(indiceCalculableSinIntervaloDTO: IndiceCalculableDTO, entityManager?: EntityManager) {
-        if (!entityManager) // No se trata de una llamada con una transacción heredada
-            await this.indiceCalculableSinIntervaloRepository.manager.transaction(async (trasactionManager: EntityManager) => { // se crea una transacción para este procedimiento
-                await this.createIndiceCalculableSinIntervaloWithEntity(indiceCalculableSinIntervaloDTO, trasactionManager)
-            })
-        else // se continua con la transacción heredada
-            await this.createIndiceCalculableSinIntervaloWithEntity(indiceCalculableSinIntervaloDTO, entityManager)
+        // se comprueba que no existe un indice calculable con el mismo nombre y calculo
+        // si no existe un indice calculable que tenga el mismo nombre y si no existe un indice calculable con el mismo calculo
+        if (!(await this.indiceCalculableService.getIndiceCalculable(undefined, indiceCalculableSinIntervaloDTO.nombre, undefined, indiceCalculableSinIntervaloDTO.config.version))) {
+            if (!(await this.indiceCalculableService.getIndiceCalculable(undefined, undefined, indiceCalculableSinIntervaloDTO.calculo, indiceCalculableSinIntervaloDTO.config.version))) {
+                if (!entityManager) // No se trata de una llamada con una transacción heredada
+                    await this.indiceCalculableSinIntervaloRepository.manager.transaction(async (trasactionManager: EntityManager) => { // se crea una transacción para este procedimiento
+                        await this.createIndiceCalculableSinIntervaloWithEntity(indiceCalculableSinIntervaloDTO, trasactionManager)
+                    })
+                else // se continua con la transacción heredada
+                    await this.createIndiceCalculableSinIntervaloWithEntity(indiceCalculableSinIntervaloDTO, entityManager)
+            }
+            else // si existe un índice calculable con el mismo calculo
+                throw new HttpException("Ya existe un índice calculable con el mismo cálculo", HttpStatus.BAD_REQUEST)
+        }
+        else // si existe un indice calculable con el mismo nombre
+            throw new HttpException("Ya existe un índice calculable con el mismo nombre", HttpStatus.BAD_REQUEST)
+
     }
 
     private async createIndiceCalculableSinIntervaloWithEntity(indiceCalculableSinIntervaloDTO: IndiceCalculableDTO, entityManager: EntityManager) {
@@ -94,22 +106,34 @@ export class IndiceCalculableSinIntervaloService {
         // se busca el indice calculable sin intervalos a modificar
         const indiceCalculableSinIntervaloUpdate: IndiceCalculableSinIntervalo = await this.getIndiceCalculableSinIntervalo(idIndiceCalculableSinIntervalo)
         // se busca un indice calculable que posea el mismo nombre
-        const indiceCalculableSinIntervalo: IndiceCalculableSinIntervalo = await this.getIndiceCalculableSinIntervalo(undefined, updateIndiceCalculableSinIntervaloDTO.nombre, undefined,
+        const indiceCalculableSinIntervalo: IndiceCalculable = await this.indiceCalculableService.getIndiceCalculable(undefined, updateIndiceCalculableSinIntervaloDTO.nombre, undefined,
             indiceCalculableSinIntervaloUpdate.configVersion)
 
-        await this.indiceCalculableSinIntervaloRepository.manager.transaction(async (transactionManager: EntityManager) => {
-            // Si no existe un indice calculable sin intervalo con el mismo nombre o si el encontrado es el mismo
-            if (!indiceCalculableSinIntervalo || indiceCalculableSinIntervalo.id === idIndiceCalculableSinIntervalo) {
-                // se actualiza la información de los atributos del indice calculable
-                indiceCalculableSinIntervaloUpdate.nombre = updateIndiceCalculableSinIntervaloDTO.nombre // se actualiza el nombre
-                indiceCalculableSinIntervaloUpdate.calculo = updateIndiceCalculableSinIntervaloDTO.calculo // se actualiza el calculo
-                // se actualiza la información de los indicadores sin intervalo del indice calculable sin intervalos
-                await this.actualizarIndicadoresSinIntervalo(indiceCalculableSinIntervaloUpdate, updateIndiceCalculableSinIntervaloDTO.indicadoresSinIntervalo, transactionManager)
 
-                // se actualizan los cambios en la base de datos
-                await transactionManager.save(indiceCalculableSinIntervaloUpdate)
+        // Si no existe un indice calculable sin intervalo con el mismo nombre o si el encontrado es el mismo
+        if (!indiceCalculableSinIntervalo || indiceCalculableSinIntervalo.id === idIndiceCalculableSinIntervalo) {
+            const indiceCalculableCalculo: IndiceCalculable = await this.indiceCalculableService.getIndiceCalculable(undefined, undefined, updateIndiceCalculableSinIntervaloDTO.calculo,
+                indiceCalculableSinIntervaloUpdate.configVersion)
+            // Si no existe un indice calculable intervalo con el mismo calculo o si el encontrado es el mismo
+            if (!indiceCalculableCalculo || indiceCalculableCalculo.id === idIndiceCalculableSinIntervalo) {
+                await this.indiceCalculableSinIntervaloRepository.manager.transaction(async (transactionManager: EntityManager) => {
+                    // se actualiza la información de los atributos del indice calculable
+                    indiceCalculableSinIntervaloUpdate.nombre = updateIndiceCalculableSinIntervaloDTO.nombre // se actualiza el nombre
+                    indiceCalculableSinIntervaloUpdate.calculo = updateIndiceCalculableSinIntervaloDTO.calculo // se actualiza el calculo
+                    // se actualiza la información de los indicadores sin intervalo del indice calculable sin intervalos
+                    await this.actualizarIndicadoresSinIntervalo(indiceCalculableSinIntervaloUpdate, updateIndiceCalculableSinIntervaloDTO.indicadoresSinIntervalo, transactionManager)
+
+                    // se actualizan los cambios en la base de datos
+                    await transactionManager.save(indiceCalculableSinIntervaloUpdate)
+
+                })
             }
-        })
+            else // si existe un índice calculable con el mismo calculo
+                throw new HttpException("Ya existe un índice calculable con el mismo cálculo", HttpStatus.BAD_REQUEST)
+        }
+        else // si existe un indice calculable con el mismo nombre
+            throw new HttpException("Ya existe un índice calculable con el mismo nombre", HttpStatus.BAD_REQUEST)
+
     }
 
     // Método para actualizar la información de los indicadores sin intervalos

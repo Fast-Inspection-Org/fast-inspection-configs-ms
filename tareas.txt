@@ -43,3 +43,5 @@ Por tanto la tarea sería modificar cada endpoint que se haya implementado de la
 *Realizar algoritmos para verificar la completitud de una herramienta y configuración
 22/06/2024
 *Decidir acciones a ejecutar despues de la eliminación de un registro
+16/07/2024
+*Validar que no puedan existir más de un indice cálculable perteneciente al mismo cálculo 
