@@ -8,7 +8,7 @@ export class SistemaConfigSerializable {
     herramienta: HerramientaSerializable // representa el nombre de la herramienta a la que pertenece el sistema
     configVersion: number // indica la versión de la configuración a la cual pertenece el sistema
 
-    constructor(id: number, nombre: String, cantSubsistemas: number, herramienta: Herramienta, configVersion: number ) {
+    constructor(id: number, nombre: String, cantSubsistemas: number, herramienta: Herramienta, configVersion: number) {
         this.id = id
         this.nombre = nombre
         this.cantSubsistemas = cantSubsistemas

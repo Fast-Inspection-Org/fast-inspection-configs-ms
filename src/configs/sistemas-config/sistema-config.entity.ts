@@ -48,7 +48,7 @@ export class SistemaConfig {
         return herramienta // se retorna el nombre de la herramienta
     }
 
-    
+
     public async isContainsMaterial(idMaterial: number): Promise<boolean> {
         let isContains: boolean = false
         // se obtienen los subsistemas del sistema
@@ -61,6 +61,41 @@ export class SistemaConfig {
         }
 
         return isContains
+    }
+
+    // Método para comprobar que exista al menos un material en dicho sistema
+    public async isExistMaterial(): Promise<boolean> {
+        let isExist: boolean = false
+
+        // se obtiene la lista de subsistemas
+        const subSistemasConfigs: Array<SubsistemaConfig> = await this.subSistemasConfig
+
+        for (let index = 0; index < subSistemasConfigs.length && !isExist; index++) {
+            const subsistemaConfig = subSistemasConfigs[index];
+
+            if ((await subsistemaConfig.cantMateriales()) > 0) // si existe al menos un material en dicho subsistema
+                isExist = true // se indica que existe al menos un material en el sistema
+        }
+
+        return isExist
+    }
+
+    // Método para comprobar que exista al menos un tipo de deterioro en dicho sistema
+
+    public async isExistTipoDeterioro(): Promise<boolean> {
+        let isExist: boolean = false
+
+        // se obtiene la lista de subsistemas
+        const subSistemasConfigs: Array<SubsistemaConfig> = await this.subSistemasConfig
+
+        for (let index = 0; index < subSistemasConfigs.length && !isExist; index++) {
+            const subsistemaConfig = subSistemasConfigs[index];
+
+            if (await subsistemaConfig.isExistTipoDeterioro()) // si existe al menos un material en dicho subsistema
+                isExist = true // se indica que existe al menos un tipo de deterioro en el sistema
+        }
+
+        return isExist
     }
 
 }

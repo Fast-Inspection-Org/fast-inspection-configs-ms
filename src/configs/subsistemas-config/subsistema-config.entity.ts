@@ -2,6 +2,7 @@ import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "ty
 import { SistemaConfig } from "../sistemas-config/sistema-config.entity";
 import { MaterialConfig } from "../materiales-config/material-config.entity";
 import { retry } from "rxjs";
+import { Material } from "src/controlador-edificaciones/levantamiento/estructura-levantamiento/material.domain";
 
 @Entity("subsistemaConfig")
 export class SubsistemaConfig {
@@ -41,6 +42,22 @@ export class SubsistemaConfig {
         }
 
         return isContains
+    }
+
+    // Método para comprobar que exista al menos un tipo de deterioro en dicho subsistema
+    public async isExistTipoDeterioro(): Promise<boolean> {
+        let isExist: boolean = false
+
+        // se obtiene la lista de materiales
+        const materialesConfigs: Array<MaterialConfig> = await this.materialesConfig
+
+        for (let index = 0; index < materialesConfigs.length && !isExist; index++) {
+            const materialConfig = materialesConfigs[index];
+            if ((await materialConfig.cantTiposDeterioros()) > 0) // si existe al menos un tipo de deterioro en dicho material
+                isExist = true // se indica que existe al menos un tipo de deterioro en el subsistema
+        }
+
+        return isExist
     }
 
 }

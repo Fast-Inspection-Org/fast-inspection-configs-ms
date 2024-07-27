@@ -8,6 +8,8 @@ export enum TipoIndiceCalculable {
   IndiceCalcuableSinIntervalo = "indiceCalculableSinIntervalo"
 }
 
+export const cantCalculos = 4
+
 export enum Calculos {
   Detectabilidad = "Detectabilidad",
   Impacto = "Impacto",

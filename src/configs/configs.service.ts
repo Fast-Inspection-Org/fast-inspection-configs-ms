@@ -13,6 +13,7 @@ import { TipoHerramienta } from './herramientas/herramienta.entity';
 import { IndiceCalculableDTO } from './indice-calculable/indice-calculable.dto';
 import { TipoIndiceCalculable } from './indice-calculable/indice-calculable.entity';
 import { UpdateConfigDTO } from './config-update.dto';
+import { ConfigSerializable } from './config.serializable';
 
 
 
@@ -27,15 +28,16 @@ export class ConfigsService {
         private sistemaConfigService: SistemasConfigService) { }
 
     //Metodo para obtener todas  las configuraciones
-    public async getAllConfigs(orderBy: ConfigOrderBy, version?: number, nombre?: String) {
-
+    public async getAllConfigs(orderBy: ConfigOrderBy, version?: number, nombre?: String): Promise<Array<ConfigSerializable>> {
+        const configsSerializables: Array<ConfigSerializable> = new Array<ConfigSerializable>()
         const orderObject = {}
         if (orderBy === ConfigOrderBy.Nombre)
             orderObject[orderBy] = "ASC"
         else if (orderBy === ConfigOrderBy.Version)
             orderObject[orderBy] = "DESC"
 
-        return await this.configuracionRepository.find({
+        // se obtiene la lista de configuraciones según los filtros
+        const configsEntity: Array<Config> = await this.configuracionRepository.find({
             where: {
                 version: version,
                 nombre: nombre ? Like(`%${nombre}%`) : nombre
@@ -43,6 +45,15 @@ export class ConfigsService {
             order: orderObject,
 
         })
+
+        // se crean objetos serializables en base a las configuraciones entity
+        for (let index = 0; index < configsEntity.length; index++) {
+            const configEntity = configsEntity[index];
+            configsSerializables.push(new ConfigSerializable(configEntity.version, configEntity.nombre, configEntity.descripcion, configEntity.state,
+                await configEntity.getPorcentajeCompletitud()))
+        }
+
+        return configsSerializables
     }
 
     // Metodo para obtener la configuración más reciente
