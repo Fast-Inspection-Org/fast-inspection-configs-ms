@@ -17,8 +17,8 @@ export class ConfigsController {
 
     @Get("getAllConfigs") // Ruta para obtener todas las configuraciones registradas
     public async getAllConfigs(@Query("version") version: string, @Query("nombre") nombre: String, @Query("orderBy") orderBy: ConfigOrderBy /* parametros representa los filtros de búsqueda */) {
-        
-        return await this.configsService.getAllConfigs(orderBy ? orderBy : ConfigOrderBy.Nombre , version ? parseInt(version) : undefined, nombre)
+
+        return await this.configsService.getAllConfigs(orderBy ? orderBy : ConfigOrderBy.Nombre, version ? parseInt(version) : undefined, nombre)
     }
 
     @Get("getLastConfig") // Ruta para obtener la ultima configuración registrada
@@ -49,13 +49,13 @@ export class ConfigsController {
     @Delete("deleteConfig/:version") // Ruta para eliminar una configuración en especifico (Método de super administrador)
     @Roles([RolEnum.Administrador]) // Solo el rol administrador tiene acceso a la rutaa
     @UseGuards(AuthGuard, RolGuard) // verifica el acceso a la solicitud
-    public async deleteConfig(@Param("version", ParseIntPipe) versionConfig: number) { 
-          return  await this.configsService.deleteConfig(versionConfig)
+    public async deleteConfig(@Param("version", ParseIntPipe) versionConfig: number) {
+        return await this.configsService.deleteConfig(versionConfig)
     }
 
     @Delete("deleteAllConfigs") // Ruta para eliminar todas las configuraciones (Método de super administrador)
     public async deletedeleteAllConfigs() {
-       await this.configsService.deleteAllConfigs()
+        await this.configsService.deleteAllConfigs()
     }
 
     @Patch("updateConfig/:version")
@@ -64,5 +64,8 @@ export class ConfigsController {
         await this.configsService.updateConfig(version, updateConfigDTO)
     }
 
-
+    @Patch("marcarAsActivaConfig/:version")
+    public async marcarAsActivaConfig(@Param("version", ParseIntPipe) version: number) {
+        return await this.configsService.marcarAsActivaConfig(version)
+    }
 }

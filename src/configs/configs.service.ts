@@ -180,9 +180,9 @@ export class ConfigsService {
             await this.configuracionRepository.delete({ version: versionConfig })
         else
             throw new HttpException({
-                status: HttpStatus.INTERNAL_SERVER_ERROR,
+                status: HttpStatus.BAD_REQUEST,
                 error: 'No exite una configuración con ese id',
-            }, HttpStatus.INTERNAL_SERVER_ERROR);
+            }, HttpStatus.BAD_REQUEST);
 
     }
 
@@ -201,5 +201,50 @@ export class ConfigsService {
             await this.configuracionRepository.update({ version: version }, updateConfigDTO)
         else
             throw new HttpException({ message: "Ya existe una configuración con ese nombre" }, HttpStatus.BAD_REQUEST)
+    }
+
+    // Método para marcar como activa una configuración en específico
+    public async marcarAsActivaConfig(versionConfig: number) {
+        // se obtiene la configuración que se desea marcar como activa
+        const configMarcarActiva: Config | undefined = await this.configuracionRepository.findOne({
+            where: {
+                version: versionConfig
+            }
+        })
+        // Si fue encontrada dicha configuración
+        if (configMarcarActiva) {
+            // se comprueba que el "porcentaje de completitud de la configuración sea 100 %"
+            if ((await configMarcarActiva.getPorcentajeCompletitud()) === 100) {
+                await this.configuracionRepository.manager.transaction(async (transactionManager: EntityManager) => { // Se crea una transaccion para este procedimiento
+                    // Primero se desmarca la anterior configuración marcada como activa, en el caso de que exista
+                    const anteriorConfigMarcadaAsActiva: Config | undefined = await this.getConfig(undefined, true)
+                    // si existe una configuración marcada como activa
+                    if (anteriorConfigMarcadaAsActiva) {
+                        anteriorConfigMarcadaAsActiva.state = false // se indica que ya no es la configuración activa
+                        await transactionManager.save(anteriorConfigMarcadaAsActiva) // se actualiza los cambios de esta configuración en la base de datos
+                    }
+
+                    configMarcarActiva.state = true // se marca como activa la configuración
+                    // Luego se actualizan los cambios en la base de datos
+                    await transactionManager.save(configMarcarActiva)
+                })
+            }
+            else
+                throw new HttpException({ message: "No es posible marcar como activa dicha configuración ya que no cumple con los requisitos mínimos de completitud" },
+                    HttpStatus.BAD_REQUEST)
+        }
+        else
+            throw new HttpException({ message: "No existe una configuración con esa versión" }, HttpStatus.BAD_REQUEST)
+
+    }
+
+    // Método para obtener una configuración en específico
+    public async getConfig(versionConfig?: number, state?: boolean) {
+        return await this.configuracionRepository.findOne({
+            where: {
+                version: versionConfig,
+                state: state
+            }
+        })
     }
 }
