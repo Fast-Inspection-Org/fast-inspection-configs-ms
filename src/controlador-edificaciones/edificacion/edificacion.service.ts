@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Edificacion } from './edificacion.entity';
-import { EntityManager, Repository } from 'typeorm';
+import { EntityManager, Like, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EdificacionDTO } from './edificacion.dto';
 import { EdificacionDomain } from './edificacion.domain';
@@ -15,10 +15,14 @@ export class EdificacionService {
     }
 
     // Metoodo para obtener todos las edificaciones
-    public async getAllEdificaciones() {
-        const edificaciones: Array<Edificacion> = await this.edificacionRepository.find() // se obtienen todas las edificaciones de la base de datos
+    public async getAllEdificaciones(nombre?: String) {
+        const edificaciones: Array<Edificacion> = await this.edificacionRepository.find({
+            where: {
+                nombre: nombre ? Like(`%${nombre}%`) : nombre
+            }
+        }) // se obtienen todas las edificaciones de la base de datos
 
-        return this.createEdificacionesDomain(edificaciones)
+        return await this.createEdificacionesDomain(edificaciones)
     }
 
     // Metodo para insertar una nueva edificación en la base de datos
@@ -92,11 +96,12 @@ export class EdificacionService {
 
         // Se crean y se añaden a la lista edificaciones del dominio
         for (let i = 0; i < edificaciones.length; i++) {
-            edificacionesDomain.push(new EdificacionDomain(edificaciones[i].id, edificaciones[i].nombre, edificaciones[i].direccion,
-                edificaciones[i].ubicacionX, edificaciones[i].ubicacionY, await this.levantamientoService.getLevantamientosByEdificacion(edificaciones[i].id)))
+            const edificacionDomain = new EdificacionDomain(edificaciones[i].id, edificaciones[i].nombre, edificaciones[i].direccion,
+                edificaciones[i].ubicacionX, edificaciones[i].ubicacionY, await this.levantamientoService.getLevantamientosByEdificacion(edificaciones[i].id))
+            // luego se ejecutan los calculos para exponer las características calculables
+            await edificacionDomain.obtenerCriticidad()
+            edificacionesDomain.push(edificacionDomain)
         }
-
-
 
         return edificacionesDomain
     }

@@ -637,3 +637,46 @@
     }
   ]
 }
+
+#Edificaciones
+{
+  "nombre": "Fabrica de Arte Cubano",
+  "direccion": "Calle 26, La Habana, Cuba",
+  "ubicacionX": 23.129255787219893,
+  "ubicacionY": -82.41017844510101
+}
+
+{
+  "nombre": "Hotel Nacional",
+  "direccion": "Calle O, La Habana, Cuba",
+  "ubicacionX": 23.143465,
+  "ubicacionY": -82.381471
+}
+
+{
+  "nombre": "Hotel Habana Libre",
+  "direccion": "Calle L, La Habana, Cuba",
+  "ubicacionX": 23.139461,
+  "ubicacionY": -82.382081
+}
+
+{
+  "nombre": "Edificio Focsa",
+  "direccion": "Calle 17, La Habana, Cuba",
+  "ubicacionX": 23.143164,
+  "ubicacionY": -82.384275
+}
+
+{
+  "nombre": "Museo de Arte Universal",
+  "direccion": "Calle Agramonte, La Habana, Cuba",
+  "ubicacionX": 23.140255,
+  "ubicacionY": -82.357579
+}
+
+{
+  "nombre": "Hotel Meliá Cohiba",
+  "direccion": "Avenida Paseo, La Habana, Cuba",
+  "ubicacionX": 23.139759,
+  "ubicacionY": -82.402897
+}

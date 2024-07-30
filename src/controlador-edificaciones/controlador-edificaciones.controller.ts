@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { EdificacionService } from './edificacion/edificacion.service';
 import { EdificacionDTO } from './edificacion/edificacion.dto';
 
@@ -7,8 +7,8 @@ export class ControladorEdificacionesController {
     constructor(private edificacionService: EdificacionService) { }
 
     @Get("getAllEdificaciones")
-    public async getAllEdificaciones() {
-        return this.edificacionService.getAllEdificaciones()
+    public async getAllEdificaciones(@Query("nombre") nombre: String) {
+        return this.edificacionService.getAllEdificaciones(nombre)
     }
 
     @Post("createEdificacion")
