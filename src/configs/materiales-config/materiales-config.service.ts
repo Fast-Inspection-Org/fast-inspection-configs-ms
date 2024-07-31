@@ -9,12 +9,13 @@ import { TipoDeterioroAnalisisCriticidadConfigService } from '../tipo-deterioro-
 import { TipoTipoDeterioro } from '../tipo-deterioros-config/tipo-deterioro-config.entity';
 import { MaterialConfigSerializable } from './material-config.serializable';
 import { UpdateMaterialConfigDTO } from './update-material-config.dto';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @Injectable()
 export class MaterialesConfigService {
 
     constructor(@InjectRepository(MaterialConfig) private materialConfigRepository: Repository<MaterialConfig>,
-        private tipoDeterioroAnalisisCriticidadConfigService: TipoDeterioroAnalisisCriticidadConfigService) { }
+        private tipoDeterioroAnalisisCriticidadConfigService: TipoDeterioroAnalisisCriticidadConfigService, private eventEmitter: EventEmitter2) { }
 
     // Método para obtener los materiales config
 
@@ -95,7 +96,7 @@ export class MaterialesConfigService {
         const materialConfig: MaterialConfig = await this.getMaterialConfig(undefined, idSubsistemaConfig, updateMaterialConfigDTO.nombre) // se obtiene al material con ese id de la base de datos
         // Si no hay materiales con ese nombre o si el que existe es el mismo
         if (!materialConfig || materialConfig.id === idMaterialConfig) {
-           await this.materialConfigRepository.update({ id: idMaterialConfig }, updateMaterialConfigDTO) // se actualiza el material en la base de datos
+            await this.materialConfigRepository.update({ id: idMaterialConfig }, updateMaterialConfigDTO) // se actualiza el material en la base de datos
         }
         else
             throw new HttpException("Ya existe un material con ese nombre", HttpStatus.BAD_REQUEST)
@@ -103,6 +104,21 @@ export class MaterialesConfigService {
 
     // Método para eliminar un material config de la base de datos
     public async deleteMaterialConfig(idMaterialConfig: number) {
-        await this.materialConfigRepository.delete({ id: idMaterialConfig })
+        // se obtiene primero el material config antes de eliminarlo
+        const materialConfigEliminar: MaterialConfig | undefined = await this.materialConfigRepository.findOne({
+            where: {
+                id: idMaterialConfig
+            },
+            relations: ['subsistemaConfig', 'subsistemaConfig.sistemaConfig'] // Solo se carga la relación subsistemaConfig
+        })
+
+        if (materialConfigEliminar) {
+            await this.materialConfigRepository.delete({ id: idMaterialConfig })
+            // se emite el evento
+            await this.eventEmitter.emitAsync("accionCritica", materialConfigEliminar.subsistemaConfig.sistemaConfig.configVersion)
+        }
+        else
+            throw new HttpException("No existe un Material con ese id", HttpStatus.BAD_REQUEST)
+
     }
 }

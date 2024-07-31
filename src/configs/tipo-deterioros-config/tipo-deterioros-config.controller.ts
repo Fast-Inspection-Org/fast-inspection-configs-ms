@@ -9,7 +9,7 @@ export class TipoDeteriorosConfigController {
 
     @Delete("deleteTipoDeterioroConfig/:id")
     public async deleteTipoDeterioro(@Param("id", ParseIntPipe) idTipoDeterioro: number) {
-        this.tipoDeterioroConfigService.deleteTipoDeterioroConfig(idTipoDeterioro)
+       await this.tipoDeterioroConfigService.deleteTipoDeterioroConfig(idTipoDeterioro)
     }
 
 }

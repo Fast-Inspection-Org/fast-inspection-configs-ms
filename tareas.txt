@@ -44,4 +44,7 @@ Por tanto la tarea sería modificar cada endpoint que se haya implementado de la
 22/06/2024
 *Decidir acciones a ejecutar despues de la eliminación de un registro
 16/07/2024
-*Validar que no puedan existir más de un indice cálculable perteneciente al mismo cálculo 
+*Validar que no puedan existir más de un indice cálculable perteneciente al mismo cálculo
+31/07/2024
+*Agregar atributo que represente la version de la configuracion en la estructura arbolea de los levantamientos para con ellos evitar la carga constante de relaciones
+*Verificar que acción tomar si no ham sido definido campos en las herramientas 

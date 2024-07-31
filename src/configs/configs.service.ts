@@ -247,4 +247,21 @@ export class ConfigsService {
             }
         })
     }
+
+       // Método para actualizar el estado de una configuración
+       public async actualizarEstadoConfig(versionConfig: number) {
+        const config: Config = await this.getConfig(versionConfig) // obtenemos la configuración a actualizar
+        // Verificamos si está activa o no
+        if (config) {
+            if (config.state) { // si está activa
+                if ((await config.getPorcentajeCompletitud()) < 100) { // si el porcentaje de completitud es inferior al 100 % (no cumple con los requisitos mínimos)
+                    config.state = false // se indica que esta configuración no va a seguir siendo activa
+                   await this.configuracionRepository.save(config) // se actualiza los cambios en la base de datos
+                }
+            }
+        }
+        else
+            throw new HttpException({ message: "No existe una configuración con esa versión" }, HttpStatus.BAD_REQUEST)
+    }
+    
 }

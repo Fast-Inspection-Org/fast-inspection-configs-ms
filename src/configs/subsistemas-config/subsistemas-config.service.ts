@@ -8,13 +8,14 @@ import { MaterialConfigDTO } from '../materiales-config/material-config.dto';
 import { MaterialesConfigService } from '../materiales-config/materiales-config.service';
 import { SubsistemaConfigSerializable } from './subsistema-config.serializable';
 import { UpdateSubsistemaConfigDTO } from './update-subsistema-config.dto';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 
 @Injectable()
 export class SubsistemasConfigService {
 
     constructor(@InjectRepository(SubsistemaConfig) private subSistemaConfigRepository: Repository<SubsistemaConfig>,
-        private materialConfigService: MaterialesConfigService) { }
+        private materialConfigService: MaterialesConfigService, private eventEmitter: EventEmitter2) { }
 
     public async getAllSubsistemasConfig(idSistemaConfig: number, nombre?: String): Promise<Array<SubsistemaConfigSerializable>> {
         const subsistemasConfigSerializable: Array<SubsistemaConfigSerializable> = new Array<SubsistemaConfigSerializable>()
@@ -83,7 +84,7 @@ export class SubsistemasConfigService {
     }
 
     // Método para modificar la información de un subsistema config en específico
-    public async updateSubsistemaConfig(idSubsistemaConfig: number, idSistemaConfig: number ,updateSubsistemaConfigDTO: UpdateSubsistemaConfigDTO) {
+    public async updateSubsistemaConfig(idSubsistemaConfig: number, idSistemaConfig: number, updateSubsistemaConfigDTO: UpdateSubsistemaConfigDTO) {
         // se obtiene un subsistema config con ese nombre
         const subsistemaConfig: SubsistemaConfig = await this.getSubSistemaConfig(undefined, idSistemaConfig, updateSubsistemaConfigDTO.nombre)
         // si no fue encontrado un subsistema config con ese nombre o si el que fue encontrado fue el mismo
@@ -98,7 +99,20 @@ export class SubsistemasConfigService {
 
     // Método para eliminar un subsistemaConfig en específico 
     public async deleteSubsistemaConfig(idSubsistemaConfig: number) {
-        await this.subSistemaConfigRepository.delete({ id: idSubsistemaConfig })
-    }
+        // se obtiene primero el subsistema config  antes de eliminarlo
+        const subSistemaConfigEliminar: SubsistemaConfig | undefined = await this.subSistemaConfigRepository.findOne({
+            where: {
+                id: idSubsistemaConfig
+            },
+            relations: ['sistemaConfig'] // Solo se carga la relación subsistemaConfig
+        })
 
+        if (subSistemaConfigEliminar) {
+            await this.subSistemaConfigRepository.delete({ id: idSubsistemaConfig })
+            // se emite el evento
+            await this.eventEmitter.emitAsync("accionCritica", subSistemaConfigEliminar.sistemaConfig.configVersion)
+        }
+        else
+            throw new HttpException("No existe un Subsistema Config con ese id", HttpStatus.BAD_REQUEST)
+    }
 }

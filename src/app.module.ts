@@ -9,6 +9,7 @@ import { UsuarioModule } from './usuario/usuario.module';
 import { AuthModule } from './auth/auth.module';
 
 import { MailerModule } from '@nestjs-modules/mailer';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 
 
@@ -49,6 +50,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
         },
       },
     }),
+    EventEmitterModule.forRoot()
   ],
   controllers: [AppController],
   providers: [AppService],

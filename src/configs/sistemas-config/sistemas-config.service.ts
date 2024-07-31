@@ -10,13 +10,14 @@ import { SubsistemasConfigService } from '../subsistemas-config/subsistemas-conf
 import { SistemaConfigSerializable } from './sistema-config.serializable';
 import { UpdateSistemaConfigDTO } from './update-sistema-config.dto';
 import { HerramientasService } from '../herramientas/herramientas.service';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 
 @Injectable()
 export class SistemasConfigService {
 
     constructor(@InjectRepository(SistemaConfig) private sistemaConfigRepository: Repository<SistemaConfig>,
-        private subSistemaConfigService: SubsistemasConfigService, private herramientaService: HerramientasService) { }
+        private subSistemaConfigService: SubsistemasConfigService, private herramientaService: HerramientasService, private eventEmitter: EventEmitter2) { }
 
 
 
@@ -153,7 +154,20 @@ export class SistemasConfigService {
 
     // Método para eliminar un sistema config en específico
     public async deleteSistemaConfig(idSistemaConfig: number) {
-        await this.sistemaConfigRepository.delete({ id: idSistemaConfig })
+        // se obtiene primero el sistema config  antes de eliminarlo
+        const sistemaConfigEliminar: SistemaConfig | undefined = await this.sistemaConfigRepository.findOne({
+            where: {
+                id: idSistemaConfig
+            }
+        })
+
+        if (sistemaConfigEliminar) {
+            await this.sistemaConfigRepository.delete({ id: idSistemaConfig })
+            // se emite el evento
+            await this.eventEmitter.emitAsync("accionCritica", sistemaConfigEliminar.configVersion)
+        }
+        else
+            throw new HttpException("No existe un Sistema Config con ese id", HttpStatus.BAD_REQUEST)
     }
 
     // Operaciones
