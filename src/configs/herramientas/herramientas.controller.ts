@@ -1,13 +1,14 @@
 import { Controller, Delete, Get, Param, ParseIntPipe, Query, UseGuards } from '@nestjs/common';
 import { HerramientasService } from './herramientas.service';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
+import { MessagePattern } from '@nestjs/microservices';
 
 @Controller('herramientas')
 export class HerramientasController {
     constructor(private herramientaService: HerramientasService) { }
-
-    @Delete("deleteHerramienta/:id")
-    public async deleteHerramienta(@Param("id", ParseIntPipe) idHerramienta: number) {
+    
+    @MessagePattern('deleteHerramienta')
+    public async deleteHerramienta(idHerramienta: number) {
         return await this.herramientaService.deleteHerramienta(idHerramienta)
     }
 }

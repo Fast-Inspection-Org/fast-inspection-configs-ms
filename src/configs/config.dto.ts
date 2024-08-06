@@ -9,7 +9,7 @@ import { SistemaConfig } from "./sistemas-config/sistema-config.entity"
 import { HerramientaAnalisisCriticidad } from "./herramienta-analisis-criticidad/herrramienta-analisis-criticidad.entity"
 import { IndiceCalculableIntervalo } from "./indice-calculable-intervalo/indice-calculable-intervalo.entity"
 import { IndiceCalculableSinIntervalo } from "./indice-calculable-sin-intervalo/indice-calculable-sin-intervalo.entity"
-import { Sistema } from "src/controlador-edificaciones/levantamiento/estructura-levantamiento/sistema.domain"
+
 
 
 export class ConfigDTO {

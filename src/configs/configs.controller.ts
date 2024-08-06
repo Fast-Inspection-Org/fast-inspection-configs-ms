@@ -9,63 +9,63 @@ import { ConfigOrderBy } from './config.entity';
 import { Roles } from 'src/decoradores/rol.decorator';
 import { RolEnum } from 'src/usuario/entities/usuario.entity';
 import { RolGuard } from 'src/auth/guards/rol/rol.guard';
+import { FiltersConfigDTO } from './filters-config.dto';
+import { MessagePattern } from '@nestjs/microservices';
 
 
 @Controller('configs')
 export class ConfigsController {
     constructor(private configsService: ConfigsService) { }
 
-    @Get("getAllConfigs") // Ruta para obtener todas las configuraciones registradas
-    public async getAllConfigs(@Query("version") version: string, @Query("nombre") nombre: String, @Query("orderBy") orderBy: ConfigOrderBy /* parametros representa los filtros de búsqueda */) {
+    @MessagePattern('getAllConfigs') // Ruta para obtener todas las configuraciones registradas
+    public async getAllConfigs(filtersConfig: FiltersConfigDTO /* parametros representa los filtros de búsqueda */) {
 
-        return await this.configsService.getAllConfigs(orderBy ? orderBy : ConfigOrderBy.Nombre, version ? parseInt(version) : undefined, nombre)
+        return await this.configsService.getAllConfigs(filtersConfig.orderBy ? filtersConfig.orderBy : ConfigOrderBy.Nombre, filtersConfig.version ? parseInt(filtersConfig.version.toString()) : undefined, filtersConfig.nombre)
     }
 
-    @Get("getLastConfig") // Ruta para obtener la ultima configuración registrada
+    @MessagePattern('getLastConfig') // Ruta para obtener la ultima configuración registrada
     public async getLastConfig() {
 
         return await this.configsService.getLastConfig()
     }
 
-    @Get("getConfigByVersion/:versionConfig") // Ruta para obtener la configuración con una versión en específico
-    public async getConfigByVersion(@Param("versionConfig", ParseIntPipe) versionConfig: number) {
+
+    @MessagePattern('getConfigByVersion') // Ruta para obtener la configuración con una versión en específico
+    public async getConfigByVersion(versionConfig: number) {
         return await this.configsService.getConfigByVersion(versionConfig)
     }
 
 
-    @Post("createConfigByOtherConfig/:versionOtherConfig")
-    @UseGuards(AuthGuard) // verifica el acceso a la solicitud
-    public async createConfigByOtherConfig(@Param("versionOtherConfig", ParseIntPipe) versionOtherConfig: number, @Body() configDTO: ConfigDTO) {
-        return await this.configsService.createConfigByOtherConfig(versionOtherConfig, configDTO.nombre, configDTO.descripcion)
+    @MessagePattern('createConfigByOtherConfig')
+    public async createConfigByOtherConfig(payload: { versionOtherConfig: number, configDTO: ConfigDTO } /* Representa el payload del mensaje */) {
+        return await this.configsService.createConfigByOtherConfig(payload.versionOtherConfig, payload.configDTO.nombre, payload.configDTO.descripcion)
     }
 
-    @Post("createNewConfig")
-    //@UseGuards(AuthGuard) // verifica el acceso a la solicitud
-    public async saveNewConfig(@Body() newConfig: ConfigDTO, @Req() req: RequestWithUser) {
+    @MessagePattern('createNewConfig')
+    public async saveNewConfig(newConfig: ConfigDTO) {
         // se debe registrar traza
         return await this.configsService.createConfig(newConfig)
     }
 
-    @Delete("deleteConfig/:version") // Ruta para eliminar una configuración en especifico (Método de super administrador)
-    @Roles([RolEnum.Administrador]) // Solo el rol administrador tiene acceso a la rutaa
-    @UseGuards(AuthGuard, RolGuard) // verifica el acceso a la solicitud
-    public async deleteConfig(@Param("version", ParseIntPipe) versionConfig: number) {
+
+    @MessagePattern('deleteConfig') // Ruta para eliminar una configuración en especifico (Método de super administrador)
+    public async deleteConfig(versionConfig: number) {
         return await this.configsService.deleteConfig(versionConfig)
     }
 
-    @Delete("deleteAllConfigs") // Ruta para eliminar todas las configuraciones (Método de super administrador)
+    @MessagePattern('deleteAllConfigs') // Ruta para eliminar todas las configuraciones (Método de super administrador)
     public async deletedeleteAllConfigs() {
         await this.configsService.deleteAllConfigs()
     }
 
-    @Patch("updateConfig/:version")
-    @UseGuards(AuthGuard) // verifica el acceso a la solicitud
-    public async updateConfig(@Param("version", ParseIntPipe) version: number, @Body() updateConfigDTO: UpdateConfigDTO) {
-        await this.configsService.updateConfig(version, updateConfigDTO)
+
+    @MessagePattern('updateConfig')
+    public async updateConfig(payload: { version: number, updateConfigDTO: UpdateConfigDTO }) {
+        await this.configsService.updateConfig(payload.version, payload.updateConfigDTO)
     }
 
-    @Patch("marcarAsActivaConfig/:version")
-    public async marcarAsActivaConfig(@Param("version", ParseIntPipe) version: number) {
+    @MessagePattern('marcarAsActivaConfig')
+    public async marcarAsActivaConfig(version: number) {
         return await this.configsService.marcarAsActivaConfig(version)
     }
 }

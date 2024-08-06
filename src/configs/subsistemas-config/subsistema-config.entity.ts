@@ -1,8 +1,6 @@
 import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { SistemaConfig } from "../sistemas-config/sistema-config.entity";
 import { MaterialConfig } from "../materiales-config/material-config.entity";
-import { retry } from "rxjs";
-import { Material } from "src/controlador-edificaciones/levantamiento/estructura-levantamiento/material.domain";
 
 @Entity("subsistemaConfig")
 export class SubsistemaConfig {

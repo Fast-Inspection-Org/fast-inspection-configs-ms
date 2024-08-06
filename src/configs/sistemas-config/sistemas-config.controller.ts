@@ -3,42 +3,45 @@ import { SistemasConfigService } from './sistemas-config.service';
 import { SistemaConfigDTO } from './sistema-config.dto';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { UpdateSistemaConfigDTO } from './update-sistema-config.dto';
+import { MessagePattern } from '@nestjs/microservices';
+import { FiltersSistemaConfigDTO } from './filters-sistema-config.dto';
 
 @Controller('sistemas-config')
 export class SistemasConfigController {
     constructor(private sistemaConfigService: SistemasConfigService) { }
 
-    @Post("createSistemaConfig")
-    public async createSistemaConfig(@Body() sistemaConfigDTO: SistemaConfigDTO) {
+    @MessagePattern('createSistemaConfig')
+    public async createSistemaConfig(sistemaConfigDTO: SistemaConfigDTO) {
 
         return await this.sistemaConfigService.createSistemaConfig(sistemaConfigDTO)
     }
 
-    @Patch("updateSistemaConfig/:id")
-    public async updateSistemaConfig(@Param("id", ParseIntPipe) idSistemaConfig: number, @Body() updateSistemaConfigDTO: UpdateSistemaConfigDTO) {
-        return await this.sistemaConfigService.updateSistemaConfigDTO(idSistemaConfig, updateSistemaConfigDTO)
+    @MessagePattern('updateSistemaConfig')
+    public async updateSistemaConfig(payload: { idSistemaConfig: number, updateSistemaConfigDTO: UpdateSistemaConfigDTO }) {
+        return await this.sistemaConfigService.updateSistemaConfigDTO(payload.idSistemaConfig, payload.updateSistemaConfigDTO)
     }
 
-    @Get("getAllSistemasConfig")
+
+    @MessagePattern('getAllSistemasConfig')
     public async getAllSistemasConfig() {
         return await this.sistemaConfigService.getAllSistemasConfig()
     }
 
+    // cambiar el enfoque de los filtros
+    @MessagePattern('getAllBelongConfig')
+    public async getAllBelongConfig(filtersSistemaConfigDTO: FiltersSistemaConfigDTO) {
 
-    @Get("getAllBelongConfig/:version")
-    //@UseGuards(AuthGuard)
-    public async getAllBelongConfig(@Param("version") versionConfig: number, @Query("nombre") nombre: String, @Query("nombreHerramienta") nombreHerramienta: String) {
-
-        return await this.sistemaConfigService.getAllSistemasConfig(versionConfig, nombre, nombreHerramienta)
+        return await this.sistemaConfigService.getAllSistemasConfig(filtersSistemaConfigDTO.versionConfig, filtersSistemaConfigDTO.nombre,
+            filtersSistemaConfigDTO.nombreHerramienta)
     }
 
-    @Delete("deleteSistemaConfig/:id")
-    public async deleteSistemaConfig(@Param("id", ParseIntPipe) idSistema: number) {
+    @MessagePattern('deleteSistemaConfig')
+    public async deleteSistemaConfig(idSistema: number) {
         return await this.sistemaConfigService.deleteSistemaConfig(idSistema)
     }
 
-    @Get("getHerramientaSistemaMaterial/:idMaterial/:versionConfig")
-    public async getHerramientaSistemaMaterial(@Param("idMaterial", ParseIntPipe) idMaterial: number, @Param("versionConfig", ParseIntPipe) versionConfig: number) {
-        return await this.sistemaConfigService.getHerramientaSistemaMaterial(idMaterial, versionConfig)
+    @MessagePattern('getHerramientaSistemaMaterial')
+    public async getHerramientaSistemaMaterial(payload: { idMaterial: number, versionConfig: number }) {
+        return await this.sistemaConfigService.getHerramientaSistemaMaterial(payload.idMaterial, payload.versionConfig)
     }
 }

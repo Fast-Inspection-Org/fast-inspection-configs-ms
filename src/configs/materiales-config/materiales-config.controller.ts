@@ -2,28 +2,33 @@ import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query 
 import { MaterialesConfigService } from './materiales-config.service';
 import { MaterialConfigDTO } from './material-config.dto';
 import { UpdateMaterialConfigDTO } from './update-material-config.dto';
+import { MessagePattern } from '@nestjs/microservices';
+import { FiltersMaterialConfigDTO } from './filters-material-config.dto';
 
 @Controller('materiales-config')
 export class MaterialesConfigController {
     constructor(private materialesConfigService: MaterialesConfigService) { }
-    @Get("getAllMaterialesConfig/:idSubsistemaConfig")
-    public async getAllMaterialesConfig(@Param("idSubsistemaConfig", ParseIntPipe) idSubsistemaConfig, @Query("nombre") nombre: String) {
-        return await this.materialesConfigService.getAllMaterialesConfig(idSubsistemaConfig, nombre)
+
+    @MessagePattern('getAllMaterialesConfig')
+    public async getAllMaterialesConfig(filtersMaterialConfigDTO: FiltersMaterialConfigDTO) {
+        return await this.materialesConfigService.getAllMaterialesConfig(filtersMaterialConfigDTO.idSubsistemaConfig, filtersMaterialConfigDTO.nombre)
     }
 
-    @Post("createMaterialConfig")
-    public async createMaterialConfig(@Body() materialConfig: MaterialConfigDTO) {
+    @MessagePattern('createMaterialConfig')
+    public async createMaterialConfig(materialConfig: MaterialConfigDTO) {
         return await this.materialesConfigService.createMaterialConfig(materialConfig)
     }
 
-    @Patch("updateMaterialConfig/:id/:idSubsistemaConfig")
-    public async updateMaterialConfig(@Param("id", ParseIntPipe) idMaterialConfig: number, @Param("idSubsistemaConfig", ParseIntPipe) idSubsistemaConfig: number,
-        @Body() updateMaterialConfigDTO: UpdateMaterialConfigDTO) {
-        return await this.materialesConfigService.updateMaterialConfig(idMaterialConfig, idSubsistemaConfig, updateMaterialConfigDTO)
+    @MessagePattern('updateMaterialConfig')
+    public async updateMaterialConfig(payload: {
+        idMaterialConfig: number, idSubsistemaConfig: number,
+        updateMaterialConfigDTO: UpdateMaterialConfigDTO
+    }) {
+        return await this.materialesConfigService.updateMaterialConfig(payload.idMaterialConfig, payload.idSubsistemaConfig, payload.updateMaterialConfigDTO)
     }
 
-    @Delete("deleteMaterialConfig/:id")
-    public async deleteMaterialConfig(@Param("id", ParseIntPipe) idMaterialConfig: number) {
+    @MessagePattern('deleteMaterialConfig')
+    public async deleteMaterialConfig(idMaterialConfig: number) {
         return await this.materialesConfigService.deleteMaterialConfig(idMaterialConfig)
     }
 }

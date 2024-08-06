@@ -3,7 +3,6 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigsModule } from './configs/configs.module';
-import { ControladorEdificacionesModule } from './controlador-edificaciones/controlador-edificaciones.module';
 import { ConfigModule } from '@nestjs/config';
 import { UsuarioModule } from './usuario/usuario.module';
 import { AuthModule } from './auth/auth.module';
@@ -39,7 +38,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
             }
             : null,
       },
-    }), ConfigsModule, ControladorEdificacionesModule, UsuarioModule, AuthModule,
+    }), ConfigsModule, UsuarioModule, AuthModule,
     AuthModule,
     MailerModule.forRoot({
       transport: {

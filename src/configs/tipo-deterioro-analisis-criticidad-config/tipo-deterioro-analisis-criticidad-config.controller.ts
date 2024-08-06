@@ -3,33 +3,35 @@ import { TipoDeterioroAnalisisCriticidadConfigService } from './tipo-deterioro-a
 import { TipoDeterioroAnalisisCriticidadConfigDTO } from './tipo-deterioro-analisis-criticidad-config.dto';
 import { TipoDeterioroConfigDTO } from '../tipo-deterioros-config/tipo-deterioro-config.dto';
 import { UpdateTipoDeterioroAnalisisCriticidadConfigDTO } from './update-tipo-deterioro-analisis-criticidad-config.dt';
+import { MessagePattern } from '@nestjs/microservices';
 
 @Controller('tipo-deterioro-analisis-criticidad-config')
 export class TipoDeterioroAnalisisCriticidadConfigController {
 
     constructor(private tipoDeterioroAnalisisCriticidadConfigService: TipoDeterioroAnalisisCriticidadConfigService) { }
 
-    @Get("getAllTiposDeteriorosAnalisisCriticidadConfig/:idMaterialConfig")
-    public async getAllTiposDeteriorosConfig(@Param("idMaterialConfig", ParseIntPipe) idMaterialConfig: number, @Query("nombre") nombre: String) {
-
+    @MessagePattern('getAllTiposDeteriorosAnalisisCriticidadConfig')
+    public async getAllTiposDeteriorosConfig(idMaterialConfig: number, nombre: String) {
         return await this.tipoDeterioroAnalisisCriticidadConfigService.getAllTiposDeteriorosAnalisisCriticidadConfig(idMaterialConfig, nombre)
     }
 
-    @Get("getTipoDeterioroAnalisisCriticidad/:id")
-    public async getTipoDeterioroAnalisisCriticidad(@Param("id", ParseIntPipe) idTipoDeterioro: number) {
-
+    @MessagePattern('getTipoDeterioroAnalisisCriticidad')
+    public async getTipoDeterioroAnalisisCriticidad(idTipoDeterioro: number) {
         return await this.tipoDeterioroAnalisisCriticidadConfigService.getTipoDeterioroAnalisisCriticidadConfigSerializable(idTipoDeterioro)
     }
 
-    @Post("createTipoDeterioroAnalisisCriticidadConfig")
-    public async createTipoDeterioroAnalisisCriticidadConfig(@Body() tipoDeterioroConfigDTO: TipoDeterioroConfigDTO) {
+    @MessagePattern('createTipoDeterioroAnalisisCriticidadConfig')
+    public async createTipoDeterioroAnalisisCriticidadConfig(tipoDeterioroConfigDTO: TipoDeterioroConfigDTO) {
         await this.tipoDeterioroAnalisisCriticidadConfigService.createTipoDeterioroAnalisisCriticidadConfig(tipoDeterioroConfigDTO)
     }
 
-    @Patch("updateTipoDeterioroAnalisisCriticidad/:id")
-    public async updateTipoDeterioroAnalisisCriticidad(@Param("id", ParseIntPipe) idTipoDeterioro: number,
-        @Body() updateTipoDeterioroAnalisisCriticidadDTO: UpdateTipoDeterioroAnalisisCriticidadConfigDTO) {
-        return await this.tipoDeterioroAnalisisCriticidadConfigService.updateTipoDeterioroConfigAnalisisCriticidadConfig(idTipoDeterioro, updateTipoDeterioroAnalisisCriticidadDTO)
+    @MessagePattern('updateTipoDeterioroAnalisisCriticidad')
+    public async updateTipoDeterioroAnalisisCriticidad(payload: {
+        idTipoDeterioro: number,
+        updateTipoDeterioroAnalisisCriticidadDTO: UpdateTipoDeterioroAnalisisCriticidadConfigDTO
+    }) {
+        return await this.tipoDeterioroAnalisisCriticidadConfigService.updateTipoDeterioroConfigAnalisisCriticidadConfig(payload.idTipoDeterioro,
+            payload.updateTipoDeterioroAnalisisCriticidadDTO)
     }
 
 }

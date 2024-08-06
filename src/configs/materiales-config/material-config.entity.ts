@@ -1,8 +1,6 @@
 import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm"
 import { SubsistemaConfig } from "../subsistemas-config/subsistema-config.entity"
 import { TipoDeterioroConfig } from "../tipo-deterioros-config/tipo-deterioro-config.entity"
-import { TipoDeterioroAnalisisCriticidadConfig } from "../tipo-deterioro-analisis-criticidad-config/tipo-deterioro-analisis-criticidad-config.entity"
-import { TipoDeterioro } from "src/controlador-edificaciones/levantamiento/estructura-levantamiento/tipo-deterioro.domain"
 
 @Entity("materialConfig")
 export class MaterialConfig {

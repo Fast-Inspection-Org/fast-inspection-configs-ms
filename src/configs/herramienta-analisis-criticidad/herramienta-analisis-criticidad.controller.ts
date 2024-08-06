@@ -2,6 +2,8 @@ import { Body, ClassSerializerInterceptor, Controller, Delete, Get, Param, Parse
 import { HerramientaAnalisisCriticidadService } from './herramienta-analisis-criticidad.service';
 import { HerramientaDTO } from '../herramientas/herramienta.dto';
 import { UpdateHerramientaAnalisisCriticidadDTO } from './update-herramienta-analisis-criticidad.dto';
+import { MessagePattern } from '@nestjs/microservices';
+import { FiltersHerramientaAnalisisCriticidadDTO } from './filters-herramienta-analisis-criticidad.dto';
 
 
 
@@ -11,39 +13,34 @@ export class HerramientaAnalisisCriticidadController {
 
     constructor(private herramientaAnalisisCriticidadService: HerramientaAnalisisCriticidadService) { }
 
-    @Post("createHerramientaAnalisisCriticidad")
-    public async createHerramientaAnalisisCriticidad(@Body() herramientaDTO: HerramientaDTO) {
-
+    @MessagePattern('createHerramientaAnalisisCriticidad')
+    public async createHerramientaAnalisisCriticidad(herramientaDTO: HerramientaDTO) {
         return await this.herramientaAnalisisCriticidadService.createHerramientaAnalisisCriticidad(herramientaDTO)
-
-
     }
 
-    @Patch("updateHerramientaAnalisisCriticidad/:id")
-    public async updateHerramientaAnalisisCriticidad(@Param("id") idHerramienta: number, @Body() updateHerramientaAnalisisCriticidadDTO: UpdateHerramientaAnalisisCriticidadDTO) {
-        return await this.herramientaAnalisisCriticidadService.updateHerramientaAnalisisCriticidad(idHerramienta, updateHerramientaAnalisisCriticidadDTO)
+    @MessagePattern('updateHerramientaAnalisisCriticidad')
+    public async updateHerramientaAnalisisCriticidad(payload: {
+        idHerramienta: number,
+        updateHerramientaAnalisisCriticidadDTO: UpdateHerramientaAnalisisCriticidadDTO
+    }) {
+        return await this.herramientaAnalisisCriticidadService.updateHerramientaAnalisisCriticidad(payload.idHerramienta,
+            payload.updateHerramientaAnalisisCriticidadDTO)
+    }
+
+    @MessagePattern('getAllHerramientasAnalisisCritcidad')
+    public async getAll(filtersHerramientaAnalisisCriticidadDTO: FiltersHerramientaAnalisisCriticidadDTO) {
+        return await this.herramientaAnalisisCriticidadService.getAllHerrramientasAnalisisCriticidad(filtersHerramientaAnalisisCriticidadDTO.versionConfig
+            ? parseInt(filtersHerramientaAnalisisCriticidadDTO.versionConfig.toString()) : undefined, filtersHerramientaAnalisisCriticidadDTO.nombre)
     }
 
 
-    @Get("getAllHerramientasAnalisisCritcidad")
-    public async getAll(@Query("versionConfig") versionConfig: string, @Query("nombre") nombre: string) {
-        return await this.herramientaAnalisisCriticidadService.getAllHerrramientasAnalisisCriticidad(versionConfig ? parseInt(versionConfig) : undefined, nombre)
-    }
-
-    @Get("getHerramientaAnalisisCriticidad/:id")
-    public async getHerramientaAnalisisCriticidad(@Param("id", ParseIntPipe) idHerramienta: number) {
+    @MessagePattern('getHerramientaAnalisisCriticidad')
+    public async getHerramientaAnalisisCriticidad(idHerramienta: number) {
         return await this.herramientaAnalisisCriticidadService.getHerramientaAnalisisCriticdad(idHerramienta)
     }
 
-    @UseInterceptors(ClassSerializerInterceptor)
-    @Get("getCamposHerramienta/:id")
-    public async getCamposHerramienta(@Param("id", ParseIntPipe) idHerramienta: number) {
+    @MessagePattern('getCamposHerramienta')
+    public async getCamposHerramienta(idHerramienta: number) {
         return await this.herramientaAnalisisCriticidadService.getCamposAfectados(idHerramienta)
     }
-
-    @Delete("deleteHerramientaAnalisisCritcidad/:id")
-    public async deleteHerramientaAnalisisCritcidad(@Param() idHerramienta: number) {
-
-    }
-
 }
