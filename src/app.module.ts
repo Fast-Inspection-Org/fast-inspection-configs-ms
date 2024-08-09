@@ -4,9 +4,6 @@ import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigsModule } from './configs/configs.module';
 import { ConfigModule } from '@nestjs/config';
-import { UsuarioModule } from './usuario/usuario.module';
-import { AuthModule } from './auth/auth.module';
-
 import { MailerModule } from '@nestjs-modules/mailer';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 
@@ -38,8 +35,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
             }
             : null,
       },
-    }), ConfigsModule, UsuarioModule, AuthModule,
-    AuthModule,
+    }), ConfigsModule,
     MailerModule.forRoot({
       transport: {
         host: process.env.EMAIL_HOST, //

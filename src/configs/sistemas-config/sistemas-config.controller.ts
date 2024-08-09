@@ -1,7 +1,6 @@
 import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, ParseIntPipe, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { SistemasConfigService } from './sistemas-config.service';
 import { SistemaConfigDTO } from './sistema-config.dto';
-import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { UpdateSistemaConfigDTO } from './update-sistema-config.dto';
 import { MessagePattern } from '@nestjs/microservices';
 import { FiltersSistemaConfigDTO } from './filters-sistema-config.dto';

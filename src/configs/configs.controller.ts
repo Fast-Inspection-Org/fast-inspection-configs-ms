@@ -1,14 +1,9 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, Param, ParseIntPipe, Patch, Post, Query, Req, Request, UseGuards } from '@nestjs/common';
 import { ConfigsService } from './configs.service';
 import { ConfigDTO } from './config.dto';
-
-import { RequestWithUser } from 'src/auth/request-with-user';
-import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { UpdateConfigDTO } from './config-update.dto';
 import { ConfigOrderBy } from './config.entity';
 import { Roles } from 'src/decoradores/rol.decorator';
-import { RolEnum } from 'src/usuario/entities/usuario.entity';
-import { RolGuard } from 'src/auth/guards/rol/rol.guard';
 import { FiltersConfigDTO } from './filters-config.dto';
 import { MessagePattern } from '@nestjs/microservices';
 
