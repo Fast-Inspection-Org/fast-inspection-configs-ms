@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, ParseI
 import { SistemasConfigService } from './sistemas-config.service';
 import { SistemaConfigDTO } from './sistema-config.dto';
 import { UpdateSistemaConfigDTO } from './update-sistema-config.dto';
-import { MessagePattern } from '@nestjs/microservices';
+import { MessagePattern, RpcException } from '@nestjs/microservices';
 import { FiltersSistemaConfigDTO } from './filters-sistema-config.dto';
 
 @Controller('sistemas-config')
@@ -11,36 +11,79 @@ export class SistemasConfigController {
 
     @MessagePattern('createSistemaConfig')
     public async createSistemaConfig(sistemaConfigDTO: SistemaConfigDTO) {
-
-        return await this.sistemaConfigService.createSistemaConfig(sistemaConfigDTO)
+        try {
+            await this.sistemaConfigService.createSistemaConfig(sistemaConfigDTO)
+            return { success: true }
+        } catch (error) {
+            throw new RpcException({
+                message: error.message,
+                status: error.status
+            })
+        }
     }
 
     @MessagePattern('updateSistemaConfig')
     public async updateSistemaConfig(payload: { idSistemaConfig: number, updateSistemaConfigDTO: UpdateSistemaConfigDTO }) {
-        return await this.sistemaConfigService.updateSistemaConfigDTO(payload.idSistemaConfig, payload.updateSistemaConfigDTO)
+        try {
+            await this.sistemaConfigService.updateSistemaConfigDTO(payload.idSistemaConfig, payload.updateSistemaConfigDTO)
+            return { success: true }
+        } catch (error) {
+            throw new RpcException({
+                message: error.message,
+                status: error.status
+            })
+        }
     }
 
 
     @MessagePattern('getAllSistemasConfig')
     public async getAllSistemasConfig() {
-        return await this.sistemaConfigService.getAllSistemasConfig()
+        try {
+            return await this.sistemaConfigService.getAllSistemasConfig()
+        } catch (error) {
+            throw new RpcException({
+                message: error.message,
+                status: error.status
+            })
+        }
     }
 
     // cambiar el enfoque de los filtros
     @MessagePattern('getAllBelongConfig')
     public async getAllBelongConfig(filtersSistemaConfigDTO: FiltersSistemaConfigDTO) {
-
-        return await this.sistemaConfigService.getAllSistemasConfig(filtersSistemaConfigDTO.versionConfig, filtersSistemaConfigDTO.nombre,
-            filtersSistemaConfigDTO.nombreHerramienta)
+        try {
+            return await this.sistemaConfigService.getAllSistemasConfig(filtersSistemaConfigDTO.versionConfig, filtersSistemaConfigDTO.nombre,
+                filtersSistemaConfigDTO.nombreHerramienta)
+        } catch (error) {
+            throw new RpcException({
+                message: error.message,
+                status: error.status
+            })
+        }
     }
 
     @MessagePattern('deleteSistemaConfig')
     public async deleteSistemaConfig(idSistema: number) {
-        return await this.sistemaConfigService.deleteSistemaConfig(idSistema)
+        try {
+            await this.sistemaConfigService.deleteSistemaConfig(idSistema)
+            return { success: true }
+        } catch (error) {
+            throw new RpcException({
+                message: error.message,
+                status: error.status
+            })
+        }
     }
 
     @MessagePattern('getHerramientaSistemaMaterial')
     public async getHerramientaSistemaMaterial(payload: { idMaterial: number, versionConfig: number }) {
-        return await this.sistemaConfigService.getHerramientaSistemaMaterial(payload.idMaterial, payload.versionConfig)
+        try {
+            return await this.sistemaConfigService.getHerramientaSistemaMaterial(payload.idMaterial, payload.versionConfig)
+        } catch (error) {
+            throw new RpcException({
+                message: error.message,
+                status: error.status
+            })
+        }
     }
 }

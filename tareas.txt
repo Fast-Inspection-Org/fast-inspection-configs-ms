@@ -49,4 +49,7 @@ Por tanto la tarea sería modificar cada endpoint que se haya implementado de la
 *Agregar atributo que represente la version de la configuracion en la estructura arbolea de los levantamientos para con ellos evitar la carga constante de relaciones
 *Verificar que acción tomar si no ham sido definido campos en las herramientas
 04/08/2024
-*Cambio total en la lógica de los Levantamientos. Se opta por un enfoque no relacional un poco más redundante para ganar velocidad 
+*Cambio total en la lógica de los Levantamientos. Se opta por un enfoque no relacional un poco más redundante para ganar velocidad
+09/08/2024
+*Establecer una respuesta para todos los controladores
+*Cambiar las exeptions lanzadas en los servicios por Grpc exeption 

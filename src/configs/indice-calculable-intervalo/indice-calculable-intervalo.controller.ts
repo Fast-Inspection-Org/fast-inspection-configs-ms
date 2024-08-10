@@ -3,7 +3,7 @@ import { IndiceCalculableIntervaloService } from './indice-calculable-intervalo.
 import { Calculos } from '../indice-calculable/indice-calculable.entity';
 import { IndiceCalculableDTO } from '../indice-calculable/indice-calculable.dto';
 import { UpdateIndiceCalculableIntervaloDTO } from './update-indice-calculable-intervalo.dto';
-import { MessagePattern } from '@nestjs/microservices';
+import { MessagePattern, RpcException } from '@nestjs/microservices';
 import { FiltersIndiceCalculableIntervaloDTO } from './filters-indice-calculable-intervalo.dto';
 
 @Controller('indice-calculable-intervalo')
@@ -12,24 +12,54 @@ export class IndiceCalculableIntervaloController {
 
     @MessagePattern('getAllIndicesCalculablesIntervalos')
     public async getAllIndicesCalculablesIntervalos(filtersIndiceCalculableIntervalo: FiltersIndiceCalculableIntervaloDTO) {
-        return await this.indiceCalculableIntervalosService.getAllIndicesCalculablesIntervalos(filtersIndiceCalculableIntervalo.nombre,
-            filtersIndiceCalculableIntervalo.calculo,
-            filtersIndiceCalculableIntervalo.versionConfig ? parseInt(filtersIndiceCalculableIntervalo.versionConfig.toString()) : undefined)
+        try {
+            return await this.indiceCalculableIntervalosService.getAllIndicesCalculablesIntervalos(filtersIndiceCalculableIntervalo.nombre,
+                filtersIndiceCalculableIntervalo.calculo,
+                filtersIndiceCalculableIntervalo.versionConfig ? parseInt(filtersIndiceCalculableIntervalo.versionConfig.toString()) : undefined)
+        } catch (error) {
+            throw new RpcException({
+                message: error.message,
+                status: error.status
+            })
+        }
     }
 
     @MessagePattern('getIndiceCalculableIntervalo')
     public async getIndiceCalculableIntervalo(idIndiceCalculable: number) {
-        return await this.indiceCalculableIntervalosService.getIndiceCalculableIntervaloWithRelations(idIndiceCalculable)
+        try {
+            return await this.indiceCalculableIntervalosService.getIndiceCalculableIntervaloWithRelations(idIndiceCalculable)
+        } catch (error) {
+            throw new RpcException({
+                message: error.message,
+                status: error.status
+            })
+        }
     }
 
     @MessagePattern('createIndiceCalculableIntervalo')
     public async createIndiceCalculableIntervalo(indiceCalculableIntervaloDTO: IndiceCalculableDTO) {
-        return await this.indiceCalculableIntervalosService.createIndiceCalculableIntervalo(indiceCalculableIntervaloDTO)
+        try {
+            await this.indiceCalculableIntervalosService.createIndiceCalculableIntervalo(indiceCalculableIntervaloDTO)
+            return { success: true }
+        } catch (error) {
+            throw new RpcException({
+                message: error.message,
+                status: error.status
+            })
+        }
     }
 
     @MessagePattern('updateIndiceCalculableIntervalo')
     public async updateIndiceCalculableIntervalo(payload: { idIndiceCalculable, updateIndiceCalculableIntervaloDTO: UpdateIndiceCalculableIntervaloDTO }) {
-        return await this.indiceCalculableIntervalosService.updateIndiceCalculableIntervalos(payload.idIndiceCalculable,
-            payload.updateIndiceCalculableIntervaloDTO)
+        try {
+            await this.indiceCalculableIntervalosService.updateIndiceCalculableIntervalos(payload.idIndiceCalculable,
+                payload.updateIndiceCalculableIntervaloDTO)
+            return { success: true }
+        } catch (error) {
+            throw new RpcException({
+                message: error.message,
+                status: error.status
+            })
+        }
     }
 }

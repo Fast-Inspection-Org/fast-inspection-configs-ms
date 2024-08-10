@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query 
 import { MaterialesConfigService } from './materiales-config.service';
 import { MaterialConfigDTO } from './material-config.dto';
 import { UpdateMaterialConfigDTO } from './update-material-config.dto';
-import { MessagePattern } from '@nestjs/microservices';
+import { MessagePattern, RpcException } from '@nestjs/microservices';
 import { FiltersMaterialConfigDTO } from './filters-material-config.dto';
 
 @Controller('materiales-config')
@@ -11,12 +11,27 @@ export class MaterialesConfigController {
 
     @MessagePattern('getAllMaterialesConfig')
     public async getAllMaterialesConfig(filtersMaterialConfigDTO: FiltersMaterialConfigDTO) {
-        return await this.materialesConfigService.getAllMaterialesConfig(filtersMaterialConfigDTO.idSubsistemaConfig, filtersMaterialConfigDTO.nombre)
+        try {
+            return await this.materialesConfigService.getAllMaterialesConfig(filtersMaterialConfigDTO.idSubsistemaConfig, filtersMaterialConfigDTO.nombre)
+        } catch (error) {
+            throw new RpcException({
+                message: error.message,
+                status: error.status
+            })
+        }
     }
 
     @MessagePattern('createMaterialConfig')
     public async createMaterialConfig(materialConfig: MaterialConfigDTO) {
-        return await this.materialesConfigService.createMaterialConfig(materialConfig)
+        try {
+            await this.materialesConfigService.createMaterialConfig(materialConfig)
+            return { success: true }
+        } catch (error) {
+            throw new RpcException({
+                message: error.message,
+                status: error.status
+            })
+        }
     }
 
     @MessagePattern('updateMaterialConfig')
@@ -24,11 +39,27 @@ export class MaterialesConfigController {
         idMaterialConfig: number, idSubsistemaConfig: number,
         updateMaterialConfigDTO: UpdateMaterialConfigDTO
     }) {
-        return await this.materialesConfigService.updateMaterialConfig(payload.idMaterialConfig, payload.idSubsistemaConfig, payload.updateMaterialConfigDTO)
+        try {
+            await this.materialesConfigService.updateMaterialConfig(payload.idMaterialConfig, payload.idSubsistemaConfig, payload.updateMaterialConfigDTO)
+            return { success: true }
+        } catch (error) {
+            throw new RpcException({
+                message: error.message,
+                status: error.status
+            })
+        }
     }
 
     @MessagePattern('deleteMaterialConfig')
     public async deleteMaterialConfig(idMaterialConfig: number) {
-        return await this.materialesConfigService.deleteMaterialConfig(idMaterialConfig)
+        try {
+            await this.materialesConfigService.deleteMaterialConfig(idMaterialConfig)
+            return { success: true }
+        } catch (error) {
+            throw new RpcException({
+                message: error.message,
+                status: error.status
+            })
+        }
     }
 }

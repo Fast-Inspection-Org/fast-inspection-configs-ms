@@ -1,11 +1,10 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, Param, ParseIntPipe, Patch, Post, Query, Req, Request, UseGuards } from '@nestjs/common';
+import { Controller} from '@nestjs/common';
 import { ConfigsService } from './configs.service';
 import { ConfigDTO } from './config.dto';
 import { UpdateConfigDTO } from './config-update.dto';
 import { ConfigOrderBy } from './config.entity';
-import { Roles } from 'src/decoradores/rol.decorator';
 import { FiltersConfigDTO } from './filters-config.dto';
-import { MessagePattern } from '@nestjs/microservices';
+import { MessagePattern, RpcException } from '@nestjs/microservices';
 
 
 @Controller('configs')
@@ -14,53 +13,118 @@ export class ConfigsController {
 
     @MessagePattern('getAllConfigs') // Ruta para obtener todas las configuraciones registradas
     public async getAllConfigs(filtersConfig: FiltersConfigDTO /* parametros representa los filtros de búsqueda */) {
-
-        return await this.configsService.getAllConfigs(filtersConfig.orderBy ? filtersConfig.orderBy : ConfigOrderBy.Nombre, filtersConfig.version ? parseInt(filtersConfig.version.toString()) : undefined, filtersConfig.nombre)
+        try {
+            return await this.configsService.getAllConfigs(filtersConfig.orderBy ? filtersConfig.orderBy : ConfigOrderBy.Nombre, filtersConfig.version ? parseInt(filtersConfig.version.toString()) : undefined, filtersConfig.nombre)
+        } catch (error) {
+            throw new RpcException({
+                message: error.message,
+                status: error.status
+            })
+        }
     }
 
     @MessagePattern('getLastConfig') // Ruta para obtener la ultima configuración registrada
     public async getLastConfig() {
-
-        return await this.configsService.getLastConfig()
+        try {
+            return await this.configsService.getLastConfig()
+        } catch (error) {
+            throw new RpcException({
+                message: error.message,
+                status: error.status
+            })
+        }
     }
 
 
     @MessagePattern('getConfigByVersion') // Ruta para obtener la configuración con una versión en específico
     public async getConfigByVersion(versionConfig: number) {
-        return await this.configsService.getConfigByVersion(versionConfig)
+        try {
+            return await this.configsService.getConfigByVersion(versionConfig)
+        } catch (error) {
+            throw new RpcException({
+                message: error.message,
+                status: error.status
+            })
+        }
     }
 
 
     @MessagePattern('createConfigByOtherConfig')
     public async createConfigByOtherConfig(payload: { versionOtherConfig: number, configDTO: ConfigDTO } /* Representa el payload del mensaje */) {
-        return await this.configsService.createConfigByOtherConfig(payload.versionOtherConfig, payload.configDTO.nombre, payload.configDTO.descripcion)
+        try {
+            await this.configsService.createConfigByOtherConfig(payload.versionOtherConfig, payload.configDTO.nombre, payload.configDTO.descripcion)
+            return { success: true }
+        } catch (error) {
+            throw new RpcException({
+                message: error.message,
+                status: error.status
+            })
+        }
     }
 
     @MessagePattern('createNewConfig')
     public async saveNewConfig(newConfig: ConfigDTO) {
-        // se debe registrar traza
-        return await this.configsService.createConfig(newConfig)
+        try {
+            // se debe registrar traza
+            await this.configsService.createConfig(newConfig)
+            return { success: true }
+        } catch (error) {
+            throw new RpcException({
+                message: error.message,
+                status: error.status
+            })
+        }
     }
-
 
     @MessagePattern('deleteConfig') // Ruta para eliminar una configuración en especifico (Método de super administrador)
     public async deleteConfig(versionConfig: number) {
-        return await this.configsService.deleteConfig(versionConfig)
+        try {
+            await this.configsService.deleteConfig(versionConfig)
+            return { success: true }
+        } catch (error) {
+            throw new RpcException({
+                message: error.message,
+                status: error.status
+            })
+        }
     }
 
     @MessagePattern('deleteAllConfigs') // Ruta para eliminar todas las configuraciones (Método de super administrador)
     public async deletedeleteAllConfigs() {
-        await this.configsService.deleteAllConfigs()
+        try {
+            await this.configsService.deleteAllConfigs()
+            return { success: true }
+        } catch (error) {
+            throw new RpcException({
+                message: error.message,
+                status: error.status
+            })
+        }
     }
-
 
     @MessagePattern('updateConfig')
     public async updateConfig(payload: { version: number, updateConfigDTO: UpdateConfigDTO }) {
-        await this.configsService.updateConfig(payload.version, payload.updateConfigDTO)
+        try {
+            await this.configsService.updateConfig(payload.version, payload.updateConfigDTO)
+            return { success: true }
+        } catch (error) {
+            throw new RpcException({
+                message: error.message,
+                status: error.status
+            })
+        }
     }
 
     @MessagePattern('marcarAsActivaConfig')
     public async marcarAsActivaConfig(version: number) {
-        return await this.configsService.marcarAsActivaConfig(version)
+        try {
+            await this.configsService.marcarAsActivaConfig(version)
+            return { success: true }
+        } catch (error) {
+            throw new RpcException({
+                message: error.message,
+                status: error.status
+            })
+        }
     }
 }

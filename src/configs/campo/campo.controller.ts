@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query 
 import { CampoService } from './campo.service';
 import { CampoDTO } from './campo.dto';
 import { UpdateCampoDTO } from './update-campo.dto';
-import { MessagePattern } from '@nestjs/microservices';
+import { MessagePattern, RpcException } from '@nestjs/microservices';
 import { FiltersCampoDTO } from './filters-campo.dto';
 
 @Controller('campo')
@@ -11,23 +11,54 @@ export class CampoController {
 
     @MessagePattern('getAllCampos')
     public async getAllCampos(filtersCampoDTO: FiltersCampoDTO) {
-        return await this.campoService.getAllCampos(filtersCampoDTO.nombre, filtersCampoDTO.importancia ?
-            parseInt(filtersCampoDTO.importancia.toString()) : undefined, filtersCampoDTO.idHerramienta ?
-            parseInt(filtersCampoDTO.idHerramienta.toString()) : undefined)
+        try {
+            return await this.campoService.getAllCampos(filtersCampoDTO.nombre, filtersCampoDTO.importancia ?
+                parseInt(filtersCampoDTO.importancia.toString()) : undefined, filtersCampoDTO.idHerramienta ?
+                parseInt(filtersCampoDTO.idHerramienta.toString()) : undefined)
+        } catch (error) {
+            throw new RpcException({
+                message: error.message,
+                status: error.status
+            })
+        }
     }
 
     @MessagePattern('createCampo')
     public async createCampo(campoDTO: CampoDTO) {
-        return await this.campoService.createCampo(campoDTO)
+        try {
+            await this.campoService.createCampo(campoDTO)
+            return { success: true }
+        } catch (error) {
+            throw new RpcException({
+                message: error.message,
+                status: error.status
+            })
+        }
     }
 
     @MessagePattern('updateCampo')
     public async updateCampo(payload: { idCampo: number, updateCampoDTO: UpdateCampoDTO }) {
-        return await this.campoService.updateCampo(payload.idCampo, payload.updateCampoDTO)
+        try {
+            await this.campoService.updateCampo(payload.idCampo, payload.updateCampoDTO)
+            return { success: true }
+        } catch (error) {
+            throw new RpcException({
+                message: error.message,
+                status: error.status
+            })
+        }
     }
 
     @MessagePattern('deleteCampo')
     public async deleteCampo(idCampo: number) {
-        return await this.campoService.deleteCampo(idCampo)
+        try {
+            await this.campoService.deleteCampo(idCampo)
+            return { success: true }
+        } catch (error) {
+            throw new RpcException({
+                message: error.message,
+                status: error.status
+            })
+        }
     }
 }
