@@ -44,13 +44,8 @@ export class SistemasConfigService {
         }
         else {
 
-            throw new HttpException({
-                status: HttpStatus.INTERNAL_SERVER_ERROR,
-                error: 'Sistema con igual nombre',
-            }, HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new HttpException("Ya existe un sistema con el mismo nombre", HttpStatus.BAD_REQUEST);
         }
-
-
     }
 
     // Método para actualizar la información de un Sistema Config
@@ -69,7 +64,7 @@ export class SistemasConfigService {
             await this.sistemaConfigRepository.save(sistemaConfigUpdate) // se actualiza la información del sistema config en la base de datos
         }
         else
-            throw new HttpException({ message: "Ya existe un sistema con ese nombre" }, HttpStatus.BAD_REQUEST)
+            throw new HttpException("Ya existe un sistema con ese nombre" , HttpStatus.BAD_REQUEST)
     }
 
 
@@ -139,7 +134,7 @@ export class SistemasConfigService {
 
         }
         else
-            throw new HttpException("Herramienta no encontrada dentro de la configuración", 500)
+            throw new HttpException("Herramienta no encontrada dentro de la configuración", HttpStatus.BAD_REQUEST)
     }
 
 
