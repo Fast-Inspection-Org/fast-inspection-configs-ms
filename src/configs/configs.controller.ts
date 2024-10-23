@@ -1,10 +1,11 @@
-import { Controller} from '@nestjs/common';
+import { Controller } from '@nestjs/common';
 import { ConfigsService } from './configs.service';
 import { ConfigDTO } from './config.dto';
 import { UpdateConfigDTO } from './config-update.dto';
 import { ConfigOrderBy } from './config.entity';
 import { FiltersConfigDTO } from './filters-config.dto';
 import { MessagePattern, RpcException } from '@nestjs/microservices';
+import { Calculos } from './indice-calculable/indice-calculable.entity';
 
 
 @Controller('configs')
@@ -120,6 +121,23 @@ export class ConfigsController {
         try {
             await this.configsService.marcarAsActivaConfig(version)
             return { success: true }
+        } catch (error) {
+            throw new RpcException({
+                message: error.message,
+                status: error.status
+            })
+        }
+    }
+
+    @MessagePattern('getIndicadorCalculo')
+    public async getIndicadorCalculo(payload: {
+        version: number
+        valorCalculo: number
+        calculo: Calculos
+    }) {
+        try {
+            console.log("version: " + payload.version + " valor: " + payload.valorCalculo + " calculo: " + payload.calculo)
+            return await this.configsService.getIndicadorCalculo(payload.version, payload.valorCalculo, payload.calculo)
         } catch (error) {
             throw new RpcException({
                 message: error.message,

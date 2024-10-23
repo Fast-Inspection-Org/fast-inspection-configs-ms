@@ -11,7 +11,7 @@ import { SistemaConfigDTO } from './sistemas-config/sistema-config.dto';
 import { HerramientaDTO } from './herramientas/herramienta.dto';
 import { TipoHerramienta } from './herramientas/herramienta.entity';
 import { IndiceCalculableDTO } from './indice-calculable/indice-calculable.dto';
-import { TipoIndiceCalculable } from './indice-calculable/indice-calculable.entity';
+import { Calculos, TipoIndiceCalculable } from './indice-calculable/indice-calculable.entity';
 import { UpdateConfigDTO } from './config-update.dto';
 import { ConfigSerializable } from './config.serializable';
 
@@ -248,20 +248,35 @@ export class ConfigsService {
         })
     }
 
-       // Método para actualizar el estado de una configuración
-       public async actualizarEstadoConfig(versionConfig: number) {
+    // Método para actualizar el estado de una configuración
+    public async actualizarEstadoConfig(versionConfig: number) {
         const config: Config = await this.getConfig(versionConfig) // obtenemos la configuración a actualizar
         // Verificamos si está activa o no
         if (config) {
             if (config.state) { // si está activa
                 if ((await config.getPorcentajeCompletitud()) < 100) { // si el porcentaje de completitud es inferior al 100 % (no cumple con los requisitos mínimos)
                     config.state = false // se indica que esta configuración no va a seguir siendo activa
-                   await this.configuracionRepository.save(config) // se actualiza los cambios en la base de datos
+                    await this.configuracionRepository.save(config) // se actualiza los cambios en la base de datos
                 }
             }
         }
         else
             throw new HttpException({ message: "No existe una configuración con esa versión" }, HttpStatus.BAD_REQUEST)
     }
-    
+
+    // Método para obtener el indicador de un correspondiente a un cálculo espcificado en una configuración
+    public async getIndicadorCalculo(configVersion: number, valorCalculo: number, calculo: Calculos) {
+        // se busca la configuración
+        const config = await this.configuracionRepository.findOne({
+            where: {
+                version: configVersion
+            }
+        })
+
+        // si exite una configuración con esa versión
+        if (config)
+            return await config.obtenerIndicadorCalculo(valorCalculo, calculo)
+        else
+            throw new HttpException({ message: "No existe una configuración con esa versión" }, HttpStatus.BAD_REQUEST)
+    }
 }
