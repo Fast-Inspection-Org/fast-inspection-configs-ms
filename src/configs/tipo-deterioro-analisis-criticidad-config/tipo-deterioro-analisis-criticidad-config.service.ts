@@ -41,7 +41,7 @@ export class TipoDeterioroAnalisisCriticidadConfigService {
 
     // Método para obtener todos los tipos de deterioro analisis criticidad
 
-    public async getAllTiposDeteriorosAnalisisCriticidadConfig(idMaterialConfig?: number, nombre?: String) {
+    public async getAllTiposDeteriorosAnalisisCriticidadConfig(idMaterialConfig?: number, nombre?: String, withCamposAfectados: boolean = false) {
         const tiposDeteriorosAnalisisCriticidadConfigSerializables: Array<TipoDeterioroAnalisisCriticidadConfigSerializable> = new
             Array<TipoDeterioroAnalisisCriticidadConfigSerializable>()
         // Se obtienen los tipos de deterioro de la base de datos
@@ -57,7 +57,8 @@ export class TipoDeterioroAnalisisCriticidadConfigService {
             const tipoDeterioroAnalisisCriticidadConfig: TipoDeterioroAnalisisCriticidadConfig = tiposDeteriorosAnalisisCriticidadConfig[index]
             tiposDeteriorosAnalisisCriticidadConfigSerializables.push(new TipoDeterioroAnalisisCriticidadConfigSerializable(tipoDeterioroAnalisisCriticidadConfig.id,
                 tipoDeterioroAnalisisCriticidadConfig.nombre, await tipoDeterioroAnalisisCriticidadConfig.cantCamposAfectados(),
-                await tipoDeterioroAnalisisCriticidadConfig.cantCausas()))
+                await tipoDeterioroAnalisisCriticidadConfig.cantCausas(), tipoDeterioroAnalisisCriticidadConfig.detectabilidad, 
+                withCamposAfectados ? await tipoDeterioroAnalisisCriticidadConfig.camposAfectados : undefined))
         }
 
 
@@ -306,4 +307,19 @@ export class TipoDeterioroAnalisisCriticidadConfigService {
         await this.saveCamposInTipoDeterioroAnalisisCriticidad(camposAfectados, tipoDeterioroAnalisisCriticidadUpdate, entityManager)
     }
 
+    // Método para obtener los campos de un tipo de deterioro análisis criticidad en específico (valorar si eliminar este método o no, ya que hasta el momento no va a ser utilizado)
+    public async getCampos(tipoDeterioroAnalisisCriticidadId: number) {
+        // se busca al tipo de deterioro en la base de datos
+        const tipoDeterioroAnalisiCriticidad = await this.tipoDeterioroAnalisisCriticidadRepository.findOne({
+            where: {
+                id: tipoDeterioroAnalisisCriticidadId
+            }
+        })
+
+        // si el tipo de deterioro análisis de criticdad fue encontrado
+        if (tipoDeterioroAnalisiCriticidad)
+            return await tipoDeterioroAnalisiCriticidad.camposAfectados
+        else
+            throw new HttpException("Ya existe un tipo de deterioro con ese identificador", HttpStatus.BAD_REQUEST)
+    }
 }

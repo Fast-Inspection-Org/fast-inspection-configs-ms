@@ -53,3 +53,5 @@ Por tanto la tarea sería modificar cada endpoint que se haya implementado de la
 09/08/2024
 *Establecer una respuesta para todos los controladores
 *Cambiar las exeptions lanzadas en los servicios por Grpc exeption 
+23/10/2024
+*Reenfocar la lógica de los indices

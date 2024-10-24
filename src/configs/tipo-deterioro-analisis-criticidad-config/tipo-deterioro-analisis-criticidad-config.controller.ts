@@ -15,13 +15,13 @@ export class TipoDeterioroAnalisisCriticidadConfigController {
     public async getAllTiposDeteriorosConfig(filtersTipoDeterioroAnalisisCriticidad: FiltersTipoDeterioroAnalisisCriticidadDTO) {
         try {
             return await this.tipoDeterioroAnalisisCriticidadConfigService.getAllTiposDeteriorosAnalisisCriticidadConfig(filtersTipoDeterioroAnalisisCriticidad.idMaterialConfig,
-                filtersTipoDeterioroAnalisisCriticidad.nombre)
+                filtersTipoDeterioroAnalisisCriticidad.nombre, filtersTipoDeterioroAnalisisCriticidad.withCamposAfectados ? filtersTipoDeterioroAnalisisCriticidad.withCamposAfectados : false)
         } catch (error) {
             throw new RpcException({
                 message: error.message,
                 status: error.status
             })
-        }  
+        }
     }
 
     @MessagePattern('getTipoDeterioroAnalisisCriticidad')
@@ -33,7 +33,7 @@ export class TipoDeterioroAnalisisCriticidadConfigController {
                 message: error.message,
                 status: error.status
             })
-        }  
+        }
     }
 
     @MessagePattern('createTipoDeterioroAnalisisCriticidadConfig')
@@ -58,6 +58,18 @@ export class TipoDeterioroAnalisisCriticidadConfigController {
             await this.tipoDeterioroAnalisisCriticidadConfigService.updateTipoDeterioroConfigAnalisisCriticidadConfig(payload.idTipoDeterioro,
                 payload.updateTipoDeterioroAnalisisCriticidadDTO)
             return { success: true }
+        } catch (error) {
+            throw new RpcException({
+                message: error.message,
+                status: error.status
+            })
+        }
+    }
+
+    @MessagePattern('getCamposTipoDeterioroAnalisisCriticidad')
+    public async getCampos(tipoDeterioroAnalisiCriticidadId: string) {
+        try {
+            return await this.tipoDeterioroAnalisisCriticidadConfigService.getCampos(+tipoDeterioroAnalisiCriticidadId)
         } catch (error) {
             throw new RpcException({
                 message: error.message,

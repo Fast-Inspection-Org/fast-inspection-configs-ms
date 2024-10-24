@@ -136,7 +136,6 @@ export class ConfigsController {
         calculo: Calculos
     }) {
         try {
-            console.log("version: " + payload.version + " valor: " + payload.valorCalculo + " calculo: " + payload.calculo)
             return await this.configsService.getIndicadorCalculo(payload.version, payload.valorCalculo, payload.calculo)
         } catch (error) {
             throw new RpcException({
