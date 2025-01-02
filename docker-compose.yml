@@ -36,3 +36,4 @@ volumes:
 networks:
   default:
     name: fast_inspection_network
+    external: true
