@@ -54,3 +54,11 @@ pids
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# Txt
+/EndPoints.Txt
+/consideraciones de desarrollo.txt
+/fast_inspection_DB.sql
+/Json Parcial.txt
+/LevantamientosCoordenadas.txt
+/tareas.txt
