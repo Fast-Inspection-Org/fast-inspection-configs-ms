@@ -1,8 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
-import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 
 
@@ -12,6 +10,7 @@ async function bootstrap() {
     {
       transport: Transport.TCP,
       options: {
+        host: '0.0.0.0',
         port: parseInt(process.env.PORT)
       }
     },
