@@ -1,0 +1,38 @@
+services:
+  fast_inspection_config_ms:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      PORT: ${PORT:-3001}
+      HOST: ${HOST:-localhost}
+      POSTGRES_HOST: ${POSTGRES_HOST:-fast_inspection_config_db_server}
+      POSTGRES_PORT: ${POSTGRES_PORT:-5432}
+      POSTGRES_USERNAME: ${POSTGRES_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-12134588ad}
+      POSTGRES_DATABASE: ${POSTGRES_DATABASE:-fast_inspection_config_db}
+      POSTGRES_SSL: ${POSTGRES_SSL:-false}
+    ports:
+      - "${PORT:-3001}:${PORT:-3001}"
+    depends_on:
+      - fast_inspection_config_db_server
+    
+  fast_inspection_config_db_server:
+    image: postgres
+    container_name: fast_inspection_config_db_server
+    ports:
+      - ${POSTGRES_PORT:-5432}:${POSTGRES_PORT:-5432}
+    environment:
+      POSTGRES_USER: ${POSTGRES_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-12134588ad}
+      POSTGRES_DB: ${POSTGRES_DATABASE:-fast_inspection_config_db}
+    volumes:
+      - fast_inspection_config_db_server_data:/var/lib/postgresql/data
+
+volumes:
+  fast_inspection_config_db_server_data:
+
+networks:
+  default:
+    name: fast_inspection_network
