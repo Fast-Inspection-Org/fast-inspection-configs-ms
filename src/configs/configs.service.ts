@@ -17,7 +17,7 @@ import {
 } from './indice-calculable/indice-calculable.entity';
 import { UpdateConfigDTO } from './config-update.dto';
 import { ConfigSerializable } from './config.serializable';
-import { ApiResponse } from 'src/utils/api-response';
+import { ApiPaginatedResponse } from 'src/utils/api-response';
 
 @Injectable()
 export class ConfigsService {
@@ -36,7 +36,7 @@ export class ConfigsService {
     orderBy: ConfigOrderBy,
     version?: number,
     nombre?: String,
-  ): Promise<ApiResponse<ConfigSerializable[]>> {
+  ): Promise<ApiPaginatedResponse<ConfigSerializable[]>> {
     const configsSerializables: Array<ConfigSerializable> =
       new Array<ConfigSerializable>();
     const orderObject = {};
