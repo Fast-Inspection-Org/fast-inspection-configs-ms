@@ -14,32 +14,10 @@ services:
       POSTGRES_DATABASE: ${POSTGRES_DATABASE:-fast_inspection_config_db}
       POSTGRES_SSL: ${POSTGRES_SSL:-false}
     ports:
-      - "${PORT:-3001}:${PORT:-3001}"
-    depends_on:
-      - fast_inspection_config_db_server
-
+      - '${PORT:-3001}:${PORT:-3001}'
     networks:
       - fast_inspection_network
-    
-  fast_inspection_config_db_server:
-    image: postgres
-    container_name: fast_inspection_config_db_server
-    ports:
-      - ${POSTGRES_PORT:-5432}:${POSTGRES_PORT:-5432}
-    environment:
-      POSTGRES_USER: ${POSTGRES_USERNAME:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-12134588ad}
-      POSTGRES_DB: ${POSTGRES_DATABASE:-fast_inspection_config_db}
-    volumes:
-      - fast_inspection_config_db_server_data:/var/lib/postgresql/data
-
-    networks:
-      - fast_inspection_network
-
-volumes:
-  fast_inspection_config_db_server_data:
 
 networks:
   fast_inspection_network:
     name: fast_inspection_network
-

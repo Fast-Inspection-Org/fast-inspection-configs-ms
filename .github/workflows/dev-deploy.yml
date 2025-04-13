@@ -1,0 +1,41 @@
+name: Deploy to VPS
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: dev
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Add SSH Key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.VPS_SSH_KEY }}
+          known_hosts: "just-easy-guess"
+
+      - name: Execute Deploy Script
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_IP }} "
+            cd /home/deployer && 
+            git clone https://github.com/Fast-Inspection-Org/fast-inspection-configs-ms || true && 
+            cd fast-inspection-configs-ms &&
+            rm -f .env &&
+            echo 'HOST=${{ secrets.HOST }}' > .env &&
+            echo 'PORT=${{ secrets.PORT }}' >> .env &&
+            echo 'POSTGRES_HOST=${{ secrets.POSTGRES_HOST }}' >> .env &&
+            echo 'POSTGRES_PORT=${{ secrets.POSTGRES_PORT }}' >> .env &&
+            echo 'POSTGRES_USERNAME=${{ secrets.POSTGRES_USERNAME }}' >> .env &&
+            echo 'POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}' >> .env &&
+            echo 'POSTGRES_DATABASE=${{ secrets.POSTGRES_DATABASE }}' >> .env &&
+            echo 'POSTGRES_SSL=${{ secrets.POSTGRES_SSL }}' >> .env &&  
+            git pull origin main && 
+            docker-compose down &&
+            docker-compose pull && 
+            docker-compose up -d --build
+          "
