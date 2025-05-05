@@ -1,3 +1,5 @@
+import { IndiceCalculableSinIntervaloSerializableDetails } from './indice-calculable-sin-intervalo/serializable/indice-calculable-sin-intervalo.serializable';
+import { IndiceCalculableSerializable } from './indice-calculable/serializable/indice-calculable.serializable';
 import { SistemaConfigSerializableDetails } from './sistemas-config/sistema-config.serializable';
 
 export class ConfigSerializable {
@@ -28,6 +30,7 @@ export class ConfigSerializableDetails extends ConfigSerializable {
   descripcion: String;
   state: boolean; // Atributo que define el estado de la configuración (true: terminada, false: en progreso)
   porcentajeCompletitud: number;
+  indicesCalculables: Array<IndiceCalculableSerializable>;
   sistemasConfig: SistemaConfigSerializableDetails[];
 
   constructor(
@@ -37,8 +40,10 @@ export class ConfigSerializableDetails extends ConfigSerializable {
     state: boolean,
     porcentajeCompletitud: number,
     sistemasConfig: SistemaConfigSerializableDetails[],
+    indicesCalculables: Array<IndiceCalculableSerializable>,
   ) {
     super(version, nombre, descripcion, state, porcentajeCompletitud);
     this.sistemasConfig = sistemasConfig;
+    this.indicesCalculables = indicesCalculables;
   }
 }

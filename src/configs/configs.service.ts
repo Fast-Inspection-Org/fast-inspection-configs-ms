@@ -21,6 +21,11 @@ import {
   ConfigSerializableDetails,
 } from './config.serializable';
 import { ApiPaginatedResponse } from 'src/utils/api-response';
+import { IndiceCalculableSerializable } from './indice-calculable/serializable/indice-calculable.serializable';
+import { IndiceCalculableSinIntervaloSerializableDetails } from './indice-calculable-sin-intervalo/serializable/indice-calculable-sin-intervalo.serializable';
+import { IndiceCaculableIntervaloSerializableDetails } from './indice-calculable-intervalo/serializable/indice-calculable-intervalo.serializable';
+import { IndicadorIntervalo } from './indicador-intervalo/indicador-intervalo.entity';
+import { IndicadorSinIntervalo } from './indicador-sin-intervalo/indicador-sin-intervalo.entity';
 
 @Injectable()
 export class ConfigsService {
@@ -88,6 +93,32 @@ export class ConfigsService {
             version: maxVersion.max,
           },
         });
+        const indiceCalculables: Array<IndiceCalculableSerializable> =
+          await Promise.all(
+            (await configEntity.indicesCalculables).map(
+              async (indiceCalculable) => {
+                if (
+                  indiceCalculable.tipo ===
+                  TipoIndiceCalculable.InidiceCalculableIntervalo
+                )
+                  return new IndiceCaculableIntervaloSerializableDetails(
+                    indiceCalculable.id,
+                    indiceCalculable.nombre,
+                    indiceCalculable.tipo,
+                    indiceCalculable.calculo,
+                    (await indiceCalculable.obtenerIndicadores()) as IndicadorIntervalo[],
+                  );
+                else
+                  return new IndiceCalculableSinIntervaloSerializableDetails(
+                    indiceCalculable.id,
+                    indiceCalculable.nombre,
+                    indiceCalculable.tipo,
+                    indiceCalculable.calculo,
+                    (await indiceCalculable.obtenerIndicadores()) as IndicadorSinIntervalo[],
+                  );
+              },
+            ),
+          );
         this.lastConfig = new ConfigSerializableDetails(
           configEntity.version,
           configEntity.nombre,
@@ -101,6 +132,7 @@ export class ConfigsService {
               );
             }),
           ),
+          indiceCalculables,
         );
       }
     }
