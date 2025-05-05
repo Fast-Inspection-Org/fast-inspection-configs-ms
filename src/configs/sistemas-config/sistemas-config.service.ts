@@ -15,6 +15,7 @@ import { UpdateSistemaConfigDTO } from './update-sistema-config.dto';
 import { HerramientasService } from '../herramientas/herramientas.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { ApiPaginatedResponse } from 'src/utils/api-response';
+import { HerramientaAnalisisCriticidad } from '../herramienta-analisis-criticidad/herrramienta-analisis-criticidad.entity';
 
 @Injectable()
 export class SistemasConfigService {
@@ -160,12 +161,14 @@ export class SistemasConfigService {
     const sistemaConfigEntity = await this.sistemaConfigRepository.findOne({
       where: { id },
     });
-
+    const herramienta =
+      (await sistemaConfigEntity.getHerramienta()) as HerramientaAnalisisCriticidad;
     return new SistemaConfigSerializableDetails(
       sistemaConfigEntity.id,
       sistemaConfigEntity.nombre,
       await sistemaConfigEntity.cantSubsistemasConfig(),
-      await sistemaConfigEntity.getHerramienta(),
+      herramienta,
+      await herramienta.campos,
       sistemaConfigEntity.configVersion,
       await Promise.all(
         (await sistemaConfigEntity.subSistemasConfig).map(

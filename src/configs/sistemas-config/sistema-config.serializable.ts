@@ -1,3 +1,6 @@
+import { Campo } from '../campo/campo.entity';
+import { HerramientaAnalisisCriticidad } from '../herramienta-analisis-criticidad/herrramienta-analisis-criticidad.entity';
+import { HerramientaAnalisisCriticidadSerializableDetails } from '../herramienta-analisis-criticidad/serializable/herramienta-analisis-criticidad.serializable';
 import { Herramienta } from '../herramientas/herramienta.entity';
 import { HerramientaSerializable } from '../herramientas/herramienta.serializable';
 import { SubsistemaConfigSerializableDetails } from '../subsistemas-config/subsistema-config.serializable';
@@ -28,17 +31,32 @@ export class SistemaConfigSerializable {
   }
 }
 
-export class SistemaConfigSerializableDetails extends SistemaConfigSerializable {
+export class SistemaConfigSerializableDetails {
+  id: number;
+  nombre: String;
+  cantSubsistemas: number;
+  herramienta: HerramientaAnalisisCriticidadSerializableDetails;
+  configVersion: number;
   subSistemasConfig: SubsistemaConfigSerializableDetails[];
   constructor(
     id: number,
     nombre: String,
     cantSubsistemas: number,
     herramienta: Herramienta,
+    campos: Array<Campo>,
     configVersion: number,
     subSistemasConfig: SubsistemaConfigSerializableDetails[],
   ) {
-    super(id, nombre, cantSubsistemas, herramienta, configVersion);
+    this.id = id;
+    this.nombre = nombre;
+    this.cantSubsistemas = cantSubsistemas;
+    this.configVersion = configVersion;
+    this.herramienta = new HerramientaAnalisisCriticidadSerializableDetails(
+      herramienta.id,
+      herramienta.nombre,
+      herramienta.tipo,
+      campos,
+    );
     this.subSistemasConfig = subSistemasConfig;
   }
 }
