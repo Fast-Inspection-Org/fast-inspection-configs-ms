@@ -16,12 +16,15 @@ import {
   TipoIndiceCalculable,
 } from './indice-calculable/indice-calculable.entity';
 import { UpdateConfigDTO } from './config-update.dto';
-import { ConfigSerializable } from './config.serializable';
+import {
+  ConfigSerializable,
+  ConfigSerializableDetails,
+} from './config.serializable';
 import { ApiPaginatedResponse } from 'src/utils/api-response';
 
 @Injectable()
 export class ConfigsService {
-  lastConfig: Config | undefined;
+  lastConfig: ConfigSerializableDetails | undefined;
   constructor(
     @InjectRepository(Config)
     private configuracionRepository: Repository<Config>,
@@ -71,7 +74,7 @@ export class ConfigsService {
   }
 
   // Metodo para obtener la configuración más reciente
-  public async getLastConfig(): Promise<Config> | undefined {
+  public async getLastConfig(): Promise<ConfigSerializableDetails | undefined> {
     if (!this.lastConfig) {
       // Si no hay cargada ninguna configuración en caché
       const maxVersion = await this.configuracionRepository
@@ -80,12 +83,25 @@ export class ConfigsService {
         .getRawOne();
       if (maxVersion.max) {
         // si fue encontrada un maxima version
-
-        this.lastConfig = await this.configuracionRepository.findOne({
+        const configEntity = await this.configuracionRepository.findOne({
           where: {
             version: maxVersion.max,
           },
         });
+        this.lastConfig = new ConfigSerializableDetails(
+          configEntity.version,
+          configEntity.nombre,
+          configEntity.descripcion,
+          configEntity.state,
+          await configEntity.getPorcentajeCompletitud(),
+          await Promise.all(
+            (await configEntity.sistemasConfig).map(async (sistemaConfig) => {
+              return await this.sistemaConfigService.getSistemaConfigDetails(
+                sistemaConfig.id,
+              );
+            }),
+          ),
+        );
       }
     }
 
@@ -204,7 +220,8 @@ export class ConfigsService {
         await this.indiceCalculableIntervaloService.createIndiceCalculableIntervalo(
           indicesCalculablesIntervaloDTO[index],
           entityManager,
-        ); // se manda a insertar al servicio los indices con intervalo
+        );
+      // se manda a insertar al servicio los indices con intervalo
       else
         await this.indiceCalculableSinIntervaloService.createIndiceCalculableSinIntervalo(
           indicesCalculablesIntervaloDTO[index],

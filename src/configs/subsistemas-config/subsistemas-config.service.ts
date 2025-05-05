@@ -6,7 +6,10 @@ import { SubsistemaConfigDTO } from './subsistema-config.dto';
 import { SistemaConfig } from '../sistemas-config/sistema-config.entity';
 import { MaterialConfigDTO } from '../materiales-config/material-config.dto';
 import { MaterialesConfigService } from '../materiales-config/materiales-config.service';
-import { SubsistemaConfigSerializable } from './subsistema-config.serializable';
+import {
+  SubsistemaConfigSerializable,
+  SubsistemaConfigSerializableDetails,
+} from './subsistema-config.serializable';
 import { UpdateSubsistemaConfigDTO } from './update-subsistema-config.dto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { ApiPaginatedResponse } from 'src/utils/api-response';
@@ -62,6 +65,28 @@ export class SubsistemasConfigService {
         nombre: nombre,
       },
     });
+  }
+
+  public async getSubsistemaConfigDetails(id: number) {
+    const subsistemaConfigEntity =
+      await this.subSistemaConfigRepository.findOne({
+        where: { id },
+      });
+
+    return new SubsistemaConfigSerializableDetails(
+      subsistemaConfigEntity.id,
+      subsistemaConfigEntity.nombre,
+      await subsistemaConfigEntity.cantMateriales(),
+      await Promise.all(
+        (await subsistemaConfigEntity.materialesConfig).map(
+          async (materialConfig) => {
+            return await this.materialConfigService.getMaterialConfigDetails(
+              materialConfig.id,
+            );
+          },
+        ),
+      ),
+    );
   }
 
   public async createSubSistemaConfig(

@@ -7,7 +7,10 @@ import { Herramienta } from '../herramientas/herramienta.entity';
 import { Config } from '../config.entity';
 import { SubsistemaConfigDTO } from '../subsistemas-config/subsistema-config.dto';
 import { SubsistemasConfigService } from '../subsistemas-config/subsistemas-config.service';
-import { SistemaConfigSerializable } from './sistema-config.serializable';
+import {
+  SistemaConfigSerializable,
+  SistemaConfigSerializableDetails,
+} from './sistema-config.serializable';
 import { UpdateSistemaConfigDTO } from './update-sistema-config.dto';
 import { HerramientasService } from '../herramientas/herramientas.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
@@ -151,6 +154,29 @@ export class SistemasConfigService {
     }
 
     return { data: sistemasConfigSerializable };
+  }
+
+  public async getSistemaConfigDetails(id: number) {
+    const sistemaConfigEntity = await this.sistemaConfigRepository.findOne({
+      where: { id },
+    });
+
+    return new SistemaConfigSerializableDetails(
+      sistemaConfigEntity.id,
+      sistemaConfigEntity.nombre,
+      await sistemaConfigEntity.cantSubsistemasConfig(),
+      await sistemaConfigEntity.getHerramienta(),
+      sistemaConfigEntity.configVersion,
+      await Promise.all(
+        (await sistemaConfigEntity.subSistemasConfig).map(
+          async (subsistemaConfig) => {
+            return await this.subSistemaConfigService.getSubsistemaConfigDetails(
+              subsistemaConfig.id,
+            );
+          },
+        ),
+      ),
+    );
   }
 
   private async createSistemaConfigWithEntityManager(

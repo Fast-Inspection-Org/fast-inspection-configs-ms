@@ -7,7 +7,10 @@ import { SubsistemaConfig } from '../subsistemas-config/subsistema-config.entity
 import { TipoDeterioroConfigDTO } from '../tipo-deterioros-config/tipo-deterioro-config.dto';
 import { TipoDeterioroAnalisisCriticidadConfigService } from '../tipo-deterioro-analisis-criticidad-config/tipo-deterioro-analisis-criticidad-config.service';
 import { TipoTipoDeterioro } from '../tipo-deterioros-config/tipo-deterioro-config.entity';
-import { MaterialConfigSerializable } from './material-config.serializable';
+import {
+  MaterialConfigSerializable,
+  MaterialConfigSerializableDetails,
+} from './material-config.serializable';
 import { UpdateMaterialConfigDTO } from './update-material-config.dto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { ApiPaginatedResponse } from 'src/utils/api-response';
@@ -68,6 +71,23 @@ export class MaterialesConfigService {
         nombre: nombre,
       },
     });
+  }
+
+  public async getMaterialConfigDetails(id: number) {
+    const materialConfigEntity = await this.materialConfigRepository.findOne({
+      where: { id },
+    });
+
+    return new MaterialConfigSerializableDetails(
+      materialConfigEntity.id,
+      materialConfigEntity.nombre,
+      await materialConfigEntity.cantTiposDeterioros(),
+      (
+        await this.tipoDeterioroAnalisisCriticidadConfigService.getAllTiposDeteriorosAnalisisCriticidadConfig(
+          materialConfigEntity.id,
+        )
+      ).data,
+    );
   }
 
   public async createMaterialConfig(
