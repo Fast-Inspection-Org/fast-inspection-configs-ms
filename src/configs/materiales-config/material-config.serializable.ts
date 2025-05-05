@@ -1,4 +1,4 @@
-import { TipoDeterioroAnalisisCriticidadConfigSerializable } from '../tipo-deterioro-analisis-criticidad-config/tipo-deterioro-analisis-criticidad-config.serializable';
+import { TipoDeterioroAnalisisCriticidadConfigSerializable, TipoDeterioroAnalisisCriticidadConfigSerializableDetails } from '../tipo-deterioro-analisis-criticidad-config/tipo-deterioro-analisis-criticidad-config.serializable';
 
 export class MaterialConfigSerializable {
   id: number;
@@ -13,13 +13,13 @@ export class MaterialConfigSerializable {
 }
 
 export class MaterialConfigSerializableDetails extends MaterialConfigSerializable {
-  tiposDeteriorosConfig: TipoDeterioroAnalisisCriticidadConfigSerializable[];
+  tiposDeteriorosConfig: TipoDeterioroAnalisisCriticidadConfigSerializableDetails[];
 
   constructor(
     id: number,
     nombre: String,
     cantTiposDeterioros: number,
-    tiposDeteriorosConfig: TipoDeterioroAnalisisCriticidadConfigSerializable[],
+    tiposDeteriorosConfig: TipoDeterioroAnalisisCriticidadConfigSerializableDetails[],
   ) {
     super(id, nombre, cantTiposDeterioros);
     this.tiposDeteriorosConfig = tiposDeteriorosConfig;

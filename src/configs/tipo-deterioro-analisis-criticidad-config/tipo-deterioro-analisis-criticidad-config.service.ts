@@ -18,7 +18,10 @@ import { CampoDTO } from '../campo/campo.dto';
 import { Campo } from '../campo/campo.entity';
 import { CampoService } from '../campo/campo.service';
 import { Console } from 'console';
-import { TipoDeterioroAnalisisCriticidadConfigSerializable } from './tipo-deterioro-analisis-criticidad-config.serializable';
+import {
+  TipoDeterioroAnalisisCriticidadConfigSerializable,
+  TipoDeterioroAnalisisCriticidadConfigSerializableDetails,
+} from './tipo-deterioro-analisis-criticidad-config.serializable';
 import { retry } from 'rxjs';
 import { UpdateTipoDeterioroAnalisisCriticidadConfigDTO } from './update-tipo-deterioro-analisis-criticidad-config.dt';
 import { CampoDefinidoTextoService } from '../campo-definido-texto/campo-definido-texto.service';
@@ -30,6 +33,11 @@ import { CampoDefinidoTexto } from '../campo-definido-texto/entities/campo-defin
 import { CampoDefinidoNumerico } from '../campo-definido-numerico/entities/campo-definido-numerico.entity';
 import { CampoDefinidoSeleccion } from '../campo-definido-seleccion/entities/campo-definido-seleccion.entity';
 import { ApiPaginatedResponse } from 'src/utils/api-response';
+import { CampoDefinidoSerializable } from '../campo-definido/serializable/campo-definido.serializable';
+import { CampoDefinidoTextoSerializable } from '../campo-definido-texto/serializable/campo-definido-texto.serializable';
+import { CampoDefinidoImagenSerializable } from '../campo-definido-imagen/serializable/campo-definido-imagen.serializable';
+import { CampoDefinidoNumericoSerializable } from '../campo-definido-numerico/serializable/campo-definido-numerico.serializable';
+import { CampoDefinidoSeleccionSerializable } from '../campo-definido-seleccion/serializable/campo-definido-seleccion.serializable';
 
 @Injectable()
 export class TipoDeterioroAnalisisCriticidadConfigService {
@@ -104,6 +112,61 @@ export class TipoDeterioroAnalisisCriticidadConfigService {
         nombre: nombre,
       },
     });
+  }
+
+  public async getTipoDeterioroAnalisisCriticidadConfigDetails(id: number) {
+    const tipoDeterioroAnalisisCriticidadConfigEntity =
+      await this.tipoDeterioroAnalisisCriticidadRepository.findOne({
+        where: { id },
+      });
+    const camposDefinidos: Array<CampoDefinidoSerializable> = (
+      await tipoDeterioroAnalisisCriticidadConfigEntity.camposDefinidos
+    ).map((campoDefinido) => {
+      if (campoDefinido.tipo === TiposCamposDefinidos.Texto) {
+        return new CampoDefinidoTextoSerializable(
+          campoDefinido.id,
+          campoDefinido.nombre,
+          campoDefinido.tipo,
+        );
+      } else if (campoDefinido.tipo === TiposCamposDefinidos.Imagen) {
+        return new CampoDefinidoImagenSerializable(
+          campoDefinido.id,
+          campoDefinido.nombre,
+          campoDefinido.tipo,
+        );
+      } else if (campoDefinido.tipo === TiposCamposDefinidos.Numerico) {
+        const campoDefinidoNumerico = campoDefinido as CampoDefinidoNumerico;
+        return new CampoDefinidoNumericoSerializable(
+          campoDefinidoNumerico.id,
+          campoDefinidoNumerico.nombre,
+          campoDefinidoNumerico.tipo,
+          campoDefinidoNumerico.inicioIntervalo,
+          campoDefinidoNumerico.finalIntervalo,
+          campoDefinidoNumerico.unidadMedida,
+        );
+      } else if (campoDefinido.tipo === TiposCamposDefinidos.Seleccion) {
+        const campoDefinidoSeleccion = campoDefinido as CampoDefinidoSeleccion;
+        const opciones: Array<string> = JSON.parse(
+          campoDefinidoSeleccion.opciones.toString(),
+        );
+        return new CampoDefinidoSeleccionSerializable(
+          campoDefinidoSeleccion.id,
+          campoDefinidoSeleccion.nombre,
+          campoDefinidoSeleccion.tipo,
+          opciones,
+        );
+      }
+    });
+    return new TipoDeterioroAnalisisCriticidadConfigSerializableDetails(
+      tipoDeterioroAnalisisCriticidadConfigEntity.id,
+      tipoDeterioroAnalisisCriticidadConfigEntity.nombre,
+      await tipoDeterioroAnalisisCriticidadConfigEntity.cantCamposAfectados(),
+      await tipoDeterioroAnalisisCriticidadConfigEntity.cantCausas(),
+      tipoDeterioroAnalisisCriticidadConfigEntity.detectabilidad,
+      camposDefinidos,
+      await tipoDeterioroAnalisisCriticidadConfigEntity.causas,
+      await tipoDeterioroAnalisisCriticidadConfigEntity.camposAfectados,
+    );
   }
 
   // Método para obtener un tipo de deterioro analisis de criticidad serializable
@@ -285,19 +348,22 @@ export class TipoDeterioroAnalisisCriticidadConfigService {
         await this.campoDefinidoNumericoService.createCampoDefinido(
           camposDefinidosDTO[index],
           entityManager,
-        ); // Se manda al servicio a crear un campo definido y a insertarlo en la base de datos
+        );
+      // Se manda al servicio a crear un campo definido y a insertarlo en la base de datos
       else if (camposDefinidosDTO[index].tipo == TiposCamposDefinidos.Texto)
         // si el campo definido es de tipo texto
         await this.campoDefinidoTextoService.createCampoDefinido(
           camposDefinidosDTO[index],
           entityManager,
-        ); // Se manda al servicio a crear un campo definido y a insertarlo en la base de datos
+        );
+      // Se manda al servicio a crear un campo definido y a insertarlo en la base de datos
       else if (camposDefinidosDTO[index].tipo == TiposCamposDefinidos.Imagen)
         // si el campo definido es de tipo imagen
         await this.campoDefinidoImagenService.createCampoDefinido(
           camposDefinidosDTO[index],
           entityManager,
-        ); // Se manda al servicio a crear un campo definido y a insertarlo en la base de datos
+        );
+      // Se manda al servicio a crear un campo definido y a insertarlo en la base de datos
       else if (camposDefinidosDTO[index].tipo == TiposCamposDefinidos.Seleccion)
         // si el campo definido es de tipo selección
         await this.campoDefinidoSeleccionService.createCampoDefinido(
