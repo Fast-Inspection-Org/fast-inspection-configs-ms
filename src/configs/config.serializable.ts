@@ -1,3 +1,4 @@
+import { HerramientaSerializable } from './herramientas/herramienta.serializable';
 import { IndiceCalculableSinIntervaloSerializableDetails } from './indice-calculable-sin-intervalo/serializable/indice-calculable-sin-intervalo.serializable';
 import { IndiceCalculableSerializable } from './indice-calculable/serializable/indice-calculable.serializable';
 import { SistemaConfigSerializableDetails } from './sistemas-config/sistema-config.serializable';
@@ -32,7 +33,7 @@ export class ConfigSerializableDetails extends ConfigSerializable {
   porcentajeCompletitud: number;
   indicesCalculables: Array<IndiceCalculableSerializable>;
   sistemasConfig: SistemaConfigSerializableDetails[];
-
+  herramientas: Array<HerramientaSerializable>;
   constructor(
     version: number,
     nombre: String,
@@ -41,9 +42,11 @@ export class ConfigSerializableDetails extends ConfigSerializable {
     porcentajeCompletitud: number,
     sistemasConfig: SistemaConfigSerializableDetails[],
     indicesCalculables: Array<IndiceCalculableSerializable>,
+    herramientas: Array<HerramientaSerializable>,
   ) {
     super(version, nombre, descripcion, state, porcentajeCompletitud);
     this.sistemasConfig = sistemasConfig;
     this.indicesCalculables = indicesCalculables;
+    this.herramientas = herramientas;
   }
 }

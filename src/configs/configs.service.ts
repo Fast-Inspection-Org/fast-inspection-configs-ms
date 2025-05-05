@@ -26,6 +26,9 @@ import { IndiceCalculableSinIntervaloSerializableDetails } from './indice-calcul
 import { IndiceCaculableIntervaloSerializableDetails } from './indice-calculable-intervalo/serializable/indice-calculable-intervalo.serializable';
 import { IndicadorIntervalo } from './indicador-intervalo/indicador-intervalo.entity';
 import { IndicadorSinIntervalo } from './indicador-sin-intervalo/indicador-sin-intervalo.entity';
+import { HerramientaSerializable } from './herramientas/herramienta.serializable';
+import { HerramientaAnalisisCriticidadSerializableDetails } from './herramienta-analisis-criticidad/serializable/herramienta-analisis-criticidad.serializable';
+import { HerramientaAnalisisCriticidad } from './herramienta-analisis-criticidad/herrramienta-analisis-criticidad.entity';
 
 @Injectable()
 export class ConfigsService {
@@ -119,6 +122,20 @@ export class ConfigsService {
               },
             ),
           );
+        const herramientas: Array<HerramientaSerializable> = await Promise.all(
+          (await configEntity.herramientas).map(async (herramienta) => {
+            if (herramienta.tipo === TipoHerramienta.AnalisisCriticidad) {
+              const herramientaAnalisisCriticidad =
+                herramienta as HerramientaAnalisisCriticidad;
+              return new HerramientaAnalisisCriticidadSerializableDetails(
+                herramientaAnalisisCriticidad.id,
+                herramientaAnalisisCriticidad.nombre,
+                herramientaAnalisisCriticidad.tipo,
+                await herramientaAnalisisCriticidad.campos,
+              );
+            }
+          }),
+        );
         this.lastConfig = new ConfigSerializableDetails(
           configEntity.version,
           configEntity.nombre,
@@ -133,6 +150,7 @@ export class ConfigsService {
             }),
           ),
           indiceCalculables,
+          herramientas,
         );
       }
     }
