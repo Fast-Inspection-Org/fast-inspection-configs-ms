@@ -365,33 +365,40 @@ export class ConfigsService {
       });
     // Si fue encontrada dicha configuración
     if (configMarcarActiva) {
-      // se comprueba que el "porcentaje de completitud de la configuración sea 100 %"
-      if ((await configMarcarActiva.getPorcentajeCompletitud()) === 100) {
-        await this.configuracionRepository.manager.transaction(
-          async (transactionManager: EntityManager) => {
-            // Se crea una transaccion para este procedimiento
-            // Primero se desmarca la anterior configuración marcada como activa, en el caso de que exista
-            const anteriorConfigMarcadaAsActiva: Config | undefined =
-              await this.getConfig(undefined, true);
-            // si existe una configuración marcada como activa
-            if (anteriorConfigMarcadaAsActiva) {
-              anteriorConfigMarcadaAsActiva.state = false; // se indica que ya no es la configuración activa
-              await transactionManager.save(anteriorConfigMarcadaAsActiva); // se actualiza los cambios de esta configuración en la base de datos
-            }
+      // si no resulta ser la configuración marcada como activa
+      if (!configMarcarActiva.state) {
+        // se comprueba que el "porcentaje de completitud de la configuración sea 100 %"
+        if ((await configMarcarActiva.getPorcentajeCompletitud()) === 100) {
+          await this.configuracionRepository.manager.transaction(
+            async (transactionManager: EntityManager) => {
+              // Se crea una transaccion para este procedimiento
+              // Primero se desmarca la anterior configuración marcada como activa, en el caso de que exista
+              const anteriorConfigMarcadaAsActiva: Config | undefined =
+                await this.getConfig(undefined, true);
+              // si existe una configuración marcada como activa
+              if (anteriorConfigMarcadaAsActiva) {
+                anteriorConfigMarcadaAsActiva.state = false; // se indica que ya no es la configuración activa
+                await transactionManager.save(anteriorConfigMarcadaAsActiva); // se actualiza los cambios de esta configuración en la base de datos
+              }
 
-            configMarcarActiva.state = true; // se marca como activa la configuración
-            // Luego se actualizan los cambios en la base de datos
-            await transactionManager.save(configMarcarActiva);
-          },
-        );
-      } else
-        throw new HttpException(
-          {
-            message:
-              'No es posible marcar como activa dicha configuración ya que no cumple con los requisitos mínimos de completitud',
-          },
-          HttpStatus.BAD_REQUEST,
-        );
+              configMarcarActiva.state = true; // se marca como activa la configuración
+              // Luego se actualizan los cambios en la base de datos
+              await transactionManager.save(configMarcarActiva);
+            },
+          );
+        } else
+          throw new HttpException(
+            {
+              message:
+                'No es posible marcar como activa dicha configuración ya que no cumple con los requisitos mínimos de completitud',
+            },
+            HttpStatus.BAD_REQUEST,
+          );
+      } else {
+        configMarcarActiva.state = false; // se marca esta vez como inactiva a la configuración
+        // Luego se actualizan los cambios en la base de datos
+        await this.configuracionRepository.save(configMarcarActiva);
+      }
     } else
       throw new HttpException(
         { message: 'No existe una configuración con esa versión' },
