@@ -32,7 +32,7 @@ export class ConfigsController {
   }
 
   @MessagePattern('getSistemasConfig') // Ruta para obtener todas las configuraciones registradas
-  public async getSistemasConfig(payload: { version: number }) {
+  public async getSistemasConfig(payload: { version: string }) {
     try {
       return await this.configsService.getSistemasConfig(
         Number(payload.version),
