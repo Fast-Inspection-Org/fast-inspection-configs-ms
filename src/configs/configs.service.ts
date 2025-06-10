@@ -188,8 +188,9 @@ export class ConfigsService {
     nombreConfig: String,
     descripcionConfig: String,
   ) {
-    const otherConfig: Config =
-      await this.getConfigByVersion(versionOtherConfig); // se obtiene la otra configuración
+    const otherConfig: Config = await this.configuracionRepository.findOne({
+      where: { version: versionOtherConfig },
+    }); // se obtiene la otra configuración
     const configDTO: ConfigDTO = new ConfigDTO(); // se crea una config dto para ser almacenada en la base de datos
     await configDTO.constuirDTO(
       nombreConfig,
