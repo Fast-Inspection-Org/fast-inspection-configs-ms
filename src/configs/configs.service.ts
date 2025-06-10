@@ -160,11 +160,19 @@ export class ConfigsService {
 
   // Metodo para obtener una configuración con una versión en específico
   public async getConfigByVersion(versionConfig: number) {
-    return await this.configuracionRepository.findOne({
+    const configEntity = await this.configuracionRepository.findOne({
       where: {
         version: versionConfig,
       },
     });
+
+    return new ConfigSerializable(
+      configEntity.version,
+      configEntity.nombre,
+      configEntity.descripcion,
+      configEntity.state,
+      await configEntity.getPorcentajeCompletitud(),
+    );
   }
 
   // Méotodo para obtener una configuración con un nombre en especifico (para validar repitencias de nombre)
