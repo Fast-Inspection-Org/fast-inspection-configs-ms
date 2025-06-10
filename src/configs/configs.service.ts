@@ -1,4 +1,9 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
 import { Config, ConfigOrderBy } from './config.entity';
 import { EntityManager, Like, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -172,6 +177,26 @@ export class ConfigsService {
       configEntity.descripcion,
       configEntity.state,
       await configEntity.getPorcentajeCompletitud(),
+    );
+  }
+
+  public async getSistemasConfig(version: number) {
+    const configEntity = await this.configuracionRepository.findOne({
+      where: { version: version },
+    });
+    if (!configEntity)
+      throw new BadRequestException(
+        'No existe una configuración con esa versión',
+      );
+
+    const sistemasConfig = await configEntity.sistemasConfig;
+
+    return await Promise.all(
+      sistemasConfig.map(async (sistemaConfig) => {
+        return await this.sistemaConfigService.getSistemaConfigDetails(
+          sistemaConfig.id,
+        );
+      }),
     );
   }
 
