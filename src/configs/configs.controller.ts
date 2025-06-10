@@ -32,10 +32,10 @@ export class ConfigsController {
   }
 
   @MessagePattern('getSistemasConfig') // Ruta para obtener todas las configuraciones registradas
-  public async getSistemasConfig(payload: { version: string }) {
+  public async getSistemasConfig(version: number) {
     try {
       return await this.configsService.getSistemasConfig(
-        Number(payload.version),
+        Number(version),
       );
     } catch (error) {
       throw new RpcException({
