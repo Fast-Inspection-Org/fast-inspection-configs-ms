@@ -34,7 +34,9 @@ export class ConfigsController {
   @MessagePattern('getSistemasConfig') // Ruta para obtener todas las configuraciones registradas
   public async getSistemasConfig(payload: { version: number }) {
     try {
-      return await this.configsService.getSistemasConfig(payload.version);
+      return await this.configsService.getSistemasConfig(
+        Number(payload.version),
+      );
     } catch (error) {
       throw new RpcException({
         message: error.message,
