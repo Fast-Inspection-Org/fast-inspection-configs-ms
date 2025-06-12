@@ -39,8 +39,7 @@ export class MaterialesConfigController {
   @MessagePattern('getMaterial')
   public async getMaterial(id: number) {
     try {
-      await this.materialesConfigService.getMaterialConfig(id);
-      return { success: true };
+      return await this.materialesConfigService.getMaterialConfig(id);
     } catch (error) {
       throw new RpcException({
         message: error.message,
