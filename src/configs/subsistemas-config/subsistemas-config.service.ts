@@ -167,22 +167,29 @@ export class SubsistemasConfigService {
   // Método para modificar la información de un subsistema config en específico
   public async updateSubsistemaConfig(
     idSubsistemaConfig: number,
-    idSistemaConfig: number,
     updateSubsistemaConfigDTO: UpdateSubsistemaConfigDTO,
   ) {
+    const subsistemaConfigEntity =
+      await this.subSistemaConfigRepository.findOne({
+        where: { id: idSubsistemaConfig },
+      });
+
+    if (!subsistemaConfigEntity)
+      throw new HttpException(
+        'No existe un subsistema con ese id',
+        HttpStatus.BAD_REQUEST,
+      );
     // se obtiene un subsistema config con ese nombre
     const subsistemaConfig: SubsistemaConfig = await this.getSubSistemaConfig(
       undefined,
-      idSistemaConfig,
+      subsistemaConfigEntity.sistemaConfigId,
       updateSubsistemaConfigDTO.nombre,
     );
     // si no fue encontrado un subsistema config con ese nombre o si el que fue encontrado fue el mismo
     if (!subsistemaConfig || subsistemaConfig.id === idSubsistemaConfig) {
+      subsistemaConfigEntity.nombre = updateSubsistemaConfigDTO.nombre;
       // se actualiza la información del subsistema config en la base de datos
-      await this.subSistemaConfigRepository.update(
-        { id: idSubsistemaConfig },
-        updateSubsistemaConfigDTO,
-      );
+      await this.subSistemaConfigRepository.save(subsistemaConfigEntity);
     } else
       throw new HttpException(
         'Ya existe un subsistema con ese nombre',
