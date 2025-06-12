@@ -84,26 +84,25 @@ export class SistemasConfigService {
     idSistemaConfig: number,
     updateSistemaConfigDTO: UpdateSistemaConfigDTO /* representa los datos a actualizar del sistema config */,
   ) {
+    const sistemaConfigUpdate = await this.sistemaConfigRepository.findOne({
+      where: { id: idSistemaConfig },
+    });
+    if (!sistemaConfigUpdate)
+      throw new HttpException(
+        'No existe un sistema config con ese identificador',
+        HttpStatus.BAD_REQUEST,
+      );
     const sistemaConfig: SistemaConfig = await this.getSistemaConfig(
       undefined /*se indica que no se va a filtar por este campo */,
       updateSistemaConfigDTO.nombre,
-      updateSistemaConfigDTO.configVersion,
+      sistemaConfigUpdate.configVersion,
     );
 
     if (!sistemaConfig || sistemaConfig.id === idSistemaConfig) {
       // si no existe un configuración con el mismo nombre o si la que existe es ella misma (significa esto ultimo que el usuario  cambió el nombre de ese sistema config por otro)
-      const sistemaConfigUpdate: SistemaConfig =
-        await this.getSistemaConfig(idSistemaConfig); // se obtiene el sistema config a modificar
-      sistemaConfigUpdate.nombre = updateSistemaConfigDTO.nombre; // se actualiza el nombre
-      const herramienta: Herramienta =
-        await this.herramientaService.getHerramientaById(
-          updateSistemaConfigDTO.herramienta.id,
-        ); // se obtiene la herramienta
 
-      if (herramienta) {
-        // si fue encontrada herramienta con ese id
-        sistemaConfigUpdate.herramientaId = herramienta.id; // se actualiza el id de la herramienta
-      }
+      sistemaConfigUpdate.nombre = updateSistemaConfigDTO.nombre; // se actualiza el nombre
+
       await this.sistemaConfigRepository.save(sistemaConfigUpdate); // se actualiza la información del sistema config en la base de datos
     } else
       throw new HttpException(
