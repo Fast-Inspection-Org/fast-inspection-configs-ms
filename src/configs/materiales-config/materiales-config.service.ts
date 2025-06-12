@@ -186,20 +186,28 @@ export class MaterialesConfigService {
 
   public async updateMaterialConfig(
     idMaterialConfig: number,
-    idSubsistemaConfig: number,
     updateMaterialConfigDTO: UpdateMaterialConfigDTO,
   ) {
+    const materialEntity = await this.materialConfigRepository.findOne({
+      where: { id: idMaterialConfig },
+    });
+
+    if (!materialEntity)
+      throw new HttpException(
+        'No existe un material con ese identificador',
+        HttpStatus.BAD_REQUEST,
+      );
+
     const materialConfig: MaterialConfig = await this.getMaterialConfig(
       undefined,
-      idSubsistemaConfig,
+      materialEntity.subsistemaConfigId,
       updateMaterialConfigDTO.nombre,
     ); // se obtiene al material con ese id de la base de datos
     // Si no hay materiales con ese nombre o si el que existe es el mismo
     if (!materialConfig || materialConfig.id === idMaterialConfig) {
-      await this.materialConfigRepository.update(
-        { id: idMaterialConfig },
-        updateMaterialConfigDTO,
-      ); // se actualiza el material en la base de datos
+      materialEntity.nombre = updateMaterialConfigDTO.nombre;
+      // se actualiza el material en la base de datos
+      await this.materialConfigRepository.save(materialEntity);
     } else
       throw new HttpException(
         'Ya existe un material con ese nombre',
