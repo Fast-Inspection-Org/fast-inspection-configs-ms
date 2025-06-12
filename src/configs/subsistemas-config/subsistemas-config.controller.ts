@@ -36,6 +36,20 @@ export class SubsistemasConfigController {
     }
   }
 
+  @MessagePattern('getSubsistemaConfig')
+  public async getSubsistemaConfig(id: number) {
+    try {
+      return await this.subsistemasConfigService.getSubSistemaConfig(
+        Number(id),
+      );
+    } catch (error) {
+      throw new RpcException({
+        message: error.message,
+        status: error.status,
+      });
+    }
+  }
+
   @MessagePattern('createSubsistemaConfig')
   public async createSubsistemaConfig(subistemaConfigDTO: SubsistemaConfigDTO) {
     try {

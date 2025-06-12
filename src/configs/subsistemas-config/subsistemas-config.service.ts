@@ -58,7 +58,7 @@ export class SubsistemasConfigService {
     idSistemaConfig?: number,
     nombre?: String,
   ): Promise<SubsistemaConfig> {
-    return this.subSistemaConfigRepository.findOne({
+    return await this.subSistemaConfigRepository.findOne({
       where: {
         id: idSubsistemaConfig,
         sistemaConfigId: idSistemaConfig,
