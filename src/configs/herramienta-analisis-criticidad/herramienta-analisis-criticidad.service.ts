@@ -78,12 +78,7 @@ export class HerramientaAnalisisCriticidadService {
     nombre?: String,
   ): Promise<ApiPaginatedResponse<HerramientaAnalisisCriticidad[]>> {
     return {
-      data: await this.herramientaAnalisisCriticidadRepository.find({
-        where: {
-          configVersion: versionConfig,
-          nombre: nombre ? Like(`%${nombre}%`) : nombre,
-        },
-      }),
+      data: []
     };
   }
 
