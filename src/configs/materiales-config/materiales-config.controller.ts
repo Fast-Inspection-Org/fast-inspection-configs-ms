@@ -36,6 +36,19 @@ export class MaterialesConfigController {
     }
   }
 
+  @MessagePattern('getMaterial')
+  public async getMaterial(id: number) {
+    try {
+      await this.materialesConfigService.getMaterialConfig(id);
+      return { success: true };
+    } catch (error) {
+      throw new RpcException({
+        message: error.message,
+        status: error.status,
+      });
+    }
+  }
+
   @MessagePattern('createMaterialConfig')
   public async createMaterialConfig(materialConfig: MaterialConfigDTO) {
     try {
