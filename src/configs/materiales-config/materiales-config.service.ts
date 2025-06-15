@@ -93,7 +93,7 @@ export class MaterialesConfigService {
               TipoTipoDeterioro.TipoDeterioroAnalisisCriticidad
             )
               return await this.tipoDeterioroAnalisisCriticidadConfigService.getTipoDeterioroAnalisisCriticidadConfigDetails(
-                materialConfigEntity.id,
+                tipoDeterioroConfig.id,
               );
           },
         ),
