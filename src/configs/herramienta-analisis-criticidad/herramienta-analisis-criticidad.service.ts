@@ -182,7 +182,6 @@ export class HerramientaAnalisisCriticidadService {
     // Lo primero es eliminar todas las causas pertenecientes al tipo de deterioro análisis criticdad
     await this.campoService.deleteCampos(
       herramientaAnalisisCriticidadUpdate.id,
-      entityManager,
     );
     // Luego se insertan las nuevas causas del tipo de deterioro
     await this.saveCamposHerramientaAnalisisCriticidad(
