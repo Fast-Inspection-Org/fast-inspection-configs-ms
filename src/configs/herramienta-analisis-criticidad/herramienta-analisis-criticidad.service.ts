@@ -150,29 +150,42 @@ export class HerramientaAnalisisCriticidadService {
         herramientaAnalisisCricidadModificar.configVersion,
       ))
     ) {
-      herramientaAnalisisCricidadModificar.nombre =
-        updateHerramientaAnalisisCriticidad.nombre; // se modifica el nombre de la herramienta análisis de criticidad
-      herramientaAnalisisCricidadModificar.campos = Promise.resolve(
-        updateHerramientaAnalisisCriticidad.campos.map(
-          (campo) =>
-            new Campo(
-              campo.nombre,
-              campo.nivelImportancia,
-              campo.configVersion,
-              new HerramientaAnalisisCriticidad(
-                herramientaAnalisisCricidadModificar.id,
-              ),
-            ),
-        ),
+      await this.herramientaAnalisisCriticidadRepository.manager.transaction(
+        async (trasactionManager: EntityManager) => {
+          // se crea una transacción para este procedimiento
+          herramientaAnalisisCricidadModificar.nombre =
+            updateHerramientaAnalisisCriticidad.nombre; // se modifica el nombre de la herramienta análisis de criticidad
+          await this.actualizarCamposHerramientaAnalisisCriticidad(
+            herramientaAnalisisCricidadModificar,
+            updateHerramientaAnalisisCriticidad.campos,
+            trasactionManager,
+          );
+          await trasactionManager.save(herramientaAnalisisCricidadModificar); // se guarda la herramienta con los cambios
+        },
       );
-      this.herramientaAnalisisCriticidadRepository.save(
-        herramientaAnalisisCricidadModificar,
-      ); // se guarda la herramienta con los cambios
     } else
       throw new HttpException(
         'Ya existe una herramienta con ese nombre en la base de datos',
         HttpStatus.BAD_REQUEST,
       );
+  }
+
+  private async actualizarCamposHerramientaAnalisisCriticidad(
+    herramientaAnalisisCriticidadUpdate: HerramientaAnalisisCriticidad,
+    campos: Array<CampoDTO>,
+    entityManager: EntityManager,
+  ) {
+    // Lo primero es eliminar todas las causas pertenecientes al tipo de deterioro análisis criticdad
+    await this.campoService.deleteCampos(
+      herramientaAnalisisCriticidadUpdate.id,
+      entityManager,
+    );
+    // Luego se insertan las nuevas causas del tipo de deterioro
+    await this.saveCamposHerramientaAnalisisCriticidad(
+      campos,
+      herramientaAnalisisCriticidadUpdate,
+      entityManager,
+    );
   }
 
   // Método para obtener los Campos Afectados definidos en la Herramienta
