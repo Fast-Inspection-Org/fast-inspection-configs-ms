@@ -10,6 +10,7 @@ import { HerramientasService } from '../herramientas/herramientas.service';
 import { UpdateHerramientaAnalisisCriticidadDTO } from './update-herramienta-analisis-criticidad.dto';
 import { Campo } from '../campo/campo.entity';
 import { ApiPaginatedResponse } from 'src/utils/api-response';
+import { HerramientaAnalisisCriticidadSerializableDetails } from './serializable/herramienta-analisis-criticidad.serializable';
 
 @Injectable()
 export class HerramientaAnalisisCriticidadService {
@@ -25,13 +26,20 @@ export class HerramientaAnalisisCriticidadService {
     idHerramienta?: number,
     nombre?: string,
   ) {
-    return await this.herramientaAnalisisCriticidadRepository.findOne({
-      where: {
-        id: idHerramienta,
-        nombre: nombre,
-      },
-      relations: ["campos"]
-    });
+    const herramientaEntity =
+      await this.herramientaAnalisisCriticidadRepository.findOne({
+        where: {
+          id: idHerramienta,
+          nombre: nombre,
+        },
+      });
+
+    return new HerramientaAnalisisCriticidadSerializableDetails(
+      herramientaEntity.id,
+      herramientaEntity.nombre,
+      herramientaEntity.tipo,
+      await herramientaEntity.campos,
+    );
   }
 
   // Metodo para crear una nueva herramienta Analisis de Criticidad
