@@ -32,7 +32,7 @@ export class HerramientaAnalisisCriticidadController {
         updateHerramientaAnalisisCriticidadDTO: UpdateHerramientaAnalisisCriticidadDTO
     }) {
         try {
-            await this.herramientaAnalisisCriticidadService.updateHerramientaAnalisisCriticidad(payload.idHerramienta,
+            await this.herramientaAnalisisCriticidadService.updateHerramientaAnalisisCriticidad(Number(payload.idHerramienta),
                 payload.updateHerramientaAnalisisCriticidadDTO)
             return { success: true }
         } catch (error) {
