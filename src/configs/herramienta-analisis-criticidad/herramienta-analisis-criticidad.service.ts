@@ -143,12 +143,16 @@ export class HerramientaAnalisisCriticidadService {
       await this.getHerramientaAnalisisCriticdad(idHerramienta);
 
     // se comprueba que no exista una herramienta con el mismo nombre
-    if (
-      !(await this.herramientaService.getHerramienta(
+    const herramientaAnalisisCriticidad =
+      await this.herramientaService.getHerramienta(
         updateHerramientaAnalisisCriticidad.nombre,
         undefined,
         herramientaAnalisisCricidadModificar.configVersion,
-      ))
+      );
+
+    if (
+      !herramientaAnalisisCriticidad ||
+      herramientaAnalisisCriticidad.id === idHerramienta
     ) {
       await this.herramientaAnalisisCriticidadRepository.manager.transaction(
         async (trasactionManager: EntityManager) => {
