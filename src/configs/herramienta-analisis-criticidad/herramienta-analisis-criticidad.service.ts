@@ -30,6 +30,7 @@ export class HerramientaAnalisisCriticidadService {
         id: idHerramienta,
         nombre: nombre,
       },
+      relations: ["campos"]
     });
   }
 
