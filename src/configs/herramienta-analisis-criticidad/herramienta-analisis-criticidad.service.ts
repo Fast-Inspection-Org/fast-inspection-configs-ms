@@ -149,7 +149,7 @@ export class HerramientaAnalisisCriticidadService {
         undefined,
         herramientaAnalisisCricidadModificar.configVersion,
       );
-
+console.log(herramientaAnalisisCriticidad)
     if (
       !herramientaAnalisisCriticidad ||
       herramientaAnalisisCriticidad.id === idHerramienta
