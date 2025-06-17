@@ -149,7 +149,9 @@ export class HerramientaAnalisisCriticidadService {
   ) {
     // se obtiene la herramienta análisis de criticidad a modificar
     const herramientaAnalisisCricidadModificar: HerramientaAnalisisCriticidad =
-      await this.getHerramientaAnalisisCriticdad(idHerramienta);
+      await this.herramientaAnalisisCriticidadRepository.findOne({
+        where: { id: idHerramienta },
+      });
 
     // se comprueba que no exista una herramienta con el mismo nombre
     const herramientaAnalisisCriticidad =
@@ -206,7 +208,9 @@ export class HerramientaAnalisisCriticidadService {
   ): Promise<Array<Campo>> {
     // Se obtiene la herramienta analisis de criticidad
     const herramientaAnalisisCriticidad: HerramientaAnalisisCriticidad =
-      await this.getHerramientaAnalisisCriticdad(idHerramienta);
+      await this.herramientaAnalisisCriticidadRepository.findOne({
+        where: { id: idHerramienta },
+      });
 
     return await herramientaAnalisisCriticidad.campos;
   }
