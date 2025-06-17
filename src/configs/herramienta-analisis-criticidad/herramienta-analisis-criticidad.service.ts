@@ -152,6 +152,19 @@ export class HerramientaAnalisisCriticidadService {
     ) {
       herramientaAnalisisCricidadModificar.nombre =
         updateHerramientaAnalisisCriticidad.nombre; // se modifica el nombre de la herramienta análisis de criticidad
+      herramientaAnalisisCricidadModificar.campos = Promise.resolve(
+        updateHerramientaAnalisisCriticidad.campos.map(
+          (campo) =>
+            new Campo(
+              campo.nombre,
+              campo.nivelImportancia,
+              campo.configVersion,
+              new HerramientaAnalisisCriticidad(
+                herramientaAnalisisCricidadModificar.id,
+              ),
+            ),
+        ),
+      );
       this.herramientaAnalisisCriticidadRepository.save(
         herramientaAnalisisCricidadModificar,
       ); // se guarda la herramienta con los cambios
