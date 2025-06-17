@@ -128,4 +128,21 @@ export class CampoService {
   public async deleteCampo(idCampo: number) {
     await this.campoRepository.delete({ id: idCampo });
   }
+
+  // Método para eliminar campos
+  public async deleteCampos(
+    idHerramienta: number,
+    entityManager?: EntityManager,
+  ) {
+    if (entityManager) {
+      // si se trata de una transacción heredada
+      await entityManager.delete(Campo, {
+        herramientaAnalisisCriticidadId: idHerramienta,
+      });
+    } else {
+      await this.campoRepository.delete({
+        herramientaAnalisisCriticidadId: idHerramienta,
+      });
+    }
+  }
 }
