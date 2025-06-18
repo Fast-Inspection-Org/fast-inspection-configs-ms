@@ -4,6 +4,7 @@ import { EntityManager, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { IndiceCalculableSinIntervalo } from '../indice-calculable-sin-intervalo/indice-calculable-sin-intervalo.entity';
 import { IndicadorDTO } from '../indicador/indicador.dto';
+import { TipoIndicador } from '../indicador/indicador.entity';
 
 @Injectable()
 export class IndicadorSinIntervaloService {
@@ -20,7 +21,7 @@ export class IndicadorSinIntervaloService {
     }
 
     public async createIndicadorSinIntervaloWithEntity(indicadorSinIntervaloDTO: IndicadorDTO, entityManager: EntityManager) {
-        const indicadorSinIntervalo: IndicadorSinIntervalo = new IndicadorSinIntervalo(undefined, indicadorSinIntervaloDTO.nombre, indicadorSinIntervaloDTO.valor, indicadorSinIntervaloDTO.tipo,
+        const indicadorSinIntervalo: IndicadorSinIntervalo = new IndicadorSinIntervalo(undefined, indicadorSinIntervaloDTO.nombre, indicadorSinIntervaloDTO.valor, TipoIndicador.IndicadorSinIntervalo,
             indicadorSinIntervaloDTO.indiceCalculableSinIntervalo instanceof
                 IndiceCalculableSinIntervalo ? indicadorSinIntervaloDTO.indiceCalculableSinIntervalo :
                 new IndiceCalculableSinIntervalo(indicadorSinIntervaloDTO.indiceCalculableSinIntervalo.id)) // se crea un objeto de la entidad con los datos propocionados
