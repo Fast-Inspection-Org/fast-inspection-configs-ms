@@ -9,6 +9,7 @@ import { IndicadorDTO } from '../indicador/indicador.dto';
 import {
   Calculos,
   IndiceCalculable,
+  TipoIndiceCalculable,
 } from '../indice-calculable/indice-calculable.entity';
 import { UpdateIndiceCalculableIntervaloDTO } from './update-indice-calculable-intervalo.dto';
 import { IndiceCalculableService } from '../indice-calculable/indice-calculable.service';
@@ -147,7 +148,7 @@ export class IndiceCalculableIntervaloService {
         indiceCalculableIntervaloDTO.config instanceof Config
           ? indiceCalculableIntervaloDTO.config
           : new Config(indiceCalculableIntervaloDTO.config.version),
-        indiceCalculableIntervaloDTO.tipo,
+        TipoIndiceCalculable.InidiceCalculableIntervalo,
         indiceCalculableIntervaloDTO.calculo,
       ); // Se crea el indice para ser añadido
 
