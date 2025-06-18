@@ -4,6 +4,7 @@ import { EntityManager, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { IndiceCalculableIntervalo } from '../indice-calculable-intervalo/indice-calculable-intervalo.entity';
 import { IndicadorDTO } from '../indicador/indicador.dto';
+import { TipoIndicador } from '../indicador/indicador.entity';
 
 @Injectable()
 export class IndicadorIntervaloService {
@@ -20,7 +21,7 @@ export class IndicadorIntervaloService {
     }
 
     private async createIndicadorIntervaloWithEntity(indicadorIntervaloDTO: IndicadorDTO, entityManager: EntityManager) {
-        const indicadorIntervalo: IndicadorIntervalo = new IndicadorIntervalo(undefined, indicadorIntervaloDTO.nombre, indicadorIntervaloDTO.valor, indicadorIntervaloDTO.tipo,
+        const indicadorIntervalo: IndicadorIntervalo = new IndicadorIntervalo(undefined, indicadorIntervaloDTO.nombre, indicadorIntervaloDTO.valor, TipoIndicador.IndicadorIntervalo,
             indicadorIntervaloDTO.limiteInferior, indicadorIntervaloDTO.limiteSuperior, indicadorIntervaloDTO.indiceCalculableIntervalo instanceof IndiceCalculableIntervalo ?
             indicadorIntervaloDTO.indiceCalculableIntervalo : new IndiceCalculableIntervalo(indicadorIntervaloDTO.indiceCalculableIntervalo.id)) // Se crea un indicador Intervalo apartir de la información del objeto DTO
 
