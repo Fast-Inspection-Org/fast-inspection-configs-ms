@@ -89,75 +89,68 @@ export class ConfigsService {
   // Metodo para obtener la configuración más reciente
   public async getLastConfig(): Promise<ConfigSerializableDetails | undefined> {
     if (!this.lastConfig) {
-      // Si no hay cargada ninguna configuración en caché
-      const maxVersion = await this.configuracionRepository
-        .createQueryBuilder('config')
-        .select('MAX(config.version)', 'max')
-        .getRawOne();
-      if (maxVersion.max) {
-        // si fue encontrada un maxima version
-        const configEntity = await this.configuracionRepository.findOne({
-          where: {
-            version: maxVersion.max,
-          },
-        });
-        const indiceCalculables: Array<IndiceCalculableSerializable> =
-          await Promise.all(
-            (await configEntity.indicesCalculables).map(
-              async (indiceCalculable) => {
-                if (
-                  indiceCalculable.tipo ===
-                  TipoIndiceCalculable.InidiceCalculableIntervalo
-                )
-                  return new IndiceCaculableIntervaloSerializableDetails(
-                    indiceCalculable.id,
-                    indiceCalculable.nombre,
-                    indiceCalculable.tipo,
-                    indiceCalculable.calculo,
-                    (await indiceCalculable.obtenerIndicadores()) as IndicadorIntervalo[],
-                  );
-                else
-                  return new IndiceCalculableSinIntervaloSerializableDetails(
-                    indiceCalculable.id,
-                    indiceCalculable.nombre,
-                    indiceCalculable.tipo,
-                    indiceCalculable.calculo,
-                    (await indiceCalculable.obtenerIndicadores()) as IndicadorSinIntervalo[],
-                  );
-              },
-            ),
-          );
-        const herramientas: Array<HerramientaSerializable> = await Promise.all(
-          (await configEntity.herramientas).map(async (herramienta) => {
-            if (herramienta.tipo === TipoHerramienta.AnalisisCriticidad) {
-              const herramientaAnalisisCriticidad =
-                herramienta as HerramientaAnalisisCriticidad;
-              return new HerramientaAnalisisCriticidadSerializableDetails(
-                herramientaAnalisisCriticidad.id,
-                herramientaAnalisisCriticidad.nombre,
-                herramientaAnalisisCriticidad.tipo,
-                await herramientaAnalisisCriticidad.campos,
-              );
-            }
-          }),
-        );
-        this.lastConfig = new ConfigSerializableDetails(
-          configEntity.version,
-          configEntity.nombre,
-          configEntity.descripcion,
-          configEntity.state,
-          await configEntity.getPorcentajeCompletitud(),
-          await Promise.all(
-            (await configEntity.sistemasConfig).map(async (sistemaConfig) => {
-              return await this.sistemaConfigService.getSistemaConfigDetails(
-                sistemaConfig.id,
-              );
-            }),
+      // se obtiene la configuración activa
+      const configEntity = await this.configuracionRepository.findOne({
+        where: {
+          state: true,
+        },
+      });
+      const indiceCalculables: Array<IndiceCalculableSerializable> =
+        await Promise.all(
+          (await configEntity.indicesCalculables).map(
+            async (indiceCalculable) => {
+              if (
+                indiceCalculable.tipo ===
+                TipoIndiceCalculable.InidiceCalculableIntervalo
+              )
+                return new IndiceCaculableIntervaloSerializableDetails(
+                  indiceCalculable.id,
+                  indiceCalculable.nombre,
+                  indiceCalculable.tipo,
+                  indiceCalculable.calculo,
+                  (await indiceCalculable.obtenerIndicadores()) as IndicadorIntervalo[],
+                );
+              else
+                return new IndiceCalculableSinIntervaloSerializableDetails(
+                  indiceCalculable.id,
+                  indiceCalculable.nombre,
+                  indiceCalculable.tipo,
+                  indiceCalculable.calculo,
+                  (await indiceCalculable.obtenerIndicadores()) as IndicadorSinIntervalo[],
+                );
+            },
           ),
-          indiceCalculables,
-          herramientas,
         );
-      }
+      const herramientas: Array<HerramientaSerializable> = await Promise.all(
+        (await configEntity.herramientas).map(async (herramienta) => {
+          if (herramienta.tipo === TipoHerramienta.AnalisisCriticidad) {
+            const herramientaAnalisisCriticidad =
+              herramienta as HerramientaAnalisisCriticidad;
+            return new HerramientaAnalisisCriticidadSerializableDetails(
+              herramientaAnalisisCriticidad.id,
+              herramientaAnalisisCriticidad.nombre,
+              herramientaAnalisisCriticidad.tipo,
+              await herramientaAnalisisCriticidad.campos,
+            );
+          }
+        }),
+      );
+      this.lastConfig = new ConfigSerializableDetails(
+        configEntity.version,
+        configEntity.nombre,
+        configEntity.descripcion,
+        configEntity.state,
+        await configEntity.getPorcentajeCompletitud(),
+        await Promise.all(
+          (await configEntity.sistemasConfig).map(async (sistemaConfig) => {
+            return await this.sistemaConfigService.getSistemaConfigDetails(
+              sistemaConfig.id,
+            );
+          }),
+        ),
+        indiceCalculables,
+        herramientas,
+      );
     }
 
     return this.lastConfig;
