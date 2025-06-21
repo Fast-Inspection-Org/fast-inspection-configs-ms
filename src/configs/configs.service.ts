@@ -88,13 +88,14 @@ export class ConfigsService {
 
   // Metodo para obtener la configuración más reciente
   public async getLastConfig(): Promise<ConfigSerializableDetails | undefined> {
-    if (!this.lastConfig) {
-      // se obtiene la configuración activa
-      const configEntity = await this.configuracionRepository.findOne({
-        where: {
-          state: true,
-        },
-      });
+    // se obtiene la configuración activa
+    const configEntity = await this.configuracionRepository.findOne({
+      where: {
+        state: true,
+      },
+    });
+
+    if (!this.lastConfig || configEntity.version !== this.lastConfig.version) {
       const indiceCalculables: Array<IndiceCalculableSerializable> =
         await Promise.all(
           (await configEntity.indicesCalculables).map(
